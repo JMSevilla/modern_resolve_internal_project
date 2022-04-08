@@ -10,30 +10,14 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
+import { Redirect } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import { appRouter } from '../../router/route'
 import TextField from '@mui/material/TextField';
-import LoadingOverlay from 'react-loading-overlay';
-import styled , {css} from 'styled-components'
-import '../../css/style.css'
-const DarkBackground = styled.div`
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 999; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 
-  ${props =>
-    props.disappear &&
-    css`
-      display: block; /* show */
-    `}
-`;
+
 
 const BootstrapDialog = styler(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -75,11 +59,30 @@ BootstrapDialogTitle.propTypes = {
 
 const NavigationBar = () => {
     const [open, setIsOpen] = React.useState(false)
+    const [BDOpen, setBDOpen] = React.useState(false)
     const handleSignin = () => {
         setIsOpen(true)
     }
     const handleClose = () => {
         setIsOpen(false)
+    }
+    const redirectHelper = () => {
+      return <Redirect as={HashLink} to={"/registration"} />
+    }
+    const backDropAwait = () => {
+      // alert("hello world")
+     setTimeout(() => {
+      if(BDOpen){
+        setBDOpen(false)
+        redirectHelper()
+      }
+     }, 2000)
+    }
+    const onBDOpen = () => {
+      setBDOpen(!BDOpen)
+    }
+    const handleCloseBackDrop = () => {
+      setBDOpen(false)
     }
     
     return(
@@ -125,7 +128,24 @@ const NavigationBar = () => {
             </Typography>
             <TextField id="outlined-basic" label="Your password" type="password" style={{width: '100%'}} variant="outlined" />
             </div>
-            {/* <a style={{cursor: 'pointer'}} as={HashLink} to={appRouter.Registration.path} >Create an account</a> */}
+            <Button variant="text" onClick={onBDOpen}>Create an account</Button>
+            {
+        BDOpen ? (
+          <>
+          
+            <Backdrop
+              sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+              open={open}
+              onClick={handleCloseBackDrop}
+            >
+              <CircularProgress color="inherit" />
+            </Backdrop>
+            {backDropAwait()}
+          </>
+        ) : (
+          <></>
+        )
+      }
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleClose}>
@@ -133,7 +153,8 @@ const NavigationBar = () => {
           </Button>
         </DialogActions>
       </BootstrapDialog>
-            
+      
+      
         </div>
         
     )
