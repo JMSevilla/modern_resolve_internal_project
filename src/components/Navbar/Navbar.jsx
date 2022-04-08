@@ -66,20 +66,11 @@ const NavigationBar = () => {
     const handleClose = () => {
         setIsOpen(false)
     }
-    const redirectHelper = () => {
-      return <Redirect as={HashLink} to={"/registration"} />
-    }
     const backDropAwait = () => {
-      // alert("hello world")
-     setTimeout(() => {
-      if(BDOpen){
-        setBDOpen(false)
-        redirectHelper()
-      }
-     }, 2000)
+      return <Redirect as={HashLink} to={appRouter.Registration.path} />
     }
     const onBDOpen = () => {
-      setBDOpen(!BDOpen)
+      setBDOpen(true)
     }
     const handleCloseBackDrop = () => {
       setBDOpen(false)
@@ -130,20 +121,22 @@ const NavigationBar = () => {
             </div>
             <Button variant="text" onClick={onBDOpen}>Create an account</Button>
             {
+              
         BDOpen ? (
           <>
-          
-            <Backdrop
+    {/* <Backdrop
               sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
               open={open}
               onClick={handleCloseBackDrop}
             >
               <CircularProgress color="inherit" />
-            </Backdrop>
+            </Backdrop> */}
             {backDropAwait()}
           </>
         ) : (
-          <></>
+          <>
+          
+          </>
         )
       }
         </DialogContent>
