@@ -110,8 +110,6 @@ const AppRegistration = () => {
       }
     })
     const dispatch = useDispatch();
-    const userValue = useSelector((state) => state.user.userValue)
-    const userValue1 = useSelector((state) => state.user.userValue1)
     const [errorHelperText, setHelperText] = React.useState('')
     const handleOccupation = (event) => {
       if(event.target.value === null || event.target.value === '') {
@@ -199,18 +197,17 @@ const AppRegistration = () => {
          await dispatch(checkUser(infoState.infoObj))
         
         setTimeout(() => {
-          console.log(store.getState().user)
-          console.log(userValue1)
           setLoading(false)
-          // if(store.getState().user.userValue[0].key === 'username_taken') {
-          //   Toast.fire({
-          //     icon: 'error',
-          //     title: 'Username already taken.'
-          //   })
-          //   setLoading(false)
-          // }else {
-          //   setLoading(false)
-          // }
+          if(store.getState().user.userValue[0].key === 'username_taken') {
+            Toast.fire({
+              icon: 'error',
+              title: 'Username already taken.'
+            })
+            setLoading(false)
+          }else {
+            await dispatch(push_registration(infoState.infoObj))
+            setLoading(false)
+          }
           
         }, 2000)
       }
