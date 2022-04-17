@@ -1,7 +1,6 @@
 import React from 'react'
 import Navbar from '../components/Navbar/Navbar'
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
@@ -15,11 +14,13 @@ import Button from '@mui/material/Button';
 import BasicSelect from '../components/Select/Select'
 import MUIText from '../components/TextField/TextField'
 import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { useDispatch, useSelector } from 'react-redux';
-import { push_check, push_registration } from '../redux/core/registration';
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
+import store from '../redux/store'
+import {push_check, push_registration, registrationSlice} from '../redux/core/registration'
+import {initialState} from '../redux/core/registration'
+import {checkUser} from '../redux/core/registration'
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -108,16 +109,10 @@ const AppRegistration = () => {
         errorLoggerConfirmPassword : false
       }
     })
-    const { userValue, isregSuccess } = useSelector((state) => state.user)
     const dispatch = useDispatch();
+    const userValue = useSelector((state) => state.user.userValue)
+    const userValue1 = useSelector((state) => state.user.userValue1)
     const [errorHelperText, setHelperText] = React.useState('')
-    React.useEffect(() => {
-      setInfoState(prevState => {
-        let infoObj = Object.assign({}, prevState.infoObj)
-        infoObj.userTrigger = true
-        return {infoObj}
-      })
-    }, [])
     const handleOccupation = (event) => {
       if(event.target.value === null || event.target.value === '') {
         setOccupation("")
@@ -179,10 +174,14 @@ const AppRegistration = () => {
     const handleCloseBackDrop = () => {
       setLoading(false)
     }
-   React.useEffect(() => {
-    dispatch(push_check(infoState.infoObj))
-   }, [])
-    const handleNextCredentials = () => {
+    React.useEffect(() => {
+      setInfoState(prevState => {
+        let infoObj = Object.assign({}, prevState.infoObj)
+        infoObj.userTrigger = true
+        return {infoObj}
+      })
+    }, [])
+    const handleNextCredentials = async () => {
       if(!infoState.infoObj.password || !infoState.infoObj.conpass || !infoState.infoObj.username) {
         Toast.fire({
           icon: 'error',
@@ -196,25 +195,23 @@ const AppRegistration = () => {
         })
         return false
       } else {
-        // call backend if username is exist
         setLoading(true)
-        dispatch(push_check(infoState.infoObj))
+         await dispatch(checkUser(infoState.infoObj))
+        
         setTimeout(() => {
-          if(JSON.parse(localStorage.getItem('userValue'))[0].key === 'username_available')
-          {
-            dispatch(push_registration(infoState.infoObj));
-            if(localStorage.getItem('regIsSuccess') === true)
-            {
-              setLoading(false)
-              return setActiveStep((prevActiveStep) => prevActiveStep + 1);
-            }
-          } else {
-            setLoading(false)
-            Toast.fire({
-              icon: 'error',
-              title: 'Username already exist'
-            })
-          }
+          console.log(store.getState().user)
+          console.log(userValue1)
+          setLoading(false)
+          // if(store.getState().user.userValue[0].key === 'username_taken') {
+          //   Toast.fire({
+          //     icon: 'error',
+          //     title: 'Username already taken.'
+          //   })
+          //   setLoading(false)
+          // }else {
+          //   setLoading(false)
+          // }
+          
         }, 2000)
       }
     }

@@ -6,7 +6,7 @@ headers.append('GET', 'POST', 'OPTIONS');
 class APICommon {
     connect() {
         const instance = axios.create({
-            baseURL : "http://localhost/mdrbackend",
+            baseURL : "http://localhost/modern_resolve_intern_project_backend",
             headers: headers
         })
         return instance
