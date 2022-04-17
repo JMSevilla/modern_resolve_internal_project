@@ -16,6 +16,10 @@ import BasicSelect from '../components/Select/Select'
 import MUIText from '../components/TextField/TextField'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { useDispatch, useSelector } from 'react-redux';
+import { push_check, push_registration } from '../redux/core/registration';
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -47,9 +51,13 @@ function TabPanel(props) {
       'aria-controls': `simple-tabpanel-${index}`,
     };
   }
-const steps = ['Personal Information', 'Credentials Information', 'Create an ad'];
+const steps = ['Personal Information', 'Credentials Information', 'Finish'];
 const infoObj = {
-  fname : "", lname : "", occupationStatus: '', occupationDetails : "", occupationPositionWork : '', nameOfSchool : '', degree : '', address : ''
+  fname : "", lname : "",
+   occupationStatus: '',
+    occupationDetails : "", occupationPositionWork : '',
+     nameOfSchool : '', degree : '', address : '',
+      username : '', password : '', conpass : '', userTrigger : true
 }
 const occupationArray = [
   {
@@ -84,6 +92,7 @@ const AppRegistration = () => {
     const [infoState, setInfoState] = React.useState(infoObj)
     const [occupation, setOccupation] = React.useState('');
     const [study, setStudy] = React.useState('')
+    const [isLoading, setLoading] = React.useState(false)
     const [errorRequest, setErrorRequest] = React.useState({
       errorHandler : {
         errorLoggerFname : false,
@@ -93,10 +102,22 @@ const AppRegistration = () => {
         errorLoggerSchoolName : false,
         errorLoggerAddress : false,
         errorLoggerIsStudy : false,
-        errorLoggerOccupation : false
+        errorLoggerOccupation : false,
+        errorLoggerUsername : false,
+        errorLoggerPassword : false,
+        errorLoggerConfirmPassword : false
       }
     })
+    const { userValue, isregSuccess } = useSelector((state) => state.user)
+    const dispatch = useDispatch();
     const [errorHelperText, setHelperText] = React.useState('')
+    React.useEffect(() => {
+      setInfoState(prevState => {
+        let infoObj = Object.assign({}, prevState.infoObj)
+        infoObj.userTrigger = true
+        return {infoObj}
+      })
+    }, [])
     const handleOccupation = (event) => {
       if(event.target.value === null || event.target.value === '') {
         setOccupation("")
@@ -155,7 +176,48 @@ const AppRegistration = () => {
     const handleChange = (event, newValue) => { 
         setValue(newValue);
     };
-    
+    const handleCloseBackDrop = () => {
+      setLoading(false)
+    }
+   React.useEffect(() => {
+    dispatch(push_check(infoState.infoObj))
+   }, [])
+    const handleNextCredentials = () => {
+      if(!infoState.infoObj.password || !infoState.infoObj.conpass || !infoState.infoObj.username) {
+        Toast.fire({
+          icon: 'error',
+          title: 'Empty fields. please try again.'
+        })
+        return false
+      } else if(infoState.infoObj.conpass != infoState.infoObj.password) {
+        Toast.fire({
+          icon: 'error',
+          title: 'Password mismatch'
+        })
+        return false
+      } else {
+        // call backend if username is exist
+        setLoading(true)
+        dispatch(push_check(infoState.infoObj))
+        setTimeout(() => {
+          if(JSON.parse(localStorage.getItem('userValue'))[0].key === 'username_available')
+          {
+            dispatch(push_registration(infoState.infoObj));
+            if(localStorage.getItem('regIsSuccess') === true)
+            {
+              setLoading(false)
+              return setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            }
+          } else {
+            setLoading(false)
+            Toast.fire({
+              icon: 'error',
+              title: 'Username already exist'
+            })
+          }
+        }, 2000)
+      }
+    }
     const handleNext = () => {
         console.log(infoState.infoObj)
         if(infoState.infoObj === undefined){
@@ -178,20 +240,33 @@ const AppRegistration = () => {
           })
           return false
         }
-        else{
-          if(!infoState.infoObj.fname || !infoState.infoObj.lname
-            || !infoState.infoObj.occupationStatus || !infoState.infoObj.occupationDetails
-            || !infoState.infoObj.occupationPositionWork || !infoState.infoObj.nameOfSchool
-            || !infoState.infoObj.degree || !infoState.infoObj.address){
+        else{ 
+          if(occupation === 'working') {
+            if(!infoState.infoObj.fname || !infoState.infoObj.lname
+              || !infoState.infoObj.occupationStatus || !infoState.infoObj.occupationDetails
+              || !infoState.infoObj.occupationPositionWork || !infoState.infoObj.address){
+                Toast.fire({
+                  icon: 'error',
+                  title: 'Empty fields. please try again.'
+                })
+                return false
+              }
+              else{
+                setActiveStep((prevActiveStep) => prevActiveStep + 1);
+              }
+          } else if (occupation === 'studying'){
+            if(!infoState.infoObj.fname || !infoState.infoObj.lname
+              || !infoState.infoObj.occupationStatus || !infoState.infoObj.nameOfSchool 
+              || !infoState.infoObj.degree || !infoState.infoObj.address){
               Toast.fire({
                 icon: 'error',
                 title: 'Empty fields. please try again.'
               })
               return false
-            }else{
+            }else {
               setActiveStep((prevActiveStep) => prevActiveStep + 1);
             }
-          
+          }
         }
     }
     const handleBack = () => {
@@ -362,6 +437,87 @@ const AppRegistration = () => {
         setHelperText("")
       }
     }
+    const handleUsernameChange = (e) => {
+      if(e.target.value === null || e.target.value === '') {
+        setInfoState(prevState => {
+          let infoObj = Object.assign({}, prevState.infoObj)
+          infoObj.username = ""
+          return {infoObj}
+        })
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerUsername = true
+          return {errorHandler}
+        })
+        setHelperText("Empty field")
+      } else {
+        setInfoState(prevState => {
+          let infoObj = Object.assign({}, prevState.infoObj)
+          infoObj.username = e.target.value
+          return {infoObj}
+        })
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerUsername = false
+          return {errorHandler}
+        })
+        setHelperText("")
+      }
+    }
+    const handlePasswordChange = (e) => {
+      if(e.target.value === null || e.target.value === '') {
+        setInfoState(prevState => {
+          let infoObj = Object.assign({}, prevState.infoObj)
+          infoObj.password = ""
+          return {infoObj}
+        })
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerPassword = true
+          return {errorHandler}
+        })
+        setHelperText("Empty field")
+      } else {
+        setInfoState(prevState => {
+          let infoObj = Object.assign({}, prevState.infoObj)
+          infoObj.password = e.target.value
+          return {infoObj}
+        })
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerPassword = false
+          return {errorHandler}
+        })
+        setHelperText("")
+      }
+    }
+    const handleConfirmPasswordChange = (e) => {
+      if(e.target.value === null || e.target.value === '') {
+        setInfoState(prevState => {
+          let infoObj = Object.assign({}, prevState.infoObj)
+          infoObj.conpass = ""
+          return {infoObj}
+        })
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerConfirmPassword = true
+          return {errorHandler}
+        })
+        setHelperText("Empty field")
+      }else{
+        setInfoState(prevState => {
+          let infoObj = Object.assign({}, prevState.infoObj)
+          infoObj.conpass = e.target.value
+          return {infoObj}
+        })
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerConfirmPassword = false
+          return {errorHandler}
+        })
+        setHelperText("")
+      }
+    }
     const OccupationHelper = () => {
       if(occupation === 'working') {
         return (
@@ -448,6 +604,9 @@ const AppRegistration = () => {
         infoObj.nameOfSchool = ""
         infoObj.degree = ""
         infoObj.address = ""
+        infoObj.username = ""
+        infoObj.password = ""
+        infoObj.conpass = ""
         return {infoObj}
       })
     }
@@ -473,7 +632,7 @@ const AppRegistration = () => {
                                               variant : "outlined",
                                               isError : errorRequest.errorHandler.errorLoggerFname,
                                               helperTextHelper : errorHelperText,
-                                              value : (infoState.infoObj === undefined) ? defaultValueSetter : infoState.infoObj.fname
+                                              value : (infoState.infoObj === undefined) ? defaultValueSetter : infoState.infoObj.username
                                             })
                                         }
                                         </div>
@@ -556,7 +715,52 @@ const AppRegistration = () => {
                                     </Typography>
 
                                     <div style={{marginTop: '30px'}}>
-
+                                      {
+                                         MUIText({
+                                          typography : "Username",
+                                          dataOnChange : handleUsernameChange,
+                                          id: "outlined-basic",
+                                          label: "Your username",
+                                          type : "text",
+                                          stylish : {width: '100%'},
+                                          helperTextHelper : errorHelperText,
+                                          isError : errorRequest.errorHandler.errorLoggerUsername,
+                                          value : (infoState.infoObj === undefined) ? defaultValueSetter : infoState.infoObj.username
+                                        })
+                                      }
+                                      {
+                                         MUIText({
+                                          typography : "Password",
+                                          dataOnChange : handlePasswordChange,
+                                          id: "outlined-basic",
+                                          label: "Your password",
+                                          type : "password",
+                                          stylish : {width: '100%'},
+                                          helperTextHelper : errorHelperText,
+                                          isError : errorRequest.errorHandler.errorLoggerPassword,
+                                          value : (infoState.infoObj === undefined) ? defaultValueSetter : infoState.infoObj.password
+                                        })
+                                      }
+                                      {
+                                         MUIText({
+                                          typography : "Confirm Password",
+                                          dataOnChange : handleConfirmPasswordChange,
+                                          id: "outlined-basic",
+                                          label: "Confirm your password",
+                                          type : "password",
+                                          stylish : {width: '100%'},
+                                          helperTextHelper : errorHelperText,
+                                          isError : errorRequest.errorHandler.errorLoggerConfirmPassword,
+                                          value : (infoState.infoObj === undefined) ? defaultValueSetter : infoState.infoObj.conpass
+                                        })
+                                      }
+                                      <Backdrop
+                                      sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                      open={isLoading}
+                                      onClick={handleCloseBackDrop}
+                                    >
+                                      <CircularProgress color="inherit" />
+                                    </Backdrop>
                                     </div>
                  </div>
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -570,19 +774,45 @@ const AppRegistration = () => {
                   </Button>
                   <Box sx={{ flex: '1 1 auto' }} />
 
-                  <Button onClick={handleNext}>
+                  <Button onClick={handleNextCredentials}>
                     {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
                   </Button>
                 </Box>
                 </React.Fragment>
             )
+        } else if(activeStep === 2) {
+          return(
+            <React.Fragment>
+               <div style={{marginTop: '20px', marginBottom: '20px'}}>
+               <h4>You're all caught up !</h4>
+                                    <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                                            Kindly wait or contact the system admin for account activation.
+                                    </Typography>
+               </div>
+               <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                  <Button
+                    color="inherit"
+                    disabled={activeStep === 0}
+                    onClick={handleBack}
+                    sx={{ mr: 1 }}
+                  >
+                    Back
+                  </Button>
+                  <Box sx={{ flex: '1 1 auto' }} />
+
+                  <Button onClick={handleNextCredentials}>
+                    {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                  </Button>
+                </Box>
+            </React.Fragment>
+          )
         }
     }
     return (
         <div>
             <Navbar />
             <div style={{marginTop: '150px'}} className="container">
-            <Card sx={{ minWidth: 275 }}>
+            <Card sx={{ minWidth: 275 }} style={{marginBottom: '30px'}}>
                         <CardContent>
                             <Box sx={{ width: '100%' }}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
