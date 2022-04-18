@@ -33,7 +33,7 @@ const MUIText = ({
                         variant={variant}
                         error={isError}
                         helperText={helperTextHelper}
-                        defaultValue={value}
+                        value={value}
                         />
                 </>
             )
@@ -51,7 +51,7 @@ const MUIText = ({
                         type={type}
                         style={stylish}
                         variant={variant}
-                        defaultValue={value}
+                        value={value}
                         />
                 </>
             )

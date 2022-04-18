@@ -5,11 +5,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'element-theme-default';
 import ApplicationRouter from './router/index'
 import {Provider} from 'react-redux'
-import store from './redux/store'
-import {persistStore} from 'redux-persist'
-import { PersistGate } from 'redux-persist/integration/react';
-let persistor = persistStore(store)
+import configureStore from './redux/configureStore'
 const rootElement = document.getElementById('root')
+
+const store = configureStore()
+
 ReactDOM.render(
   <HashRouter>
     <Provider store={store}>

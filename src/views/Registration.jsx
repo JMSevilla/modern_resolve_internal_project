@@ -18,9 +18,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 import store from '../redux/store'
-import {push_check, push_registration, registrationSlice} from '../redux/core/registration'
-import {initialState} from '../redux/core/registration'
-import {checkUser} from '../redux/core/registration'
+// import {checkUser, createUser} from '../redux/core/registration'
+import {checkUser} from '../redux/core/registrationSlice'
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -110,8 +109,11 @@ const AppRegistration = () => {
       }
     })
     const dispatch = useDispatch();
+    
+    
     const [errorHelperText, setHelperText] = React.useState('')
     const handleOccupation = (event) => {
+      
       if(event.target.value === null || event.target.value === '') {
         setOccupation("")
         setInfoState(prevState => {
@@ -129,8 +131,12 @@ const AppRegistration = () => {
       setInfoState(prevState => {
         let infoObj = Object.assign({}, prevState.infoObj)
         infoObj.occupationStatus = event.target.value
+        infoObj.nameOfSchool = ""
+        infoObj.occupationDetails = ""
+        infoObj.occupationPositionWork = ""
         return {infoObj}
       })
+      console.log(infoState.infoObj)
       setErrorRequest(prevState => {
         let errorHandler = Object.assign({}, prevState.errorHandler)
         errorHandler.errorLoggerOccupation = false
@@ -179,7 +185,9 @@ const AppRegistration = () => {
         return {infoObj}
       })
     }, [])
-    const handleNextCredentials = async () => {
+   
+    const userValue = useSelector((state) => state.user.userValue)
+    const handleNextCredentials = () => {
       if(!infoState.infoObj.password || !infoState.infoObj.conpass || !infoState.infoObj.username) {
         Toast.fire({
           icon: 'error',
@@ -193,23 +201,27 @@ const AppRegistration = () => {
         })
         return false
       } else {
-        setLoading(true)
-         await dispatch(checkUser(infoState.infoObj))
-        
-        setTimeout(() => {
-          setLoading(false)
-          if(store.getState().user.userValue[0].key === 'username_taken') {
-            Toast.fire({
-              icon: 'error',
-              title: 'Username already taken.'
-            })
-            setLoading(false)
-          }else {
-            await dispatch(push_registration(infoState.infoObj))
-            setLoading(false)
-          }
-          
-        }, 2000)
+        // setLoading(true)
+        dispatch(checkUser(infoState.infoObj))
+        console.log(userValue)
+        // await dispatch(checkUser(infoState.infoObj))
+        // setTimeout(() => {
+        //   switch(true){
+        //     case store.getState().user.userValue[0].key === 'username_taken' : {
+        //       Toast.fire({
+        //         icon: 'error',
+        //         title: 'Username already taken.'
+        //       })
+        //       setLoading(false)
+        //       return false
+        //     }
+        //     default: {
+        //       setLoading(false)
+        //       dispatch(createUser(infoState.infoObj))
+        //       console.log(store.getState().user)
+        //     }
+        //   }
+        // }, 2000)
       }
     }
     const handleNext = () => {
@@ -539,7 +551,7 @@ const AppRegistration = () => {
               MUIText({
                 typography : "Name of school",
                 dataOnChange : handleSchoolNameChange,
-                id: "outlined-basic",
+                id: "outlined-basic school",
                 label: "Your school name",
                 type : "text",
                 stylish : {width: '100%'},
@@ -591,16 +603,16 @@ const AppRegistration = () => {
     const defaultValueSetter = () => {
       setInfoState(prevState => {
         let infoObj = Object.assign({}, prevState.infoObj)
-        infoObj.fname = ""
-        infoObj.lname = ""
-        infoObj.occupationDetails = ""
-        infoObj.occupationPositionWork = ""
-        infoObj.nameOfSchool = ""
-        infoObj.degree = ""
-        infoObj.address = ""
-        infoObj.username = ""
-        infoObj.password = ""
-        infoObj.conpass = ""
+        infoObj.fname = undefined
+        infoObj.lname = undefined
+        infoObj.occupationDetails = undefined
+        infoObj.occupationPositionWork = undefined
+        infoObj.nameOfSchool = undefined
+        infoObj.degree = undefined
+        infoObj.address = undefined
+        infoObj.username = undefined
+        infoObj.password = undefined
+        infoObj.conpass = undefined
         return {infoObj}
       })
     }
@@ -626,7 +638,7 @@ const AppRegistration = () => {
                                               variant : "outlined",
                                               isError : errorRequest.errorHandler.errorLoggerFname,
                                               helperTextHelper : errorHelperText,
-                                              value : (infoState.infoObj === undefined) ? defaultValueSetter : infoState.infoObj.username
+                                              value : (infoState.infoObj === undefined) ? defaultValueSetter : infoState.infoObj.fname
                                             })
                                         }
                                         </div>

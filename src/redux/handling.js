@@ -14,7 +14,7 @@ class DataHandling {
         data.append('occupationStatus', object.occupationStatus)
         data.append('occupationDetails', object.occupationDetails)
         data.append('occupationPositionWork', object.occupationPositionWork)
-        data.append('nameofSchool', object.nameOfSchool)
+        data.append('nameOfSchool', object.nameOfSchool)
         data.append('degree', object.degree)
         data.append('address', object.address)
         data.append('username', object.username)

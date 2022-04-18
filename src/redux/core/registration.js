@@ -3,16 +3,16 @@ import client from '../common'
 import handler from '../handling'
 const initialState = {
     userValue : '',
-    registrationStatus : null
+    registrationSuccessMessage : ''
 }
 
 export const checkUser = createAsyncThunk('check/user', async (object) => {
     const response = await client.connect().post('/api/user.php', handler.HTTPHandling(object))
     return response.data
 })
-export const push_registration = createAsyncThunk('push/registration',
+export const createUser = createAsyncThunk('push/registration',
 async (object) => {
-    const response = client.connect().post('/api/user.php',
+    const response = await client.connect().post('/api/user.php',
     handler.HTTPManual(object))
     return response.data
 })
@@ -25,8 +25,10 @@ const registrationSlice = createSlice({
         .addCase(checkUser.fulfilled, (state, action) => {
             state.userValue = action.payload
         })
-        .addCase(push_registration.fulfilled, (state, action) => {
-            state.registrationStatus = action.payload
+        .addCase(createUser.fulfilled, (state, action) => {
+            console.log(action.payload)
+            state.registrationSuccessMessage = action.payload
+            console.log(state.registrationSuccessMessage)
         })
     }
 })
