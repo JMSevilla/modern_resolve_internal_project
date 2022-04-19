@@ -4,7 +4,7 @@ import * as actions from "../actions/registrationAction"
 const serverMiddleware = ({dispatch}) => (next) => async (action) => {
     if (action.type !== actions.apiCallBegan.type) return next(action);
 
-    const { headers, url, method, data, onStart, onSuccess, onError } =
+    const { url, method, data, onStart, onSuccess, onError } =
         action.payload;
 
     if (onStart) dispatch({ type: onStart });
@@ -14,9 +14,8 @@ const serverMiddleware = ({dispatch}) => (next) => async (action) => {
     try {
         let headers = new Headers()
         headers.append('Access-Control-Allow-Origin', '*');
-        headers.append('Access-Control-Allow-Credentials', 'true');
         headers.append('GET', 'POST', 'OPTIONS');
-        const response = await axios.create({
+        const response = await axios.request({
             baseURL: "http://localhost/modern_resolve_intern_project_backend",
             headers : headers,
             url,
@@ -25,7 +24,6 @@ const serverMiddleware = ({dispatch}) => (next) => async (action) => {
         });
         dispatch(actions.apiCallSuccess(response.data));
         if (onSuccess)
-            console.log(response.data)
             dispatch({ type: onSuccess, payload: response.data });
     } catch (error) {
         dispatch(actions.apiCallFailed(error.message));

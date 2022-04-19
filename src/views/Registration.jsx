@@ -19,7 +19,7 @@ import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 import store from '../redux/store'
 // import {checkUser, createUser} from '../redux/core/registration'
-import {checkUser} from '../redux/core/registrationSlice'
+import {checkUser, pushCreateDev} from '../redux/core/registrationSlice'
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -87,6 +87,15 @@ const AppRegistration = () => {
       toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
   })
+    const [
+      userValue,
+      registrationSuccessMessage
+     ] = useSelector((state) => [
+      state.user.userValue,
+      state.user.registrationSuccessMessage
+    ])
+    const ref = React.useRef(userValue)
+    const refregisterSuccess = React.useRef(registrationSuccessMessage)
     const [value, setValue] = React.useState(0);
     const [activeStep, setActiveStep] = React.useState(0);
     const [infoState, setInfoState] = React.useState(infoObj)
@@ -185,8 +194,10 @@ const AppRegistration = () => {
         return {infoObj}
       })
     }, [])
-   
-    const userValue = useSelector((state) => state.user.userValue)
+    React.useEffect(() => {
+      ref.current = userValue
+      refregisterSuccess.current = registrationSuccessMessage
+    }, [userValue, registrationSuccessMessage])
     const handleNextCredentials = () => {
       if(!infoState.infoObj.password || !infoState.infoObj.conpass || !infoState.infoObj.username) {
         Toast.fire({
@@ -201,27 +212,25 @@ const AppRegistration = () => {
         })
         return false
       } else {
-        // setLoading(true)
+        setLoading(true)
         dispatch(checkUser(infoState.infoObj))
-        console.log(userValue)
-        // await dispatch(checkUser(infoState.infoObj))
-        // setTimeout(() => {
-        //   switch(true){
-        //     case store.getState().user.userValue[0].key === 'username_taken' : {
-        //       Toast.fire({
-        //         icon: 'error',
-        //         title: 'Username already taken.'
-        //       })
-        //       setLoading(false)
-        //       return false
-        //     }
-        //     default: {
-        //       setLoading(false)
-        //       dispatch(createUser(infoState.infoObj))
-        //       console.log(store.getState().user)
-        //     }
-        //   }
-        // }, 2000)
+        setTimeout(() => {
+          switch(true){
+            case ref.current[0].key === 'username_taken' : {
+              Toast.fire({
+                icon: 'error',
+                title: 'Username already taken.'
+              })
+              setLoading(false)
+              return false
+            }
+            default: {
+              dispatch(pushCreateDev(infoState.infoObj))
+              console.log(refregisterSuccess)
+              setLoading(false)
+            }
+          }
+        }, 2000)
       }
     }
     const handleNext = () => {
