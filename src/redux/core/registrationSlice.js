@@ -17,7 +17,6 @@ const slice = createSlice({
         },
         createUserSuccess : (state, action) => {
             state.registrationSuccessMessage = action.payload
-            console.log(action.payload)
         }
     }
 })

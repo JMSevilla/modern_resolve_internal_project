@@ -16,7 +16,7 @@ import { appRouter } from '../../router/route'
 import TextField from '@mui/material/TextField';
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
-
+import MUIText from '../TextField/TextField'
 
 
 const BootstrapDialog = styler(Dialog)(({ theme }) => ({
@@ -56,10 +56,20 @@ BootstrapDialogTitle.propTypes = {
     children: PropTypes.node,
     onClose: PropTypes.func.isRequired,
   };
-
+const loginObject = { 
+  username : '', password : ''
+}
 const NavigationBar = () => {
     const [open, setIsOpen] = React.useState(false)
     const [BDOpen, setBDOpen] = React.useState(false)
+    const [loginState, setLoginState] = React.useState(loginObject)
+    const [errorRequest, setErrorRequest] = React.useState({
+      errorHandler : {
+        errorLoggerUsername : false,
+        errorLoggerPassword : false,
+      }
+    })
+    const [errorHelperText, setHelperText] = React.useState('')
     const handleSignin = () => {
         setIsOpen(true)
     }
@@ -75,7 +85,70 @@ const NavigationBar = () => {
     const handleCloseBackDrop = () => {
       setBDOpen(false)
     }
-    
+    const handlePassword = (e) => {
+      if(e.target.value === null || e.target.value === '') {
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerPassword = true
+          return {errorHandler}
+        })
+        setLoginState(prevState => {
+          let loginObject = Object.assign({}, prevState.loginObject)
+          loginObject.password = ""
+          return {loginObject}
+        })
+        setHelperText("Empty password")
+      }
+      else{
+        setLoginState(prevState => {
+          let loginObject = Object.assign({}, prevState.loginObject)
+          loginObject.password = e.target.value
+          return {loginObject}
+        })
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerPassword = false
+          return {errorHandler}
+        })
+        setHelperText("")
+      }
+    }
+    const handleUsername = (e) => {
+      if(e.target.value === null || e.target.value === '') {
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerUsername = true
+          return {errorHandler}
+        })
+        setLoginState(prevState => {
+          let loginObject = Object.assign({}, prevState.loginObject)
+          loginObject.username = ""
+          return {loginObject}
+        })
+        setHelperText("Empty username")
+      }
+      else{
+        setLoginState(prevState => {
+          let loginObject = Object.assign({}, prevState.loginObject)
+          loginObject.username = e.target.value
+          return {loginObject}
+        })
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerUsername = false
+          return {errorHandler}
+        })
+        setHelperText("")
+      }
+    }
+    const defaultValueSetter = () => {
+      setLoginState(prevState => {
+        let loginObject = Object.assign({}, prevState.loginObject)
+        loginObject.username = undefined
+        loginObject.password = undefined
+        return {loginObject}
+      })
+    }
     return(
         <div>
             <Navbar bg="dark" variant="dark">
@@ -108,16 +181,38 @@ const NavigationBar = () => {
         </BootstrapDialogTitle>
         <DialogContent dividers>
             <div style={{marginBottom : '20px'}}>
-            <Typography gutterBottom>
-                Username
-            </Typography>
-            <TextField id="outlined-basic" label="Your username" style={{width: '100%'}} variant="outlined" />
+            
+            {
+                                            MUIText({
+                                              typography : "Username",
+                                              dataOnChange : handleUsername,
+                                              id: "outlined-basic",
+                                              label: "Your username",
+                                              type : "text",
+                                              stylish : {width: '100%'},
+                                              variant : "outlined",
+                                              isError : errorRequest.errorHandler.errorLoggerUsername,
+                                              helperTextHelper : errorHelperText,
+                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.username
+                                            })
+                                          }
             </div>
             <div style={{marginBottom : '10px'}}>
-            <Typography gutterBottom>
-                Password
-            </Typography>
-            <TextField id="outlined-basic" label="Your password" type="password" style={{width: '100%'}} variant="outlined" />
+       
+            {
+                                            MUIText({
+                                              typography : "Password",
+                                              dataOnChange : handlePassword,
+                                              id: "outlined-basic",
+                                              label: "Your password",
+                                              type : "password",
+                                              stylish : {width: '100%'},
+                                              variant : "outlined",
+                                              isError : errorRequest.errorHandler.errorLoggerPassword,
+                                              helperTextHelper : errorHelperText,
+                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
+                                            })
+                                          }
             </div>
             <Button variant="text" onClick={onBDOpen}>Create an account</Button>
             {

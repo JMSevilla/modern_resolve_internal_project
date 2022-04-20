@@ -124,7 +124,6 @@ const AppRegistration = () => {
     const handleOccupation = (event) => {
       
       if(event.target.value === null || event.target.value === '') {
-        setOccupation("")
         setInfoState(prevState => {
           let infoObj = Object.assign({}, prevState.infoObj)
           infoObj.occupationStatus = ""
@@ -145,7 +144,6 @@ const AppRegistration = () => {
         infoObj.occupationPositionWork = ""
         return {infoObj}
       })
-      console.log(infoState.infoObj)
       setErrorRequest(prevState => {
         let errorHandler = Object.assign({}, prevState.errorHandler)
         errorHandler.errorLoggerOccupation = false
@@ -226,8 +224,14 @@ const AppRegistration = () => {
             }
             default: {
               dispatch(pushCreateDev(infoState.infoObj))
-              console.log(refregisterSuccess)
-              setLoading(false)
+              if(refregisterSuccess.current[0].key === "dev_registration_success") {
+                setLoading(false)
+                Toast.fire({
+                  icon: 'success',
+                  title: 'You have successfully created an account.'
+                })
+                setActiveStep((prevActiveStep) => prevActiveStep + 1);
+              }
             }
           }
         }, 2000)
@@ -801,7 +805,7 @@ const AppRegistration = () => {
                <div style={{marginTop: '20px', marginBottom: '20px'}}>
                <h4>You're all caught up !</h4>
                                     <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                                            Kindly wait or contact the system admin for account activation.
+                                            Kindly wait for your account or contact the system admin for account activation.
                                     </Typography>
                </div>
                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
