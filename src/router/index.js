@@ -3,6 +3,7 @@ import {appRouter} from './route'
 import { Route, Switch } from "react-router-dom";
 import Home from '../views/Home'
 import AppRegistration from '../views/Registration'
+
 const RouteWithLoad = ({component : Component, ...rest}) => {
     return(
         <Route {...rest} render={props => (<> <Component {...props} /> </>)} />
