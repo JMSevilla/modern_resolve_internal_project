@@ -12,7 +12,6 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import BasicSelect from '../components/Select/Select'
-import SelectQuestions from '../components/Select/SelectQuestions'
 import MUIText from '../components/TextField/TextField'
 import Swal from 'sweetalert2'
 import { useDispatch, useSelector } from 'react-redux';
@@ -995,9 +994,10 @@ const AppRegistration = () => {
         return(
           <>
             {BasicSelect({
-                                              occupation : study,
-                                              handleOccupation : handleStudy,
-                                              occupationArray : studyStatus,
+                                              value : study,
+                                              handleSelect : handleStudy,
+                                              selectionArray : studyStatus,
+                                              selectionTitle : 'Degree',
                                               isError : errorRequest.errorHandler.errorLoggerIsStudy
                                             })}
           </>
@@ -1084,9 +1084,11 @@ const AppRegistration = () => {
                                     <div className="row" style={{marginTop: '30px'}}>
                                         <div className="col-sm">
                                             {BasicSelect({
-                                              occupation : occupation,
-                                              handleOccupation : handleOccupation,
-                                              occupationArray : occupationArray,
+                                              value : occupation,
+                                              handleSelect : handleOccupation,
+                                              selectionArray : occupationArray,
+                                              selectionLabel : 'Occupation',
+                                              selectionTitle: 'Occupation Status'
                                             })}
                                         </div>
                                         <div className="col-sm">
@@ -1401,10 +1403,11 @@ const AppRegistration = () => {
                                   }
                                   <div className="row" style={{marginTop: '30px'}}>
                                     <div className="col-sm">
-                                            {SelectQuestions({
-                                              clientSecQuestion : clientSecQuestion,
-                                              handleClientSecQuestions : handleClientSecQuestions,
-                                              secQuestionsArray : secQuestionsArray,
+                                            {BasicSelect({
+                                              value : clientSecQuestion,
+                                              handleSelect : handleClientSecQuestions,
+                                              selectionArray : secQuestionsArray,
+                                              selectionTitle : 'Security Questions'
                                             })}
                                     </div>
                                     <div className="col-sm">
