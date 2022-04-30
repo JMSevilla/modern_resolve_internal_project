@@ -212,7 +212,9 @@ const AppRegistration = () => {
       } else {
         setLoading(true)
         dispatch(checkUser(infoState.infoObj))
+        dispatch(pushCreateDev(infoState.infoObj))
         setTimeout(() => {
+          
           switch(true){
             case ref.current[0].key === 'username_taken' : {
               Toast.fire({
@@ -223,7 +225,6 @@ const AppRegistration = () => {
               return false
             }
             default: {
-              dispatch(pushCreateDev(infoState.infoObj))
               if(refregisterSuccess.current[0].key === "dev_registration_success") {
                 setLoading(false)
                 Toast.fire({

@@ -22,6 +22,13 @@ class DataHandling {
         data.append('regTrigger', true)
         return data
     }
+    HTTPLogin(object) {
+        var data = new FormData()
+        data.append('username', object.username)
+        data.append('password', object.password)
+        data.append('userLogin', object.userLogin)
+        return data
+    }
 }
 
 export default new DataHandling()

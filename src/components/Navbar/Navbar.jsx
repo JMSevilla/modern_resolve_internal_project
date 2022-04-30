@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Navbar, Container, Button as BTN } from 'react-bootstrap'
 import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
+import MUIButton from '../Button/Button'
 import { styled as styler } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -14,10 +14,12 @@ import { Redirect } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import { appRouter } from '../../router/route'
 import TextField from '@mui/material/TextField';
-import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 import MUIText from '../TextField/TextField'
-
+import Swal from 'sweetalert2'
+import Backdrop from '@mui/material/Backdrop'
+import { useDispatch, useSelector } from 'react-redux';
+import {pushLogin} from '../../redux/core/loginSlice'
 
 const BootstrapDialog = styler(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -57,9 +59,21 @@ BootstrapDialogTitle.propTypes = {
     onClose: PropTypes.func.isRequired,
   };
 const loginObject = { 
-  username : '', password : ''
+  username : '', password : '', userLogin: true
 }
 const NavigationBar = () => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  })
+    const [isLoading, setLoading] = React.useState(false)
     const [open, setIsOpen] = React.useState(false)
     const [BDOpen, setBDOpen] = React.useState(false)
     const [loginState, setLoginState] = React.useState(loginObject)
@@ -69,6 +83,19 @@ const NavigationBar = () => {
         errorLoggerPassword : false,
       }
     })
+    const [token, loginSuccess] = useSelector((state) => [
+      state.login.token,
+      state.login.loginSuccess
+    ])
+    const tokenref = React.useRef(token)
+    const loginSuccessref = React.useRef(loginSuccess)
+    const dispatch = useDispatch();
+
+    React.useEffect(() => {
+      tokenref.current = token
+      loginSuccessref.current = loginSuccess
+    }, [token, loginSuccess])
+
     const [errorHelperText, setHelperText] = React.useState('')
     const handleSignin = () => {
         setIsOpen(true)
@@ -149,6 +176,55 @@ const NavigationBar = () => {
         return {loginObject}
       })
     }
+    const onSignin = () => {
+      if(loginState.loginObject === undefined){
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerUsername = true
+          errorHandler.errorLoggerPassword = true
+          return {errorHandler}
+        })
+        setHelperText("Empty field")
+        Toast.fire({
+          icon: 'error',
+          title: 'Empty fields. please try again.'
+        })
+        return false
+      } else if(!loginState.loginObject.username || !loginState.loginObject.password) { 
+        Toast.fire({
+          icon: 'error',
+          title: 'Empty username or password.'
+        })
+        return false
+      } else { 
+        setIsOpen(false)
+        setLoading(true)
+        dispatch(pushLogin(loginState.loginObject))
+        setTimeout(() => {
+          if(tokenref.current[0].key === 'username_exist') {
+            //login
+          } else if(tokenref.current[0].key === 'PASSWORD_INVALID'){
+            Toast.fire({
+              icon: 'error',
+              title: 'Password invalid.'
+            })
+            setIsOpen(true)
+            setLoading(false)
+          }
+           else { 
+            Toast.fire({
+              icon: 'error',
+              title: 'Username does not exist.'
+            })
+            setIsOpen(true)
+            setLoading(false)
+          }
+        }, 2000)
+      }
+    }
+    const handleCloseBackDropLoading = () => {
+      setLoading(false)
+    }
     return(
         <div>
             <Navbar bg="dark" variant="dark">
@@ -214,18 +290,17 @@ const NavigationBar = () => {
                                             })
                                           }
             </div>
-            <Button variant="text" onClick={onBDOpen}>Create an account</Button>
+            {
+               MUIButton({
+                variant : "text",
+                onhandleClick : onBDOpen,
+                buttonName: "Create an account"
+              })
+            }
             {
               
         BDOpen ? (
           <>
-    {/* <Backdrop
-              sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-              open={open}
-              onClick={handleCloseBackDrop}
-            >
-              <CircularProgress color="inherit" />
-            </Backdrop> */}
             {backDropAwait()}
           </>
         ) : (
@@ -236,12 +311,24 @@ const NavigationBar = () => {
       }
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleClose}>
-            Sign in
-          </Button>
+          {
+            MUIButton({
+              variant : "contained",
+              onhandleClick : onSignin,
+              size : "small",
+              buttonName: "Sign in"
+            })
+          }
         </DialogActions>
       </BootstrapDialog>
       
+      <Backdrop
+                                      sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                      open={isLoading}
+                                      onClick={handleCloseBackDropLoading}
+                                    >
+                                      <CircularProgress color="inherit" />
+                                    </Backdrop>
       
         </div>
         
