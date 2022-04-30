@@ -89,13 +89,16 @@ const AppRegistration = () => {
   })
     const [
       userValue,
-      registrationSuccessMessage
+      registrationSuccessMessage,
+      registrationBoolean
      ] = useSelector((state) => [
       state.user.userValue,
-      state.user.registrationSuccessMessage
+      state.user.registrationSuccessMessage,
+      state.user.registrationBoolean
     ])
     const ref = React.useRef(userValue)
     const refregisterSuccess = React.useRef(registrationSuccessMessage)
+    const checkUserRef = React.useRef(registrationBoolean)
     const [value, setValue] = React.useState(0);
     const [activeStep, setActiveStep] = React.useState(0);
     const [infoState, setInfoState] = React.useState(infoObj)
@@ -195,7 +198,10 @@ const AppRegistration = () => {
     React.useEffect(() => {
       ref.current = userValue
       refregisterSuccess.current = registrationSuccessMessage
-    }, [userValue, registrationSuccessMessage])
+      checkUserRef.current = registrationBoolean
+    }, [userValue,
+       registrationSuccessMessage,
+        registrationBoolean])
     const handleNextCredentials = () => {
       if(!infoState.infoObj.password || !infoState.infoObj.conpass || !infoState.infoObj.username) {
         Toast.fire({
@@ -212,28 +218,29 @@ const AppRegistration = () => {
       } else {
         setLoading(true)
         dispatch(checkUser(infoState.infoObj))
-        dispatch(pushCreateDev(infoState.infoObj))
         setTimeout(() => {
-          
-          switch(true){
-            case ref.current[0].key === 'username_taken' : {
-              Toast.fire({
-                icon: 'error',
-                title: 'Username already taken.'
-              })
+          if(ref.current[0].key === 'username_available'){
+            dispatch(pushCreateDev(infoState.infoObj))
+          }
+        }, 1000)
+        setTimeout(() => {
+          if(ref.current[0].key === "username_available") {
+            if(refregisterSuccess.current[0].key === "dev_registration_success") {
               setLoading(false)
-              return false
-            }
-            default: {
-              if(refregisterSuccess.current[0].key === "dev_registration_success") {
-                setLoading(false)
-                Toast.fire({
-                  icon: 'success',
-                  title: 'You have successfully created an account.'
-                })
-                setActiveStep((prevActiveStep) => prevActiveStep + 1);
-              }
-            }
+              Toast.fire({
+                icon: 'success',
+                title: 'You have successfully created an account.'
+              })
+              setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            } 
+          }
+          else {
+            Toast.fire({
+              icon: 'error',
+              title: 'Username already taken.'
+            })
+            setLoading(false)
+            return false
           }
         }, 2000)
       }

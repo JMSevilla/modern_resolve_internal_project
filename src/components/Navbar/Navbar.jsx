@@ -201,6 +201,7 @@ const NavigationBar = () => {
         setLoading(true)
         dispatch(pushLogin(loginState.loginObject))
         setTimeout(() => {
+          console.log(tokenref.current)
           if(tokenref.current[0].key === 'username_exist') {
             //login
           } else if(tokenref.current[0].key === 'PASSWORD_INVALID'){

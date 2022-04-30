@@ -5,7 +5,8 @@ import {baseURLMiddleware} from '../middleware/urlMiddleware'
 
 export const initialState = {
     userValue : '',
-    registrationSuccessMessage : ''
+    registrationSuccessMessage : '',
+    registrationBoolean : false
 }
 
 const slice = createSlice({
@@ -13,10 +14,11 @@ const slice = createSlice({
     initialState,
     reducers : {
         userRequestReceived: (state, action) => {
-            state.userValue = action.payload
+           state.userValue = action.payload;
         },
         createUserSuccess : (state, action) => {
-            state.registrationSuccessMessage = action.payload
+           state.registrationSuccessMessage = action.payload
+            
         }
     }
 })
