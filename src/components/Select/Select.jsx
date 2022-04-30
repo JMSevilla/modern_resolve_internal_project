@@ -6,7 +6,7 @@ import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import FormHelperText from '@mui/material/FormHelperText';
 
-const BasicSelect = ({occupation, handleOccupation, occupationArray, 
+const BasicSelect = ({value, handleSelect, selectionArray, selectionLabel, selectionTitle,
     isError = false}) => {
     const HelperText = () => {
         if(isError) {
@@ -24,17 +24,17 @@ const BasicSelect = ({occupation, handleOccupation, occupationArray,
     return (
         <FormControl fullWidth error={isError}>
             <Typography gutterBottom>
-                                            Occupation Status
+                                            {selectionTitle}
                                         </Typography>
             <Select
               id={(isError ? 'demo-simple-select-error' : 'demo-simple-select-error')}
-              value={occupation}
-              label="Occupation"
-              onChange={handleOccupation}
+              value={value}
+              label={selectionLabel}
+              onChange={handleSelect}
               labelId={(isError ? 'demo-simple-select-error-label' : 'demo-simple-select-error-label')}
             >
                 {
-                    occupationArray.map((i) => {
+                    selectionArray.map((i) => {
                         return (
                             <MenuItem value={i.value}>{i.label}</MenuItem>
                         )
