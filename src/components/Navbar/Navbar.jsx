@@ -77,6 +77,7 @@ const NavigationBar = () => {
     const [open, setIsOpen] = React.useState(false)
     const [BDOpen, setBDOpen] = React.useState(false)
     const [loginState, setLoginState] = React.useState(loginObject)
+    const [successLoginIndicator, setLoginIndicator] = React.useState(false)
     const [errorRequest, setErrorRequest] = React.useState({
       errorHandler : {
         errorLoggerUsername : false,
@@ -102,6 +103,9 @@ const NavigationBar = () => {
     }
     const handleClose = () => {
         setIsOpen(false)
+    }
+    const successLoginRedirect = () => {
+      return <Redirect as={HashLink} to={appRouter.Platform.path} />
     }
     const backDropAwait = () => {
       return <Redirect as={HashLink} to={appRouter.Registration.path} />
@@ -202,8 +206,13 @@ const NavigationBar = () => {
         dispatch(pushLogin(loginState.loginObject))
         setTimeout(() => {
           console.log(tokenref.current)
-          if(tokenref.current[0].key === 'username_exist') {
-            //login
+          if(tokenref.current[0].key.message === 'success_developer') {
+            Toast.fire({
+              icon: 'success',
+              title: 'Successfully Logged in.'
+            })
+            setLoading(false)
+            return setLoginIndicator(true) // problem : not redirecting to platform
           } else if(tokenref.current[0].key === 'PASSWORD_INVALID'){
             Toast.fire({
               icon: 'error',
@@ -308,6 +317,15 @@ const NavigationBar = () => {
           <>
           
           </>
+        )
+      }
+      {
+        successLoginIndicator ? (
+          <>
+            {successLoginRedirect()}
+          </>
+        ) : (
+          <></>
         )
       }
         </DialogContent>

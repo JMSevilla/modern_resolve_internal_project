@@ -16,7 +16,7 @@ const serverMiddleware = ({dispatch}) => (next) => async (action) => {
         headers.append('Access-Control-Allow-Origin', '*');
         headers.append('GET', 'POST', 'OPTIONS');
         const response = await axios.request({
-            baseURL: "http://localhost/modern_resolve_intern_project_backend",
+            baseURL: "http://localhost/mdrbackend",
             headers : headers,
             url,
             method,
