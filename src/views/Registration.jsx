@@ -614,7 +614,9 @@ const AppRegistration = () => {
                                               occupation : study,
                                               handleOccupation : handleStudy,
                                               occupationArray : studyStatus,
-                                              isError : errorRequest.errorHandler.errorLoggerIsStudy
+                                              isError : errorRequest.errorHandler.errorLoggerIsStudy,
+                                              formHelper : 'Kindly select degree',
+                                              selectionTitle : 'Degree'
                                             })}
           </>
         )
@@ -686,6 +688,8 @@ const AppRegistration = () => {
                                               occupation : occupation,
                                               handleOccupation : handleOccupation,
                                               occupationArray : occupationArray,
+                                              formHelper : 'Kindly select occupation',
+                                              selectionTitle : 'Occupation'
                                             })}
                                         </div>
                                         <div className="col-sm">

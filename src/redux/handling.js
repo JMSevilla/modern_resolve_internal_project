@@ -27,6 +27,13 @@ class DataHandling {
         data.append('username', object.username)
         data.append('password', object.password)
         data.append('userLogin', object.userLogin)
+        data.append('role', object.role)
+        return data
+    }
+    HTTPTokenIdentify(value) {
+        var data = new FormData()
+        data.append('tokenstate', true)
+        data.append('token', value)
         return data
     }
 }

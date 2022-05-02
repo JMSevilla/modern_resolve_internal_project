@@ -7,12 +7,12 @@ import Typography from '@mui/material/Typography';
 import FormHelperText from '@mui/material/FormHelperText';
 
 const BasicSelect = ({occupation, handleOccupation, occupationArray, 
-    isError = false}) => {
+    isError = false, formHelper, selectionTitle}) => {
     const HelperText = () => {
         if(isError) {
             return (
                 <>
-                    <FormHelperText>Kindly select occupation status.</FormHelperText>
+                    <FormHelperText>{formHelper}.</FormHelperText>
                 </>
             )
         }else {
@@ -24,7 +24,7 @@ const BasicSelect = ({occupation, handleOccupation, occupationArray,
     return (
         <FormControl fullWidth error={isError}>
             <Typography gutterBottom>
-                                            Occupation Status
+                                            {selectionTitle}
                                         </Typography>
             <Select
               id={(isError ? 'demo-simple-select-error' : 'demo-simple-select-error')}

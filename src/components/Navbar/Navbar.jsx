@@ -20,6 +20,8 @@ import Swal from 'sweetalert2'
 import Backdrop from '@mui/material/Backdrop'
 import { useDispatch, useSelector } from 'react-redux';
 import {pushLogin} from '../../redux/core/loginSlice'
+import { useHistory } from 'react-router-dom';
+import BasicSelect from '../Select/Select'
 
 const BootstrapDialog = styler(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -59,8 +61,16 @@ BootstrapDialogTitle.propTypes = {
     onClose: PropTypes.func.isRequired,
   };
 const loginObject = { 
-  username : '', password : '', userLogin: true
+  username : '', password : '', userLogin: true, role : ''
 }
+const roleArray = [
+  {
+    value : 'client', label : 'Client Portal'
+  },
+  {
+    value : 'developer', label : 'Developer Department'
+  }
+]
 const NavigationBar = () => {
   const Toast = Swal.mixin({
     toast: true,
@@ -73,14 +83,18 @@ const NavigationBar = () => {
       toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
   })
+    const history = useHistory()
+    const [isSuccessLogin, setSuccessLogin] = React.useState(false)
     const [isLoading, setLoading] = React.useState(false)
     const [open, setIsOpen] = React.useState(false)
     const [BDOpen, setBDOpen] = React.useState(false)
     const [loginState, setLoginState] = React.useState(loginObject)
+    const [roleIdentify, setRole] = React.useState('')
     const [errorRequest, setErrorRequest] = React.useState({
       errorHandler : {
         errorLoggerUsername : false,
         errorLoggerPassword : false,
+        errorLoggerRole : false
       }
     })
     const [token, loginSuccess] = useSelector((state) => [
@@ -89,12 +103,14 @@ const NavigationBar = () => {
     ])
     const tokenref = React.useRef(token)
     const loginSuccessref = React.useRef(loginSuccess)
+    const isLoginRedirection = React.useRef(isSuccessLogin)
     const dispatch = useDispatch();
 
     React.useEffect(() => {
       tokenref.current = token
       loginSuccessref.current = loginSuccess
-    }, [token, loginSuccess])
+      isLoginRedirection.current = isSuccessLogin
+    }, [token, loginSuccess, isSuccessLogin])
 
     const [errorHelperText, setHelperText] = React.useState('')
     const handleSignin = () => {
@@ -173,8 +189,12 @@ const NavigationBar = () => {
         let loginObject = Object.assign({}, prevState.loginObject)
         loginObject.username = undefined
         loginObject.password = undefined
+        loginObject.role = undefined
         return {loginObject}
       })
+    }
+    const pushtoPlatform = () => {
+      return <Redirect as={HashLink} to={appRouter.devPlatform.path} />
     }
     const onSignin = () => {
       if(loginState.loginObject === undefined){
@@ -200,10 +220,20 @@ const NavigationBar = () => {
         setIsOpen(false)
         setLoading(true)
         dispatch(pushLogin(loginState.loginObject))
+        setSuccessLogin(true)
         setTimeout(() => {
           console.log(tokenref.current)
-          if(tokenref.current[0].key === 'username_exist') {
+          if(tokenref.current[0].key.message === 'success_developer') {
             //login
+            Toast.fire({
+              icon: 'success',
+              title: 'Successfully logged in.'
+            })
+            setLoading(false)
+            localStorage.setItem("key_identifier", tokenref.current[0].key.uid)
+            if(isLoginRedirection.current) {
+              history.push(appRouter.devPlatform.path)
+            }
           } else if(tokenref.current[0].key === 'PASSWORD_INVALID'){
             Toast.fire({
               icon: 'error',
@@ -219,12 +249,42 @@ const NavigationBar = () => {
             })
             setIsOpen(true)
             setLoading(false)
+            
           }
         }, 2000)
       }
     }
     const handleCloseBackDropLoading = () => {
       setLoading(false)
+    }
+    const handleRole = (event) => {
+      if(event.target.value === null || event.target.value === ''){
+        setRole("")
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerRole = true
+          return {errorHandler}
+        })
+        setLoginState(prevState => {
+          let loginObject = Object.assign({}, prevState.loginObject)
+          loginObject.role = ""
+          return {loginObject}
+        })
+        setHelperText("Kindly select system")
+      } else {
+        setRole(event.target.value)
+        setLoginState(prevState => {
+          let loginObject = Object.assign({}, prevState.loginObject)
+          loginObject.role = event.target.value
+          return {loginObject}
+        })
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerRole = false
+          return {errorHandler}
+        })
+        setHelperText("")
+      }
     }
     return(
         <div>
@@ -291,6 +351,16 @@ const NavigationBar = () => {
                                             })
                                           }
             </div>
+            <div style={{marginBottom: '10px'}}>
+            {BasicSelect({
+                                              occupation : roleIdentify,
+                                              handleOccupation : handleRole,
+                                              occupationArray : roleArray,
+                                              isError : errorRequest.errorHandler.errorLoggerRole,
+                                              formHelper : 'Kindly select system',
+                                              selectionTitle : 'System'
+                                            })}
+            </div>
             {
                MUIButton({
                 variant : "text",
@@ -304,12 +374,13 @@ const NavigationBar = () => {
           <>
             {backDropAwait()}
           </>
-        ) : (
-          <>
-          
-          </>
-        )
-      }
+            ) : (
+              <>
+              
+              </>
+            )
+          }
+      
         </DialogContent>
         <DialogActions>
           {
