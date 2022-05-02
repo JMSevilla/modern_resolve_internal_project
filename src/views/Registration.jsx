@@ -125,7 +125,13 @@ const AppRegistration = () => {
       errorLoggerCsecanswer: false
     }
   })
+  const [clientEmailErrorRequest, setClientEmailErrorRequest] = React.useState({
+    errorHandlerClient : {
+      errorLoggerCemail : false
+    }
+  })
   const [errorHelperTextClient, setHelperTextClient] = React.useState('');
+  const [errorEmailTextClient, setEmailTextClient] = React.useState('');
 
   React.useEffect(() => {
     setInfoState(prevState => {
@@ -136,18 +142,30 @@ const AppRegistration = () => {
   }, [])
 
 const handleNextClient = () => {
+  // It matches either of the following formats 1. +639191234567, or 2. 09191234567
+  const validContactno = /((^(\+)(\d){12}$)|(^\d{11}$))/;
+  const validEmail =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
   console.log(infoStateClient.infoObjClient)
   if(infoStateClient.infoObjClient === undefined){
     setClientErrorRequest(prevState => {
       let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
       errorHandlerClient.errorLoggerCfname = true
       errorHandlerClient.errorLoggerClname = true
-      errorHandlerClient.errorLoggerCemail = true
       errorHandlerClient.errorLoggerCcontact = true
       errorHandlerClient.errorLoggerCaddress = true
       return {errorHandlerClient}
     })
     setHelperTextClient("Empty field")
+    Toast.fire({
+      icon: 'error',
+      title: 'Empty fields. please try again.'
+    })
+    setClientEmailErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerCemail = true
+      return {errorHandlerClient}
+    })
+    setEmailTextClient("Empty field")
     Toast.fire({
       icon: 'error',
       title: 'Empty fields. please try again.'
@@ -160,6 +178,22 @@ const handleNextClient = () => {
       Toast.fire({
         icon: 'error',
         title: 'Empty fields. please try again.'
+      })
+      return false
+    }
+    else if(!validEmail.test(infoStateClient.infoObjClient.clientemail))
+    {
+      Toast.fire({
+        icon: 'error',
+        title: 'Please provide a valid email address'
+      })
+      return false
+    }
+    else if(!validContactno.test(infoStateClient.infoObjClient.clientcontact))
+    {
+      Toast.fire({
+        icon: 'error',
+        title: 'Invalid Contact Number'
       })
       return false
     }
@@ -233,24 +267,24 @@ const handleEmailChangeClient = (e) => {
       infoObjClient.clientemail = ""
       return {infoObjClient}
     })
-    setClientErrorRequest(prevState => {
+    setClientEmailErrorRequest(prevState => {
       let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
       errorHandlerClient.errorLoggerCemail = true
       return {errorHandlerClient}
     })
-    setHelperTextClient("Empty field")
+    setEmailTextClient("Please provide a valid email address")
   }else{
-    setInfoStateClient(prevState => {
+      setInfoStateClient(prevState => {
       let infoObjClient = Object.assign({}, prevState.infoObjClient)
       infoObjClient.clientemail = e.target.value
       return {infoObjClient}
     })
-    setClientErrorRequest(prevState => {
+    setClientEmailErrorRequest(prevState => {
       let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
       errorHandlerClient.errorLoggerCemail = false
       return {errorHandlerClient}
     })
-    setHelperTextClient("")
+    setEmailTextClient("")
   }
 }
 const handleContactChangeClient = (e) => {
@@ -1304,8 +1338,8 @@ const handleAddressChangeClient = (e) => {
                                             type : "text",
                                             stylish : {width: '100%'},
                                             variant : "outlined",
-                                            isError : clientErrorRequest.errorHandlerClient.errorLoggerCemail,
-                                            helperTextHelper : errorHelperTextClient,
+                                            isError : clientEmailErrorRequest.errorHandlerClient.errorLoggerCemail,
+                                            helperTextHelper : errorEmailTextClient,
                                             value : (infoStateClient.infoObjClient === undefined) ? defaultClientValueSetter : infoStateClient.infoObjClient.clientemail
                                           })
                                         }
