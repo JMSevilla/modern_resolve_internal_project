@@ -6,13 +6,15 @@ import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import FormHelperText from '@mui/material/FormHelperText';
 
+
 const BasicSelect = ({value, handleSelect, selectionArray, selectionLabel, selectionTitle,
     isError = false}) => {
+
     const HelperText = () => {
         if(isError) {
             return (
                 <>
-                    <FormHelperText>Kindly select occupation status.</FormHelperText>
+                    <FormHelperText>{formHelper}.</FormHelperText>
                 </>
             )
         }else {

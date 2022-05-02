@@ -5,7 +5,9 @@ import {baseURLMiddleware} from '../middleware/urlMiddleware'
 
 export const initialState = { 
     token : null, 
-    loginSuccess : false
+    loginSuccess : false,
+    initialRoute : '',
+    savedInfo : []
 }
 
 const loginSlice = createSlice({
@@ -15,12 +17,22 @@ const loginSlice = createSlice({
         userLoginRequestReceived : (state, action) => {
             state.token = action.payload
             state.loginSuccess = true
+            //push array to saved fetch infoes
+            state.savedInfo.push({
+                fname : action.payload[0].key.fname,
+                lname : action.payload[0].key.lname,
+                uname : action.payload[0].key.uname,
+                role : action.payload[0].key.role
+            })
+        },
+        tokenRouteIdentifier : (state, action) => {
+            state.initialRoute = action.payload
         }
     }
 })
 
 export default loginSlice.reducer
-const {userLoginRequestReceived} = loginSlice.actions
+const {userLoginRequestReceived, tokenRouteIdentifier} = loginSlice.actions
 
 export const pushLogin = (object) => (dispatch) => {
     return dispatch(
@@ -29,6 +41,17 @@ export const pushLogin = (object) => (dispatch) => {
             method : 'POST',
             data : handler.HTTPLogin(object),
             onSuccess : userLoginRequestReceived.type
+        })
+    )
+}
+
+export const authIdentify = (value) => (dispatch) => {
+    return dispatch(
+        apiCallBegan({
+            url : baseURLMiddleware.userURL,
+            method : 'POST',
+            data : handler.HTTPTokenIdentify(value),
+            onSuccess : tokenRouteIdentifier.type
         })
     )
 }

@@ -1046,11 +1046,13 @@ const handleAddressChangeClient = (e) => {
         return(
           <>
             {BasicSelect({
+
                                               value : study,
                                               handleSelect : handleStudy,
                                               selectionArray : studyStatus,
                                               selectionTitle : 'Degree',
                                               isError : errorRequest.errorHandler.errorLoggerIsStudy
+
                                             })}
           </>
         )
@@ -1135,11 +1137,13 @@ const handleAddressChangeClient = (e) => {
                                     <div className="row" style={{marginTop: '30px'}}>
                                         <div className="col-sm">
                                             {BasicSelect({
+
                                               value : occupation,
                                               handleSelect : handleOccupation,
                                               selectionArray : occupationArray,
                                               selectionLabel : 'Occupation',
                                               selectionTitle: 'Occupation Status'
+
                                             })}
                                         </div>
                                         <div className="col-sm">
