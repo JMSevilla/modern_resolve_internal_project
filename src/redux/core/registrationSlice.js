@@ -6,7 +6,10 @@ import {baseURLMiddleware} from '../middleware/urlMiddleware'
 export const initialState = {
     userValue : '',
     registrationSuccessMessage : '',
-    registrationBoolean : false
+    registrationBoolean : false,
+    userClientValue: '',
+    clientRegistrationSuccessMessage: '',
+    registrationBooleanClient : false,
 }
 
 const slice = createSlice({
@@ -19,12 +22,18 @@ const slice = createSlice({
         createUserSuccess : (state, action) => {
            state.registrationSuccessMessage = action.payload
             
+        },
+        clientRequestReceived: (state, action) => {
+            state.userClientValue = action.payload
+        },
+        createClientSuccess: (state, action) => {
+            state.clientRegistrationSuccessMessage = action.payload
         }
     }
 })
 
 export default slice.reducer
-const {userRequestReceived, createUserSuccess} = slice.actions 
+const {userRequestReceived, createUserSuccess, clientRequestReceived, createClientSuccess} = slice.actions 
 
 export const checkUser = (object) => (dispatch) => {
     return dispatch(
@@ -44,6 +53,28 @@ export const pushCreateDev = (object) => (dispatch) => {
             method : 'POST',
             data : handler.HTTPManual(object),
             onSuccess: createUserSuccess.type,
+        })
+    )
+}
+
+export const checkUserClient = (object) => (dispatch) => {
+    return dispatch(
+        apiCallBegan({
+            url: baseURLMiddleware.userURL,
+            method: 'POST',
+            data: handler.HTTPCheckingClient(object),
+            onSuccess: clientRequestReceived.type,
+        })
+    )
+}
+
+export const pushCreateClient = (object) => (dispatch) => {
+    return dispatch(
+        apiCallBegan({
+            url : baseURLMiddleware.userURL,
+            method : 'POST',
+            data : handler.HTTPManualClient(object),
+            onSuccess: createClientSuccess.type,
         })
     )
 }

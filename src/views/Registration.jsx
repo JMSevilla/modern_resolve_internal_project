@@ -1,5 +1,7 @@
 import React from 'react'
 import Navbar from '../components/Navbar/Navbar'
+import BasicSelect from '../components/Select/Select'
+import MUIText from '../components/TextField/TextField'
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -11,15 +13,13 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
-import BasicSelect from '../components/Select/Select'
-import MUIText from '../components/TextField/TextField'
-import Swal from 'sweetalert2'
-import { useDispatch, useSelector } from 'react-redux';
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
+import Swal from 'sweetalert2'
+import { useDispatch, useSelector } from 'react-redux';
 import store from '../redux/store'
 // import {checkUser, createUser} from '../redux/core/registration'
-import {checkUser, pushCreateDev} from '../redux/core/registrationSlice'
+import {checkUser,checkUserClient, pushCreateDev, pushCreateClient } from '../redux/core/registrationSlice'
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -107,7 +107,31 @@ const AppRegistration = () => {
   })
 
   //CLIENT REGISTRATION
+   const [
+    userValue,
+    registrationSuccessMessage,
+    registrationBoolean,clientUserValue,
+    clientRegistrationSuccessMessage,registrationBooleanClient
+   ] = useSelector((state) => [
+    state.user.userValue, state.user.clientUserValue,
+    state.user.registrationSuccessMessage,state.user.clientRegistrationSuccessMessage,
+    state.user.registrationBoolean,state.user.registrationBooleanClient
+  ])
+  React.useEffect(() => {
+    ref.current = userValue
+    refregisterSuccess.current = registrationSuccessMessage
+    checkUserRef.current = registrationBoolean
+    // clientref.current = clientUserValue
+    refregisterSuccessClient.current = clientRegistrationSuccessMessage
+    checkClientRef.current = registrationBooleanClient
+  }, [userValue,clientUserValue,
+    clientRegistrationSuccessMessage,registrationSuccessMessage,
+    registrationBooleanClient,registrationBoolean])
+  
+  const clientref = React.useMemo(() => clientUserValue,[clientUserValue])
   const [clientValue, setClientValue] = React.useState(0);
+  const refregisterSuccessClient = React.useRef(clientRegistrationSuccessMessage)
+  const checkClientRef = React.useRef(registrationBooleanClient)
   const [infoStateClient,setInfoStateClient] = React.useState(infoObjClient)
   const [clientActiveStep, setClientActiveStep] = React.useState(0);
   const [clientSecQuestion,setClientSecQuestion] = React.useState('');
@@ -132,14 +156,6 @@ const AppRegistration = () => {
   })
   const [errorHelperTextClient, setHelperTextClient] = React.useState('');
   const [errorEmailTextClient, setEmailTextClient] = React.useState('');
-
-  React.useEffect(() => {
-    setInfoState(prevState => {
-      let infoObj = Object.assign({}, prevState.infoObj)
-      infoObj.userTrigger = true
-      return {infoObj}
-    })
-  }, [])
 
 const handleNextClient = () => {
   // It matches either of the following formats 1. +639191234567, or 2. 09191234567
@@ -341,44 +357,58 @@ const handleAddressChangeClient = (e) => {
     setHelperTextClient("")
     }
   }
-  
-  const clientUserValue = useSelector((state) => state.user.userValue)
+
+  React.useEffect(() => {
+    setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientTrigger = true
+      return {infoObjClient}
+    })
+  }, [])
+
   const handleNextCredentialsClient = () => {
     if(!infoStateClient.infoObjClient.clientusername || !infoStateClient.infoObjClient.clientpassword || 
-      !infoStateClient.infoObjClient.clientconpass || !infoStateClient.infoObjClient.clientsecquestion || !infoStateClient.infoObjClient.clientsecanswer) {
+     !infoStateClient.infoObjClient.clientconpass || !infoStateClient.infoObjClient.clientsecquestion || !infoStateClient.infoObjClient.clientsecanswer) {
       Toast.fire({
         icon: 'error',
         title: 'Empty fields. please try again.'
       })
       return false
-    } else if(infoStateClient.infoObjClient.clientpassword != infoStateClient.infoObjClient.clientconpass) {
+    } else if(infoStateClient.infoObjClient.clientconpass !== infoStateClient.infoObjClient.clientpassword) {
       Toast.fire({
         icon: 'error',
         title: 'Password mismatch'
       })
       return false
     } else {
-      // setLoading(true)
-      dispatch(checkUser(infoStateClient.infoObjClient))
-      console.log(clientUserValue)
-      // await dispatch(checkUser(infoState.infoObj))
-      // setTimeout(() => {
-      //   switch(true){
-      //     case store.getState().user.userValue[0].key === 'username_taken' : {
-      //       Toast.fire({
-      //         icon: 'error',
-      //         title: 'Username already taken.'
-      //       })
-      //       setLoading(false)
-      //       return false
-      //     }
-      //     default: {
-      //       setLoading(false)
-      //       dispatch(createUser(infoState.infoObj))
-      //       console.log(store.getState().user)
-      //     }
-      //   }
-      // }, 2000)
+      setLoading(true)
+      dispatch(checkUserClient(infoStateClient.infoObjClient))
+      setTimeout(() => {
+        console.log(clientref)
+        // if(clientref.current[0].key === 'client_username_available'){
+        //   dispatch(pushCreateClient(infoStateClient.infoObjClient))
+        // }
+      }, 1000)
+      setTimeout(() => {
+        // if(clientref.current[0].key === "client_username_available") {
+        //   if(refregisterSuccessClient.current[0].key === "client_registration_success") {
+        //     setLoading(false)
+        //     Toast.fire({
+        //       icon: 'success',
+        //       title: 'You have successfully created an account.'
+        //     })
+        //     setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
+        //   } 
+        // }
+        // else {
+        //   Toast.fire({
+        //     icon: 'error',
+        //     title: 'Username already taken.'
+        //   })
+        //   setLoading(false)
+        //   return false
+        // }
+      }, 2000)
     }
   }
 
@@ -485,7 +515,7 @@ const handleAddressChangeClient = (e) => {
       infoObjClient.clientsecquestion = event.target.value
       return {infoObjClient}
     })
-    console.log(infoState.infoObj)
+    console.log(infoStateClient.infoObjClient)
     setClientErrorRequest(prevState => {
       let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
       errorHandlerClient.errorLoggerCsecquestion = false
@@ -522,16 +552,9 @@ const handleAddressChangeClient = (e) => {
   }
 
   // DEV REGISTRATION //
-    const [
-      userValue,
-      registrationSuccessMessage,
-      registrationBoolean
-     ] = useSelector((state) => [
-      state.user.userValue,
-      state.user.registrationSuccessMessage,
-      state.user.registrationBoolean
-    ])
+
     const ref = React.useRef(userValue)
+
     const refregisterSuccess = React.useRef(registrationSuccessMessage)
     const checkUserRef = React.useRef(registrationBoolean)
     const [value, setValue] = React.useState(0);
@@ -630,13 +653,9 @@ const handleAddressChangeClient = (e) => {
         return {infoObj}
       })
     }, [])
-    React.useEffect(() => {
-      ref.current = userValue
-      refregisterSuccess.current = registrationSuccessMessage
-      checkUserRef.current = registrationBoolean
-    }, [userValue,
-       registrationSuccessMessage,
-        registrationBoolean])
+
+
+
     const handleNextCredentials = () => {
       if(!infoState.infoObj.password || !infoState.infoObj.conpass || !infoState.infoObj.username) {
         Toast.fire({
@@ -1296,7 +1315,7 @@ const handleAddressChangeClient = (e) => {
           return(
               <React.Fragment>
              <div style={{marginTop: '20px', marginBottom: '20px'}}>
-             <h4>Modern Resolve Developer Registration</h4>
+             <h4>Modern Resolve Client Registration</h4>
                                   <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                                           Be one of us, join our development community
                                   </Typography>

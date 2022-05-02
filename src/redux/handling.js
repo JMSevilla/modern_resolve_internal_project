@@ -22,11 +22,32 @@ class DataHandling {
         data.append('regTrigger', true)
         return data
     }
+    HTTPManualClient(object) {
+        var data = new FormData()
+        data.append('clientfname', object.clientfname)
+        data.append('clientlname', object.clientlname)
+        data.append('clientemail', object.clientemail)
+        data.append('clientcontact', object.clientcontact)
+        data.append('clientaddress', object.clientaddress)
+        data.append('clientusername', object.clientusername)
+        data.append('clientpassword', object.clientpassword)
+        data.append('clientsecquestion', object.clientsecquestion)
+        data.append('clientsecanswer', object.clientsecanswer)
+        data.append('clientRegTrigger', object.clientTrigger)
+        return data
+    }
     HTTPLogin(object) {
         var data = new FormData()
         data.append('username', object.username)
         data.append('password', object.password)
         data.append('userLogin', object.userLogin)
+        return data
+    }
+    HTTPCheckingClient(object) {
+        var data = new FormData()
+        data.append('clientusername', object.clientusername)
+        data.append('clientpassword', object.clientpassword)
+        data.append('clientTrigger', true)
         return data
     }
 }
