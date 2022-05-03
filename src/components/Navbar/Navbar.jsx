@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {pushLogin} from '../../redux/core/loginSlice'
 import { useHistory } from 'react-router-dom';
 import BasicSelect from '../Select/Select'
+import authenticationRoutes from "../../router/authroute"
 
 const BootstrapDialog = styler(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -219,8 +220,8 @@ const NavigationBar = () => {
       } else { 
         setIsOpen(false)
         setLoading(true)
-        dispatch(pushLogin(loginState.loginObject))
-        setSuccessLogin(true)
+        setTimeout(() => dispatch(pushLogin(loginState.loginObject)), 1000)
+        
         setTimeout(() => {
           console.log(tokenref.current)
           if(tokenref.current[0].key.message === 'success_developer') {
@@ -231,9 +232,11 @@ const NavigationBar = () => {
             })
             setLoading(false)
             localStorage.setItem("key_identifier", tokenref.current[0].key.uid)
-            if(isLoginRedirection.current) {
-              history.push(appRouter.devPlatform.path)
-            }
+            history.push({
+              pathname: appRouter.devPlatform.path,
+              search : "?secure=" + authenticationRoutes.hashURL(100),
+              state : {secure : authenticationRoutes.hashURL(100)}
+            })
           } else if(tokenref.current[0].key === 'PASSWORD_INVALID'){
             Toast.fire({
               icon: 'error',
@@ -352,13 +355,12 @@ const NavigationBar = () => {
                                           }
             </div>
             <div style={{marginBottom: '10px'}}>
-            {BasicSelect({
-                                              occupation : roleIdentify,
-                                              handleOccupation : handleRole,
-                                              occupationArray : roleArray,
-                                              isError : errorRequest.errorHandler.errorLoggerRole,
-                                              formHelper : 'Kindly select system',
-                                              selectionTitle : 'System'
+            {BasicSelect({ 
+                                              value : roleIdentify,
+                                              handleSelect : handleRole,
+                                              selectionArray : roleArray,
+                                              selectionTitle : 'System',
+                                              isError : errorRequest.errorHandler.errorLoggerRole
                                             })}
             </div>
             {

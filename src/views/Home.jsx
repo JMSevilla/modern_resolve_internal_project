@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { authIdentify } from '../redux/core/loginSlice'
 import { useHistory } from 'react-router-dom'
 import { appRouter } from '../router/route'
+import authenticationRoutes from "../router/authroute"
 const HomeApp = () => {
     const [keyIdentifier, setkeyIdentifier] = useState('')
     const dispatch = useDispatch()
@@ -22,7 +23,11 @@ const HomeApp = () => {
                 return false
             } else if(refResponse.current[0].key.key === 'token_exist_dev_platform') { 
                 //route to dev platform
-                history.push(appRouter.devPlatform.path)
+                history.push({
+                    pathname: appRouter.devPlatform.path,
+                    search : "?secure=" + authenticationRoutes.hashURL(100),
+                    state : {secure : authenticationRoutes.hashURL(100)}
+                  })
             } else {}
         },1000)
     } ,[initialRoute])
