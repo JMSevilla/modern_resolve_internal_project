@@ -14,7 +14,7 @@ const BasicSelect = ({value, handleSelect, selectionArray, selectionLabel, selec
         if(isError) {
             return (
                 <>
-                    <FormHelperText>{formHelper}.</FormHelperText>
+                    <FormHelperText>Kindly select system.</FormHelperText>
                 </>
             )
         }else {
