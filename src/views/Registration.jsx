@@ -78,6 +78,31 @@ const studyStatus = [
 ]
 
 const AppRegistration = () => {
+
+  React.useEffect(() => {
+    window.addEventListener('beforeunload', alertUser)
+    window.addEventListener('unload', handleTabClosing)
+    return () => {
+        window.removeEventListener('beforeunload', alertUser)
+        window.removeEventListener('unload', handleTabClosing)
+    }
+})
+    const handleTabClosing = () => {
+      window.close()
+    }
+
+    const alertUser = (event) => {
+    if(infoStateClient.infoObjClient.clientfname !== undefined || infoStateClient.infoObjClient.clientlname !== undefined 
+        || infoStateClient.infoObjClient.clientemail !== undefined || infoStateClient.infoObjClient.clientcontact !== undefined 
+        || infoStateClient.infoObjClient.clientaddress !== undefined || infoState.infoObj.fname !== undefined || infoState.infoObj.lname !== undefined 
+        || infoState.infoObj.occupationStatus !== undefined || infoState.infoObj.occupationDetails !== undefined 
+        || infoState.infoObj.occupationPositionWork !== undefined || infoState.infoObj.nameOfSchool !== undefined
+        || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined){
+          event.preventDefault()
+          event.returnValue = ''
+      }
+    }
+
   const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -222,6 +247,8 @@ const AppRegistration = () => {
                   infoObj.address = undefined
                   return {infoObj}
                 })	
+                setClientActiveStep(clientActiveStep => clientActiveStep = 0)
+                setActiveStep(clientStep => clientStep = 0)
                 setValue(newValue);
               }
             })
@@ -256,7 +283,7 @@ const AppRegistration = () => {
           title: 'Empty fields. please try again.'
         })
         return false
-      } else if(infoState.infoObj.conpass != infoState.infoObj.password) {
+      } else if(infoState.infoObj.conpass !== infoState.infoObj.password) {
         Toast.fire({
           icon: 'error',
           title: 'Password mismatch'
