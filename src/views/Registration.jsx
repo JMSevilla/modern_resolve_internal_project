@@ -19,7 +19,7 @@ import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 import store from '../redux/store'
 // import {checkUser, createUser} from '../redux/core/registration'
-import {checkUser, pushCreateDev} from '../redux/core/registrationSlice'
+import {checkUser, pushCreateDev, checkClient, pushCreateClient} from '../redux/core/registrationSlice'
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -51,24 +51,8 @@ function TabPanel(props) {
       'aria-controls': `simple-tabpanel-${index}`,
     };
   }
-  // CLIENT REGISTRATION //
-const clientSteps = ['Primary Information','Credentials','Request Client Proposal','Payment Method', 'Finish'];
-const infoObjClient = { 
-  clientfname: "", clientlname: "", clientemail: "",
-  clientcontact: "", clientaddress: "", clientusername: "",
-  clientpassword: "", clientconpass: "", clientsecquestion: "", clientsecanswer: '', clientTrigger : true
-}
 
-const secQuestionsArray = [
-  {
-    label : 'What is your first job position?', value : 'What is your first job position?'
-  },
-  {
-    label : 'What is your favorite food?', value: 'What is your favorite food?'
-  }
-]
-
-// DEV REGISTRATION //
+// -----------------------DEV REGISTRATION ----------------------------------------//
 const steps = ['Personal Information', 'Credentials Information', 'Finish'];
 const infoObj = {
   fname : "", lname : "",
@@ -105,422 +89,6 @@ const AppRegistration = () => {
       toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
   })
-
-  //CLIENT REGISTRATION
-  const [clientValue, setClientValue] = React.useState(0);
-  const [infoStateClient,setInfoStateClient] = React.useState(infoObjClient)
-  const [clientActiveStep, setClientActiveStep] = React.useState(0);
-  const [clientSecQuestion,setClientSecQuestion] = React.useState('');
-  const [clientErrorRequest, setClientErrorRequest] = React.useState({
-    errorHandlerClient : {
-      errorLoggerCfname : false,
-      errorLoggerClname : false,
-      errorLoggerCemail : false,
-      errorLoggerCcontact : false,
-      errorLoggerCaddress : false,
-      errorLoggerCusername : false,
-      errorLoggerCpassword : false,
-      errorLoggerCconpass : false,
-      errorLoggerCsecquestion: false,
-      errorLoggerCsecanswer: false
-    }
-  })
-  const [clientEmailErrorRequest, setClientEmailErrorRequest] = React.useState({
-    errorHandlerClient : {
-      errorLoggerCemail : false
-    }
-  })
-  const [errorHelperTextClient, setHelperTextClient] = React.useState('');
-  const [errorEmailTextClient, setEmailTextClient] = React.useState('');
-
-  React.useEffect(() => {
-    setInfoState(prevState => {
-      let infoObj = Object.assign({}, prevState.infoObj)
-      infoObj.userTrigger = true
-      return {infoObj}
-    })
-  }, [])
-
-const handleNextClient = () => {
-  // It matches either of the following formats 1. +639191234567, or 2. 09191234567
-  const validContactno = /((^(\+)(\d){12}$)|(^\d{11}$))/;
-  const validEmail =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  console.log(infoStateClient.infoObjClient)
-  if(infoStateClient.infoObjClient === undefined){
-    setClientErrorRequest(prevState => {
-      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-      errorHandlerClient.errorLoggerCfname = true
-      errorHandlerClient.errorLoggerClname = true
-      errorHandlerClient.errorLoggerCcontact = true
-      errorHandlerClient.errorLoggerCaddress = true
-      return {errorHandlerClient}
-    })
-    setHelperTextClient("Empty field")
-    Toast.fire({
-      icon: 'error',
-      title: 'Empty fields. please try again.'
-    })
-    setClientEmailErrorRequest(prevState => {
-      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-      errorHandlerClient.errorLoggerCemail = true
-      return {errorHandlerClient}
-    })
-    setEmailTextClient("Empty field")
-    Toast.fire({
-      icon: 'error',
-      title: 'Empty fields. please try again.'
-    })
-    return false
-  }
-  else if(!infoStateClient.infoObjClient.clientfname || !infoStateClient.infoObjClient.clientlname
-      || !infoStateClient.infoObjClient.clientemail || !infoStateClient.infoObjClient.clientcontact 
-      || !infoStateClient.infoObjClient.clientaddress){
-      Toast.fire({
-        icon: 'error',
-        title: 'Empty fields. please try again.'
-      })
-      return false
-    }
-    else if(!validEmail.test(infoStateClient.infoObjClient.clientemail))
-    {
-      Toast.fire({
-        icon: 'error',
-        title: 'Please provide a valid email address'
-      })
-      return false
-    }
-    else if(!validContactno.test(infoStateClient.infoObjClient.clientcontact))
-    {
-      Toast.fire({
-        icon: 'error',
-        title: 'Invalid Contact Number'
-      })
-      return false
-    }
-  else{
-    setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
-  }
-}
-
-  const handleBackClient = () => {
-  setClientActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleClientFnameChange = (e) => {
-    if(e.target.value === null || e.target.value === ''){
-      setClientErrorRequest(prevState => {
-        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-        errorHandlerClient.errorLoggerCfname = true
-        return {errorHandlerClient}
-      })
-      setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientfname = ""
-        return {infoObjClient}
-      })
-      setHelperTextClient("Empty field")
-    } else {
-      setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientfname = e.target.value
-        return {infoObjClient}
-      })
-      setClientErrorRequest(prevState => {
-        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-        errorHandlerClient.errorLoggerCfname = false
-        return {errorHandlerClient}
-      })
-      setHelperTextClient("")
-    }
-}
-  const handleClientLnameChange = (e) => {
-  if(e.target.value === null || e.target.value === '') {
-    setInfoStateClient(prevState => {
-      let infoObjClient = Object.assign({}, prevState.infoObjClient)
-      infoObjClient.clientlname = ""
-      return {infoObjClient}
-    })
-    setClientErrorRequest(prevState => {
-      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-      errorHandlerClient.errorLoggerClname = true
-      return {errorHandlerClient}
-    })
-    setHelperTextClient("Empty field")
-  } else {
-     setInfoStateClient(prevState => {
-      let infoObjClient = Object.assign({}, prevState.infoObjClient)
-      infoObjClient.clientlname = e.target.value
-      return {infoObjClient}
-    })
-    setClientErrorRequest(prevState => {
-      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-      errorHandlerClient.errorLoggerClname = false
-      return {errorHandlerClient}
-    })
-    setHelperTextClient("")
-  }
-}
-const handleEmailChangeClient = (e) => {
-  if(e.target.value === null || e.target.value === ''){
-    setInfoStateClient(prevState => {
-      let infoObjClient = Object.assign({}, prevState.infoObjClient)
-      infoObjClient.clientemail = ""
-      return {infoObjClient}
-    })
-    setClientEmailErrorRequest(prevState => {
-      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-      errorHandlerClient.errorLoggerCemail = true
-      return {errorHandlerClient}
-    })
-    setEmailTextClient("Please provide a valid email address")
-  }else{
-      setInfoStateClient(prevState => {
-      let infoObjClient = Object.assign({}, prevState.infoObjClient)
-      infoObjClient.clientemail = e.target.value
-      return {infoObjClient}
-    })
-    setClientEmailErrorRequest(prevState => {
-      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-      errorHandlerClient.errorLoggerCemail = false
-      return {errorHandlerClient}
-    })
-    setEmailTextClient("")
-  }
-}
-const handleContactChangeClient = (e) => {
-  if(e.target.value === null || e.target.value === ''){
-    setInfoStateClient(prevState => {
-      let infoObjClient = Object.assign({}, prevState.infoObjClient)
-      infoObjClient.clientcontact = ""
-      return {infoObjClient}
-    })
-    setClientErrorRequest(prevState => {
-      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-      errorHandlerClient.errorLoggerCcontact = true
-      return {errorHandlerClient}
-    })
-    setHelperTextClient("Empty field")
-  }else{
-    setInfoStateClient(prevState => {
-      let infoObjClient = Object.assign({}, prevState.infoObjClient)
-      infoObjClient.clientcontact = e.target.value
-      return {infoObjClient}
-    })
-    setClientErrorRequest(prevState => {
-      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-      errorHandlerClient.errorLoggerCcontact = false
-      return {errorHandlerClient}
-    })
-    setHelperTextClient("")
-  }
-}
-const handleAddressChangeClient = (e) => {
-  if(e.target.value === null || e.target.value === ''){
-    setInfoStateClient(prevState => {
-      let infoObjClient = Object.assign({}, prevState.infoObjClient)
-      infoObjClient.clientaddress = ""
-      return {infoObjClient}
-    })
-    setClientErrorRequest(prevState => {
-      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-      errorHandlerClient.errorLoggerCaddress = true
-      return {errorHandlerClient}
-    })
-    setHelperTextClient("Empty field")
-  }else{
-    setInfoStateClient(prevState => {
-      let infoObjClient = Object.assign({}, prevState.infoObjClient)
-      infoObjClient.clientaddress = e.target.value
-      return {infoObjClient}
-    })
-    setClientErrorRequest(prevState => {
-      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-      errorHandlerClient.errorLoggerCaddress = false
-      return {errorHandlerClient}
-    })
-    setHelperTextClient("")
-    }
-  }
-  
-  const clientUserValue = useSelector((state) => state.user.userValue)
-  const handleNextCredentialsClient = () => {
-    if(!infoStateClient.infoObjClient.clientusername || !infoStateClient.infoObjClient.clientpassword || 
-      !infoStateClient.infoObjClient.clientconpass || !infoStateClient.infoObjClient.clientsecquestion || !infoStateClient.infoObjClient.clientsecanswer) {
-      Toast.fire({
-        icon: 'error',
-        title: 'Empty fields. please try again.'
-      })
-      return false
-    } else if(infoStateClient.infoObjClient.clientpassword != infoStateClient.infoObjClient.clientconpass) {
-      Toast.fire({
-        icon: 'error',
-        title: 'Password mismatch'
-      })
-      return false
-    } else {
-      // setLoading(true)
-      dispatch(checkUser(infoStateClient.infoObjClient))
-      console.log(clientUserValue)
-      // await dispatch(checkUser(infoState.infoObj))
-      // setTimeout(() => {
-      //   switch(true){
-      //     case store.getState().user.userValue[0].key === 'username_taken' : {
-      //       Toast.fire({
-      //         icon: 'error',
-      //         title: 'Username already taken.'
-      //       })
-      //       setLoading(false)
-      //       return false
-      //     }
-      //     default: {
-      //       setLoading(false)
-      //       dispatch(createUser(infoState.infoObj))
-      //       console.log(store.getState().user)
-      //     }
-      //   }
-      // }, 2000)
-    }
-  }
-
-  const handleClientUsername = (e) => {
-    if(e.target.value === null || e.target.value === '') {
-      setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientusername = ""
-        return {infoObjClient}
-      })
-      setClientErrorRequest(prevState => {
-        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-        errorHandlerClient.errorLoggerCusername = true
-        return {errorHandlerClient}
-      })
-      setHelperTextClient("Empty field")
-    } else {
-      setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientusername = e.target.value
-        return {infoObjClient}
-      })
-      setClientErrorRequest(prevState => {
-        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-        errorHandlerClient.errorLoggerCusername = false
-        return {errorHandlerClient}
-      })
-      setHelperTextClient("")
-    }
-  }
-  const handleClientPassword = (e) => {
-    if(e.target.value === null || e.target.value === '') {
-      setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientpassword = ""
-        return {infoObjClient}
-      })
-      setClientErrorRequest(prevState => {
-        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-        errorHandlerClient.errorLoggerCpassword = true
-        return {errorHandlerClient}
-      })
-      setHelperTextClient("Empty field")
-    } else {
-      setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientpassword = e.target.value
-        return {infoObjClient}
-      })
-      setClientErrorRequest(prevState => {
-        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-        errorHandlerClient.errorLoggerCpassword = false
-        return {errorHandlerClient}
-      })
-      setHelperTextClient("")
-    }
-  }
-  const handleClientConfirmPassword = (e) => {
-    if(e.target.value === null || e.target.value === '') {
-      setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientconpass = ""
-        return {infoObjClient}
-      })
-      setClientErrorRequest(prevState => {
-        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-        errorHandlerClient.errorLoggerCconpass = true
-        return {errorHandlerClient}
-      })
-      setHelperTextClient("Empty field")
-    } else {
-      setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientconpass = e.target.value
-        return {infoObjClient}
-      })
-      setClientErrorRequest(prevState => {
-        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-        errorHandlerClient.errorLoggerCconpass = false
-        return {errorHandlerClient}
-      })
-      setHelperTextClient("")
-    }
-  }
-
-  const handleClientSecQuestions = (event) => {
-    
-    if(event.target.value === null || event.target.value === '') {
-      setClientSecQuestion("")
-      setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientsecquestion = ""
-        return {infoObjClient}
-      })
-      setClientErrorRequest(prevState => {
-        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-        errorHandlerClient.errorLoggerCsecquestion = true
-        return {errorHandlerClient}
-      })
-    }else{
-      setClientSecQuestion(event.target.value)
-      setInfoStateClient(prevState => {
-      let infoObjClient = Object.assign({}, prevState.infoObjClient)
-      infoObjClient.clientsecquestion = event.target.value
-      return {infoObjClient}
-    })
-    console.log(infoState.infoObj)
-    setClientErrorRequest(prevState => {
-      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-      errorHandlerClient.errorLoggerCsecquestion = false
-      return {errorHandlerClient}
-    })
-    }
-  }
-  const handleClientSecAnswer = (e) => {
-    if(e.target.value === null || e.target.value === '') {
-      setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientsecanswer = ""
-        return {infoObjClient}
-      })
-      setClientErrorRequest(prevState => {
-        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-        errorHandlerClient.errorLoggerCsecanswer = true
-        return {errorHandlerClient}
-      })
-      setHelperTextClient("Empty field")
-    } else {
-       setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientsecanswer = e.target.value
-        return {infoObjClient}
-      })
-      setClientErrorRequest(prevState => {
-        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
-        errorHandlerClient.errorLoggerCsecanswer = false
-        return {errorHandlerClient}
-      })
-      setHelperTextClient("")
-    }
-  }
-
   // DEV REGISTRATION //
     const [
       userValue,
@@ -556,11 +124,10 @@ const handleAddressChangeClient = (e) => {
       }
     })
     const dispatch = useDispatch();
-    
-    
+
     const [errorHelperText, setHelperText] = React.useState('')
+
     const handleOccupation = (event) => {
-      
       if(event.target.value === null || event.target.value === '') {
         setInfoState(prevState => {
           let infoObj = Object.assign({}, prevState.infoObj)
@@ -618,7 +185,52 @@ const handleAddressChangeClient = (e) => {
       }
     }
     const handleChange = (event, newValue) => { 
-        setValue(newValue);
+        if(infoStateClient.infoObjClient.clientfname !== undefined || infoStateClient.infoObjClient.clientlname !== undefined 
+          || infoStateClient.infoObjClient.clientemail !== undefined || infoStateClient.infoObjClient.clientcontact !== undefined 
+          || infoStateClient.infoObjClient.clientaddress !== undefined || infoState.infoObj.fname !== undefined || infoState.infoObj.lname !== undefined 
+          || infoState.infoObj.occupationStatus !== undefined || infoState.infoObj.occupationDetails !== undefined 
+          || infoState.infoObj.occupationPositionWork !== undefined || infoState.infoObj.nameOfSchool !== undefined
+          || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined){
+            Swal.fire({
+              title: 'Are you sure?',
+              text: "You won't be able to revert this!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Change Registration!'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                setInfoStateClient(prevState => {
+                  let infoObjClient = Object.assign({}, prevState.infoObjClient)
+                  infoObjClient.clientfname = undefined
+                  infoObjClient.clientlname = undefined
+                  infoObjClient.clientemail = undefined
+                  infoObjClient.clientcontact = undefined
+                  infoObjClient.clientaddress = undefined
+                  return {infoObjClient}
+                })
+                setInfoState(prevState => {
+                  let infoObj = Object.assign({}, prevState.infoObj)
+                  infoObj.fname = undefined
+                  infoObj.lname = undefined
+                  infoObj.occupationStatus = undefined
+                  infoObj.occupationDetails = undefined
+                  infoObj.occupationPositionWork = undefined
+                  infoObj.nameOfSchool = undefined
+                  infoObj.degree = undefined
+                  infoObj.address = undefined
+                  return {infoObj}
+                })	
+                setValue(newValue);
+              }
+            })
+          return false;
+        }
+        else {
+          setValue(newValue);
+        }
+        // setValue(newValue);
     };
     const handleCloseBackDrop = () => {
       setLoading(false)
@@ -1075,21 +687,7 @@ const handleAddressChangeClient = (e) => {
         return {infoObj}
       })
     }
-    // CLIENT REGISTRATION
-    const defaultClientValueSetter = () => {
-      setInfoStateClient(prevState => {
-        let infoObjClient = Object.assign({}, prevState.infoObjClient)
-        infoObjClient.clientfname = undefined
-        infoObjClient.clientlname = undefined
-        infoObjClient.clientaddress = undefined
-        infoObjClient.username = undefined
-        infoObjClient.password = undefined
-        infoObjClient.conpass = undefined
-        infoObjClient.secquestion = undefined
-        infoObjClient.secanswer = undefined
-        return {infoObjClient}
-      })
-    }
+
     // DEV REGISTRATION //
     const StepHelper = () => {
         if(activeStep === 0) {
@@ -1294,15 +892,484 @@ const handleAddressChangeClient = (e) => {
         }
     }
 
+  const clientSteps = ['Primary Information','Credentials','Request Client Proposal','Payment Method', 'Finish'];
+  const infoObjClient = { 
+  clientfname: "", clientlname: "", clientemail: "",
+  clientcontact: "", clientaddress: "", clientusername: "",
+  clientpassword: "", clientconpass: "", clientsecquestion: "", clientsecanswer: '', clientTrigger : true
+}
+
+const secQuestionsArray = [
+  {
+    label : 'What is your first job position?', value : 'What is your first job position?'
+  },
+  {
+    label : 'What is your favorite food?', value: 'What is your favorite food?'
+  }
+]
+// -----------------------CLIENT REGISTRATION ----------------------------------------//
+  const [
+    clientUserValue,
+    registrationSuccessMessageClient,
+    registrationBooleanClient
+   ] = useSelector((state) => [
+    state.user.clientUserValue,
+    state.user.registrationSuccessMessageClient,
+    state.user.registrationBooleanClient
+  ])
+  const clientref = React.useRef(clientUserValue)
+  const refregisterSuccessClient = React.useRef(registrationSuccessMessageClient)
+  const checkClientRef = React.useRef(registrationBooleanClient)
+  const [clientActiveStep, setClientActiveStep] = React.useState(0);
+  const [infoStateClient,setInfoStateClient] = React.useState(infoObjClient);
+  const [clientSecQuestion,setClientSecQuestion] = React.useState('');
+  const [clientErrorRequest, setClientErrorRequest] = React.useState({
+    errorHandlerClient : {
+      errorLoggerCfname : false,
+      errorLoggerClname : false,
+      errorLoggerCemail : false,
+      errorLoggerCcontact : false,
+      errorLoggerCaddress : false,
+      errorLoggerCusername : false,
+      errorLoggerCpassword : false,
+      errorLoggerCconpass : false,
+      errorLoggerCsecquestion: false,
+      errorLoggerCsecanswer: false
+    }
+  })
+  const [clientEmailErrorRequest, setClientEmailErrorRequest] = React.useState({
+    errorHandlerClient : {
+      errorLoggerCemail : false
+    }
+  })
+
+  const [errorHelperTextClient, setHelperTextClient] = React.useState('');
+  const [errorEmailTextClient, setEmailTextClient] = React.useState('');
+
+  React.useEffect(() => {
+    setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientTrigger = true
+      return {infoObjClient}
+    })
+  }, [])
+
+  React.useEffect(() => {
+    clientref.current = clientUserValue
+    refregisterSuccessClient.current = registrationSuccessMessageClient
+    checkClientRef.current = registrationBooleanClient
+  }, [clientUserValue,
+     registrationSuccessMessageClient,
+      registrationBooleanClient])
+  
+    const handleNextCredentialsClient = () => {
+        if(!infoStateClient.infoObjClient.clientusername || !infoStateClient.infoObjClient.clientpassword || 
+          !infoStateClient.infoObjClient.clientconpass || !infoStateClient.infoObjClient.clientsecquestion || !infoStateClient.infoObjClient.clientsecanswer) {
+          Toast.fire({
+            icon: 'error',
+            title: 'Empty fields. please try again.'
+          })
+          return false
+        } else if(infoStateClient.infoObjClient.clientpassword !== infoStateClient.infoObjClient.clientconpass) {
+          Toast.fire({
+            icon: 'error',
+            title: 'Password mismatch'
+          })
+          return false
+        } else {
+          setLoading(true)
+          dispatch(checkClient(infoStateClient.infoObjClient))
+          setTimeout(() => {
+            if(clientref.current[0].key === 'client_username_available'){
+              dispatch(pushCreateClient(infoStateClient.infoObjClient))
+            }
+          }, 1000)
+          setTimeout(() => {
+            if(clientref.current[0].key === "client_username_available") {
+              if(refregisterSuccessClient.current[0].key === "client_registration_success") {
+                setLoading(false)
+                Toast.fire({
+                  icon: 'success',
+                  title: 'You have successfully created an account.'
+                })
+                setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
+              } 
+            }
+            else {
+              Toast.fire({
+                icon: 'error',
+                title: 'Username already taken.'
+              })
+              setLoading(false)
+              return false
+            }
+          }, 2000)
+        }
+      }
+
+  const handleNextClient = () => {
+  // It matches either of the following formats 1. +639191234567, or 2. 09191234567
+  const validContactno = /((^(\+)(\d){12}$)|(^\d{11}$))/;
+  const validEmail =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  console.log(infoStateClient.infoObjClient)
+  if(infoStateClient.infoObjClient === undefined){
+    setClientErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerCfname = true
+      errorHandlerClient.errorLoggerClname = true
+      errorHandlerClient.errorLoggerCcontact = true
+      errorHandlerClient.errorLoggerCaddress = true
+      return {errorHandlerClient}
+    })
+    setHelperTextClient("Empty field")
+    Toast.fire({
+      icon: 'error',
+      title: 'Empty fields. please try again.'
+    })
+    setClientEmailErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerCemail = true
+      return {errorHandlerClient}
+    })
+    setEmailTextClient("Empty field")
+    Toast.fire({
+      icon: 'error',
+      title: 'Empty fields. please try again.'
+    })
+    return false
+  }
+  else if(!infoStateClient.infoObjClient.clientfname || !infoStateClient.infoObjClient.clientlname
+      || !infoStateClient.infoObjClient.clientemail || !infoStateClient.infoObjClient.clientcontact 
+      || !infoStateClient.infoObjClient.clientaddress){
+      Toast.fire({
+        icon: 'error',
+        title: 'Empty fields. please try again.'
+      })
+      return false
+    }
+    else if(!validEmail.test(infoStateClient.infoObjClient.clientemail))
+    {
+      Toast.fire({
+        icon: 'error',
+        title: 'Please provide a valid email address'
+      })
+      return false
+    }
+    else if(!validContactno.test(infoStateClient.infoObjClient.clientcontact))
+    {
+      Toast.fire({
+        icon: 'error',
+        title: 'Invalid Contact Number'
+      })
+      return false
+    }
+  else{
+    setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
+  }
+}
+
+  const handleBackClient = () => {
+  setClientActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleClientFnameChange = (e) => {
+    if(e.target.value === null || e.target.value === ''){
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCfname = true
+        return {errorHandlerClient}
+      })
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientfname = ""
+        return {infoObjClient}
+      })
+      setHelperTextClient("Empty field")
+    } else {
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientfname = e.target.value
+        return {infoObjClient}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCfname = false
+        return {errorHandlerClient}
+      })
+      setHelperTextClient("")
+    }
+}
+  const handleClientLnameChange = (e) => {
+  if(e.target.value === null || e.target.value === '') {
+    setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientlname = ""
+      return {infoObjClient}
+    })
+    setClientErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerClname = true
+      return {errorHandlerClient}
+    })
+    setHelperTextClient("Empty field")
+  } else {
+     setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientlname = e.target.value
+      return {infoObjClient}
+    })
+    setClientErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerClname = false
+      return {errorHandlerClient}
+    })
+    setHelperTextClient("")
+  }
+}
+const handleEmailChangeClient = (e) => {
+  if(e.target.value === null || e.target.value === ''){
+    setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientemail = ""
+      return {infoObjClient}
+    })
+    setClientEmailErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerCemail = true
+      return {errorHandlerClient}
+    })
+    setEmailTextClient("Please provide a valid email address")
+  }else{
+      setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientemail = e.target.value
+      return {infoObjClient}
+    })
+    setClientEmailErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerCemail = false
+      return {errorHandlerClient}
+    })
+    setEmailTextClient("")
+  }
+}
+const handleContactChangeClient = (e) => {
+  if(e.target.value === null || e.target.value === ''){
+    setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientcontact = ""
+      return {infoObjClient}
+    })
+    setClientErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerCcontact = true
+      return {errorHandlerClient}
+    })
+    setHelperTextClient("Empty field")
+  }else{
+    setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientcontact = e.target.value
+      return {infoObjClient}
+    })
+    setClientErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerCcontact = false
+      return {errorHandlerClient}
+    })
+    setHelperTextClient("")
+  }
+}
+const handleAddressChangeClient = (e) => {
+  if(e.target.value === null || e.target.value === ''){
+    setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientaddress = ""
+      return {infoObjClient}
+    })
+    setClientErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerCaddress = true
+      return {errorHandlerClient}
+    })
+    setHelperTextClient("Empty field")
+  }else{
+    setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientaddress = e.target.value
+      return {infoObjClient}
+    })
+    setClientErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerCaddress = false
+      return {errorHandlerClient}
+    })
+    setHelperTextClient("")
+    }
+  }
+
+  const handleClientUsername = (e) => {
+    if(e.target.value === null || e.target.value === '') {
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientusername = ""
+        return {infoObjClient}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCusername = true
+        return {errorHandlerClient}
+      })
+      setHelperTextClient("Empty field")
+    } else {
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientusername = e.target.value
+        return {infoObjClient}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCusername = false
+        return {errorHandlerClient}
+      })
+      setHelperTextClient("")
+    }
+  }
+  const handleClientPassword = (e) => {
+    if(e.target.value === null || e.target.value === '') {
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientpassword = ""
+        return {infoObjClient}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCpassword = true
+        return {errorHandlerClient}
+      })
+      setHelperTextClient("Empty field")
+    } else {
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientpassword = e.target.value
+        return {infoObjClient}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCpassword = false
+        return {errorHandlerClient}
+      })
+      setHelperTextClient("")
+    }
+  }
+  const handleClientConfirmPassword = (e) => {
+    if(e.target.value === null || e.target.value === '') {
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientconpass = ""
+        return {infoObjClient}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCconpass = true
+        return {errorHandlerClient}
+      })
+      setHelperTextClient("Empty field")
+    } else {
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientconpass = e.target.value
+        return {infoObjClient}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCconpass = false
+        return {errorHandlerClient}
+      })
+      setHelperTextClient("")
+    }
+  }
+
+  const handleClientSecQuestions = (event) => {
+    
+    if(event.target.value === null || event.target.value === '') {
+      setClientSecQuestion("")
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientsecquestion = ""
+        return {infoObjClient}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCsecquestion = true
+        return {errorHandlerClient}
+      })
+    }else{
+      setClientSecQuestion(event.target.value)
+      setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientsecquestion = event.target.value
+      return {infoObjClient}
+    })
+    setClientErrorRequest(prevState => {
+      let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+      errorHandlerClient.errorLoggerCsecquestion = false
+      return {errorHandlerClient}
+    })
+    }
+  }
+  const handleClientSecAnswer = (e) => {
+    if(e.target.value === null || e.target.value === '') {
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientsecanswer = ""
+        return {infoObjClient}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCsecanswer = true
+        return {errorHandlerClient}
+      })
+      setHelperTextClient("Empty field")
+    } else {
+       setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientsecanswer = e.target.value
+        return {infoObjClient}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCsecanswer = false
+        return {errorHandlerClient}
+      })
+      setHelperTextClient("")
+    }
+  }
+
+    // CLIENT REGISTRATION
+    const defaultClientValueSetter = () => {
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientfname = undefined
+        infoObjClient.clientlname = undefined
+        infoObjClient.clientaddress = undefined
+        infoObjClient.username = undefined
+        infoObjClient.password = undefined
+        infoObjClient.conpass = undefined
+        infoObjClient.secquestion = undefined
+        infoObjClient.secanswer = undefined
+        return {infoObjClient}
+      })
+    }
     // CLIENT REGISTRATION //
     const StepHelperClient = () => {
       if(clientActiveStep === 0) {
           return(
               <React.Fragment>
              <div style={{marginTop: '20px', marginBottom: '20px'}}>
-             <h4>Modern Resolve Developer Registration</h4>
+             <h4>Modern Resolve Client Registration</h4>
                                   <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                                          Be one of us, join our development community
+                                          We will help you reach  your goal, one step at a time...
                                   </Typography>
                                   <div style={{marginTop: '30px'}} className="row">
                                       <div className="col-sm">
@@ -1381,7 +1448,6 @@ const handleAddressChangeClient = (e) => {
                                             label: "Your address",
                                             type : "text",
                                             stylish : {width: '100%'},
-                                            helperTextHelper : errorHelperText,
                                             isError : clientErrorRequest.errorHandlerClient.errorLoggerCaddress,
                                             helperTextHelper : errorHelperTextClient,
                                             value : (infoStateClient.infoObjClient === undefined) ? defaultClientValueSetter : infoStateClient.infoObjClient.clientaddress
@@ -1511,6 +1577,7 @@ const handleAddressChangeClient = (e) => {
     }  
   }
 
+
     return (
         <div>
             <Navbar />
@@ -1562,4 +1629,4 @@ const handleAddressChangeClient = (e) => {
     )
 }
 
-export default AppRegistration
+export default AppRegistration;

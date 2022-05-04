@@ -4,6 +4,7 @@ import { Route, Switch } from "react-router-dom";
 import Home from '../views/Home'
 import AppRegistration from '../views/Registration'
 import DEVPlatform from '../views/devPlatform/Platform'
+import ClientRegistration from '../views/ClientRegistration';
 const RouteWithLoad = ({component : Component, ...rest}) => {
     return(
         <Route {...rest} render={props => (<> <Component {...props} /> </>)} />
