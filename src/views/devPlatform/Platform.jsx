@@ -53,7 +53,7 @@ const DEVPlatform = () => {
     ])
     const refResponse = useRef(initialRoute)
     const [currentPage, setPage] = React.useState(1);
-    const [dataperPage, setdataperPage] = React.useState(3);
+    const [dataperPage, setdataperPage] = React.useState(5);
     const refSavedInfo = useRef(savedInfo)
     const [keyIdentifier, setkeyIdentifier] = React.useState('')
     const dispatch = useDispatch()
@@ -69,11 +69,15 @@ const DEVPlatform = () => {
     useEffect(() => {
         setkeyIdentifier(JSON.parse(localStorage.getItem('keySaved'))[0].uid)
         const key = keyIdentifier ? keyIdentifier : 'unknown'
-        dispatch(authIdentify(key))
+        if(key != null){
+           
+        }else{ 
+            dispatch(authIdentify(key))
+        }
         refResponse.current = initialRoute
         setTimeout(() => {
             if(refResponse.current === undefined || refResponse.current === null) {
-                return false
+                
             } else if(refResponse.current[0].key.key === 'token_exist_dev_platform') { 
                 //retain dev here in platform
             } else {
@@ -142,7 +146,7 @@ const DEVPlatform = () => {
                 }
             </div>
                 <div style={{marginTop: '20px'}}>
-                    <Pagination count={platforms.length} page={currentPage} onChange={handleChangePage} />
+                    <Pagination count={pageNumbers} page={currentPage} onChange={handleChangePage} />
                 </div>
             </div>
         </>

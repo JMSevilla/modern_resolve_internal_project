@@ -17,8 +17,7 @@ const slice = createSlice({
            state.userValue = action.payload;
         },
         createUserSuccess : (state, action) => {
-           state.registrationSuccessMessage = action.payload
-            
+            state.registrationSuccessMessage = action.payload
         }
     }
 })
@@ -29,7 +28,7 @@ const {userRequestReceived, createUserSuccess} = slice.actions
 export const checkUser = (object) => (dispatch) => {
     return dispatch(
         apiCallBegan({
-            url : baseURLMiddleware.userURL,
+            url : baseURLMiddleware.checkuserURL,
             method : 'POST',
             data : handler.HTTPHandling(object),
             onSuccess: userRequestReceived.type,
