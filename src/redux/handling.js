@@ -1,6 +1,7 @@
+var data = new FormData()
 class DataHandling {
     HTTPHandling(object) {
-        var data = new FormData()
+        
         for(const props in object){
             data.append(`${props}`, `${object[props]}`)
         }
@@ -8,7 +9,7 @@ class DataHandling {
         return data
     }
     HTTPManual(object) {
-        var data = new FormData()
+        
         data.append('fname', object.fname)
         data.append('lname', object.lname)
         data.append('occupationStatus', object.occupationStatus)
@@ -23,7 +24,7 @@ class DataHandling {
         return data
     }
     HTTPLogin(object) {
-        var data = new FormData()
+      
         data.append('username', object.username)
         data.append('password', object.password)
         data.append('userLogin', object.userLogin)
@@ -31,7 +32,7 @@ class DataHandling {
         return data
     }
     HTTPTokenIdentify(value) {
-        var data = new FormData()
+       
         data.append('tokenstate', true)
         data.append('token', value)
         return data

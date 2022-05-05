@@ -66,10 +66,10 @@ const loginObject = {
 }
 const roleArray = [
   {
-    value : 'client', label : 'Client Portal'
+    value : 'client', label : 'CB - Client Branch'
   },
   {
-    value : 'developer', label : 'Developer Department'
+    value : 'developer', label : 'DB - Developer Branch'
   }
 ]
 const NavigationBar = () => {
@@ -359,7 +359,7 @@ const NavigationBar = () => {
                                               value : roleIdentify,
                                               handleSelect : handleRole,
                                               selectionArray : roleArray,
-                                              selectionTitle : 'System',
+                                              selectionTitle : 'Branch',
                                               isError : errorRequest.errorHandler.errorLoggerRole
                                             })}
             </div>

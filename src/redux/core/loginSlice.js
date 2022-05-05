@@ -22,17 +22,28 @@ const loginSlice = createSlice({
                 fname : action.payload[0].key.fname,
                 lname : action.payload[0].key.lname,
                 uname : action.payload[0].key.uname,
-                role : action.payload[0].key.role
+                role : action.payload[0].key.role,
+                uid : action.payload[0].key.uid
             })
+            localStorage.setItem('keySaved', JSON.stringify(state.savedInfo))
         },
         tokenRouteIdentifier : (state, action) => {
             state.initialRoute = action.payload
-        }
+            state.savedInfo.push({
+                fname : action.payload[0].key.fname,
+                lname : action.payload[0].key.lname,
+                uname : action.payload[0].key.uname,
+                role : action.payload[0].key.role,
+                uid : action.payload[0].key.uid
+            })
+            localStorage.setItem('keySaved', JSON.stringify(state.savedInfo))
+        },
+        
     }
 })
 
 export default loginSlice.reducer
-const {userLoginRequestReceived, tokenRouteIdentifier} = loginSlice.actions
+const {userLoginRequestReceived, tokenRouteIdentifier, dumpRequestReceived} = loginSlice.actions
 
 export const pushLogin = (object) => (dispatch) => {
     return dispatch(
@@ -55,3 +66,4 @@ export const authIdentify = (value) => (dispatch) => {
         })
     )
 }
+
