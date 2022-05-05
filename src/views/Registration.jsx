@@ -240,22 +240,10 @@ const AppRegistration = () => {
         dispatch(checkUser(infoState.infoObj))
         setTimeout(() => {
           if(ref.current[0].key === 'username_available'){
-            dispatch(pushCreateDev(infoState.infoObj))
-          }
-        }, 1000)
-        setTimeout(() => {
-          console.log(ref.current)
-          if(ref.current[0].key === "username_available") {
-            if(refregisterSuccess.current[0].key === "dev_registration_success") {
-              setLoading(false)
-              Toast.fire({
-                icon: 'success',
-                title: 'You have successfully created an account.'
-              })
-              setActiveStep((prevActiveStep) => prevActiveStep + 1);
-            } 
-          }
-          else {
+            console.log(ref.current)
+             dispatch(pushCreateDev(infoState.infoObj))
+          } else {
+            console.log(ref.current)
             Toast.fire({
               icon: 'error',
               title: 'Username already taken.'
@@ -264,6 +252,16 @@ const AppRegistration = () => {
             return false
           }
         }, 2000)
+        setTimeout(() => {
+          if(refregisterSuccess.current[0].key === "dev_registration_success") {
+            setLoading(false)
+            Toast.fire({
+              icon: 'success',
+              title: 'You have successfully created an account.'
+            })
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+          } 
+        }, 3000)
       }
     }
     const handleNext = () => {

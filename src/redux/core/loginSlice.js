@@ -43,12 +43,12 @@ const loginSlice = createSlice({
 })
 
 export default loginSlice.reducer
-const {userLoginRequestReceived, tokenRouteIdentifier, dumpRequestReceived} = loginSlice.actions
+const {userLoginRequestReceived, tokenRouteIdentifier} = loginSlice.actions
 
 export const pushLogin = (object) => (dispatch) => {
     return dispatch(
         apiCallBegan({
-            url : baseURLMiddleware.userURL,
+            url : baseURLMiddleware.loginURL,
             method : 'POST',
             data : handler.HTTPLogin(object),
             onSuccess : userLoginRequestReceived.type
@@ -59,7 +59,7 @@ export const pushLogin = (object) => (dispatch) => {
 export const authIdentify = (value) => (dispatch) => {
     return dispatch(
         apiCallBegan({
-            url : baseURLMiddleware.userURL,
+            url : baseURLMiddleware.tokenizationURL,
             method : 'POST',
             data : handler.HTTPTokenIdentify(value),
             onSuccess : tokenRouteIdentifier.type

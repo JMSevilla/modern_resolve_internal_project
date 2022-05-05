@@ -17,7 +17,11 @@ const HomeApp = () => {
         setkeyIdentifier(localStorage.getItem('key_identifier'))
         const key = keyIdentifier ? keyIdentifier : 'unknown'
         refResponse.current = initialRoute
-        dispatch(authIdentify(key))
+        if(key == 'unknown' || key == undefined || key == null){
+           console.log(key)
+        }else{ 
+            dispatch(authIdentify(key))
+        }
             setTimeout(() => {
                 if(refResponse.current === undefined || refResponse.current === null) {
                     return false
