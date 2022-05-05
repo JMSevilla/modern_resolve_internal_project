@@ -16,20 +16,20 @@ const HomeApp = () => {
     useEffect(() => {
         setkeyIdentifier(localStorage.getItem('key_identifier'))
         const key = keyIdentifier ? keyIdentifier : 'unknown'
-        dispatch(authIdentify(key))
         refResponse.current = initialRoute
-        setTimeout(() => {
-            if(refResponse.current === undefined || refResponse.current === null) {
-                return false
-            } else if(refResponse.current[0].key.key === 'token_exist_dev_platform') { 
-                //route to dev platform
-                history.push({
-                    pathname: appRouter.devPlatform.path,
-                    search : "?secure=" + authenticationRoutes.hashURL(100),
-                    state : {secure : authenticationRoutes.hashURL(100)}
-                  })
-            } else {}
-        },1000)
+        dispatch(authIdentify(key))
+            setTimeout(() => {
+                if(refResponse.current === undefined || refResponse.current === null) {
+                    return false
+                } else if(refResponse.current[0].key.key === 'token_exist_dev_platform') { 
+                    //route to dev platform
+                    history.push({
+                        pathname: appRouter.devPlatform.path,
+                        search : "?secure=" + authenticationRoutes.hashURL(100),
+                        state : {secure : authenticationRoutes.hashURL(100)}
+                    })
+                } else {}
+            },1000)
     } ,[initialRoute])
     
 
