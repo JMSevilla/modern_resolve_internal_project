@@ -15,25 +15,19 @@ const HomeApp = () => {
   
     useEffect(() => {
         setkeyIdentifier(localStorage.getItem('key_identifier'))
-        const key = keyIdentifier ? keyIdentifier : 'unknown'
         refResponse.current = initialRoute
-        if(key == 'unknown' || key == undefined || key == null){
-           console.log(key)
+        if(localStorage.getItem('key_identifier') == 'unknown'){
         }else{ 
-            dispatch(authIdentify(key))
+            dispatch(authIdentify(localStorage.getItem('key_identifier')))
         }
             setTimeout(() => {
                 if(refResponse.current === undefined || refResponse.current === null) {
                     return false
                 } else if(refResponse.current[0].key.key === 'token_exist_dev_platform') { 
                     //route to dev platform
-                    history.push({
-                        pathname: appRouter.devPlatform.path,
-                        search : "?secure=" + authenticationRoutes.hashURL(100),
-                        state : {secure : authenticationRoutes.hashURL(100)}
-                    })
+                    history.push(appRouter.devPlatform.path)
                 } else {}
-            },1000)
+            },3000)
     } ,[initialRoute])
     
 

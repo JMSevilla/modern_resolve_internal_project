@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { apiCallBegan } from "../actions/registrationAction";
+import { apiCallBegan } from "../actions/Action";
 import handler from '../handling'
 import {baseURLMiddleware} from '../middleware/urlMiddleware'
 
@@ -29,14 +29,19 @@ const loginSlice = createSlice({
         },
         tokenRouteIdentifier : (state, action) => {
             state.initialRoute = action.payload
-            state.savedInfo.push({
-                fname : action.payload[0].key.fname,
-                lname : action.payload[0].key.lname,
-                uname : action.payload[0].key.uname,
-                role : action.payload[0].key.role,
-                uid : action.payload[0].key.uid
-            })
-            localStorage.setItem('keySaved', JSON.stringify(state.savedInfo))
+            if(localStorage.getItem('key_identifier') != 'unknown' || localStorage.getItem('key_identifier') != undefined || localStorage.getItem('key_identifier') != null) {
+
+            }
+            else{
+                state.savedInfo.push({
+                    fname : action.payload[0].key.fname,
+                    lname : action.payload[0].key.lname,
+                    uname : action.payload[0].key.uname,
+                    role : action.payload[0].key.role,
+                    uid : action.payload[0].key.uid
+                })
+                localStorage.setItem('keySaved', JSON.stringify(state.savedInfo))
+            }
         },
         
     }

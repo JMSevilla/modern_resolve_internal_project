@@ -68,11 +68,10 @@ const DEVPlatform = () => {
     }
     useEffect(() => {
         setkeyIdentifier(JSON.parse(localStorage.getItem('keySaved'))[0].uid)
-        const key = keyIdentifier ? keyIdentifier : 'unknown'
-        if(key != null){
-           
+        if(localStorage.getItem('key_identifier') == 'unknown'){
+            
         }else{ 
-            dispatch(authIdentify(key))
+             dispatch(authIdentify(localStorage.getItem('key_identifier')))
         }
         refResponse.current = initialRoute
         setTimeout(() => {
@@ -81,7 +80,7 @@ const DEVPlatform = () => {
             } else if(refResponse.current[0].key.key === 'token_exist_dev_platform') { 
                 //retain dev here in platform
             } else {
-                // history.push({pathname: appRouter.Homepage.path})
+                history.push({pathname: appRouter.Homepage.path})
             }
         }, 1000)
     }, [initialRoute])
