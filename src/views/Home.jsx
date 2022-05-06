@@ -27,7 +27,7 @@ const HomeApp = () => {
                     //route to dev platform
                     history.push(appRouter.devPlatform.path)
                 } else {}
-            },3000)
+            },1000)
     } ,[initialRoute])
     
 
