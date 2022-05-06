@@ -1,5 +1,5 @@
 import axios from 'axios'
-import * as actions from "../actions/registrationAction"
+import * as actions from "../actions/Action"
 
 const serverMiddleware = ({dispatch}) => (next) => async (action) => {
     if (action.type !== actions.apiCallBegan.type) return next(action);

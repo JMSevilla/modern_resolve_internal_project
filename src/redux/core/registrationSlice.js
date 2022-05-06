@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { apiCallBegan } from "../actions/registrationAction";
+import { apiCallBegan } from "../actions/Action";
 import handler from '../handling'
 import {baseURLMiddleware} from '../middleware/urlMiddleware'
 

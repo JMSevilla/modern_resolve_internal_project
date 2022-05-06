@@ -5,7 +5,9 @@ const MUIButton = ({
     onhandleClick,
     size,
     variant,
-    buttonName
+    buttonName,
+    stylish,
+    color
 }) => {
     return (
         <>
@@ -13,6 +15,8 @@ const MUIButton = ({
             onClick={onhandleClick}
             size={size}
             variant={variant}
+            style={stylish}
+            color={color}
             >{buttonName}</Button>
         </>
     )

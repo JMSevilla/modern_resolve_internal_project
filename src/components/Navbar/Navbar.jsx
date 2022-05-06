@@ -232,11 +232,7 @@ const NavigationBar = () => {
             })
             setLoading(false)
             localStorage.setItem("key_identifier", tokenref.current[0].key.uid)
-            history.push({
-              pathname: appRouter.devPlatform.path,
-              search : "?secure=" + authenticationRoutes.hashURL(100),
-              state : {secure : authenticationRoutes.hashURL(100)}
-            })
+            history.push(appRouter.devPlatform.path)
           } else if(tokenref.current[0].key === 'PASSWORD_INVALID'){
             Toast.fire({
               icon: 'error',

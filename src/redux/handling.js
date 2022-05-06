@@ -37,6 +37,11 @@ class DataHandling {
         data.append('token', value)
         return data
     }
+    HTTPSignout(id){
+        data.append('signoutState', true)
+        data.append('userid', id)
+        return data
+    }
 }
 
 export default new DataHandling()
