@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Navbar, Container, Button as BTN } from 'react-bootstrap'
 import PropTypes from 'prop-types';
 import MUIButton from '../Button/Button'
+import Box from '@mui/material/Box';
 import { styled as styler } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -88,6 +89,7 @@ const NavigationBar = () => {
     const [isSuccessLogin, setSuccessLogin] = React.useState(false)
     const [isLoading, setLoading] = React.useState(false)
     const [open, setIsOpen] = React.useState(false)
+    const [modal, setModalOpen] = React.useState(false)
     const [BDOpen, setBDOpen] = React.useState(false)
     const [loginState, setLoginState] = React.useState(loginObject)
     const [roleIdentify, setRole] = React.useState('')
@@ -116,15 +118,21 @@ const NavigationBar = () => {
     const [errorHelperText, setHelperText] = React.useState('')
     const handleSignin = () => {
         setIsOpen(true)
+        setModalOpen(false)
     }
     const handleClose = () => {
         setIsOpen(false)
+        setModalOpen(false)
     }
     const backDropAwait = () => {
       return <Redirect as={HashLink} to={appRouter.Registration.path} />
     }
     const onBDOpen = () => {
       setBDOpen(true)
+    }
+    const onModal = () => {
+      setModalOpen(true)
+      setIsOpen(false)
     }
     const handleCloseBackDrop = () => {
       setBDOpen(false)
@@ -289,7 +297,7 @@ const NavigationBar = () => {
         <div>
             <Navbar bg="dark" variant="dark">
             <Container>
-            <Navbar.Brand href="#home">
+            <Navbar.Brand href="#">
                 <img
                 alt=""
                 src="https://react-bootstrap.github.io/logo.svg"
@@ -359,6 +367,7 @@ const NavigationBar = () => {
                                               isError : errorRequest.errorHandler.errorLoggerRole
                                             })}
             </div>
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
             {
                MUIButton({
                 variant : "text",
@@ -366,6 +375,16 @@ const NavigationBar = () => {
                 buttonName: "Create an account"
               })
             }
+             <Box sx={{ flex: '1 1 auto' }} />
+            {roleIdentify === 'client' ? (
+              MUIButton({
+                variant : "text",
+                onhandleClick : onModal,
+                buttonName: "Forget Password?"
+              })
+              
+            ):(<></>)}
+            </Box>
             {
               
         BDOpen ? (
@@ -391,7 +410,126 @@ const NavigationBar = () => {
           }
         </DialogActions>
       </BootstrapDialog>
+
+      {/* // MODAL // */}
+      <BootstrapDialog
+        maxWidth='sm'
+        fullWidth={true}
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={modal}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+          Recover your Account
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+            <div style={{marginBottom : '20px'}}>
+            
+            {
+                                            MUIText({
+                                              typography : "Username",
+                                              dataOnChange : handleUsername,
+                                              id: "outlined-basic",
+                                              label: "Your username",
+                                              type : "text",
+                                              stylish : {width: '100%'},
+                                              variant : "outlined",
+                                              isError : errorRequest.errorHandler.errorLoggerUsername,
+                                              helperTextHelper : errorHelperText,
+                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.username
+                                            })
+                                          }
+            </div>
+            <div style={{marginBottom : '10px'}}>
+       
+            {
+                                            MUIText({
+                                              typography : "Security Question",
+                                              dataOnChange : handlePassword,
+                                              id: "outlined-basic",
+                                              label: "Security Question",
+                                              type : "password",
+                                              stylish : {width: '100%'},
+                                              variant : "outlined",
+                                              isError : errorRequest.errorHandler.errorLoggerPassword,
+                                              helperTextHelper : errorHelperText,
+                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
+                                            })
+                                          }
+            </div>
+            <div style={{marginBottom: '10px'}}>
+            {
+                                            MUIText({
+                                              typography : "Security Answer",
+                                              dataOnChange : handlePassword,
+                                              id: "outlined-basic",
+                                              label: "Enter your answer",
+                                              type : "password",
+                                              stylish : {width: '100%'},
+                                              variant : "outlined",
+                                              isError : errorRequest.errorHandler.errorLoggerPassword,
+                                              helperTextHelper : errorHelperText,
+                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
+                                            })
+                                          }
+            </div>
+              <div style={{marginBottom: '10px'}}>
+              {
+                                              MUIText({
+                                                typography : "New Password",
+                                                dataOnChange : handlePassword,
+                                                id: "outlined-basic",
+                                                label: "Enter new password",
+                                                type : "password",
+                                                stylish : {width: '100%'},
+                                                variant : "outlined",
+                                                isError : errorRequest.errorHandler.errorLoggerPassword,
+                                                helperTextHelper : errorHelperText,
+                                                value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
+                                              })
+                                            }
+              </div>
+              <div style={{marginBottom: '10px'}}>
+              {
+                                              MUIText({
+                                                typography : "Confirm Password",
+                                                dataOnChange : handlePassword,
+                                                id: "outlined-basic",
+                                                label: "Confirm Password",
+                                                type : "password",
+                                                stylish : {width: '100%'},
+                                                variant : "outlined",
+                                                isError : errorRequest.errorHandler.errorLoggerPassword,
+                                                helperTextHelper : errorHelperText,
+                                                value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
+                                              })
+                                            }
+              </div>
+            
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+            {
+               MUIButton({
+                variant : "text",
+                onhandleClick : onModal,
+                buttonName: "Change Password"
+              })
+            }
+            <Box sx={{ flex: '1 1 auto' }} />
+            {
+            MUIButton({
+              variant : "contained",
+              onhandleClick : handleSignin,
+              size : "small",
+              buttonName: "Sign in"
+            })
+          }
+            {
+          }
+          </Box>
+        </DialogContent>
+      </BootstrapDialog>
       
+
       <Backdrop
                                       sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                                       open={isLoading}
