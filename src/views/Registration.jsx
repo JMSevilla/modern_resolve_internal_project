@@ -17,9 +17,11 @@ import Swal from 'sweetalert2'
 import { useDispatch, useSelector } from 'react-redux';
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
+import Slider from '@mui/material/Slider';
 import store from '../redux/store'
 // import {checkUser, createUser} from '../redux/core/registration'
 import {checkUser, pushCreateDev, checkClient, pushCreateClient} from '../redux/core/registrationSlice'
+import { SignalCellularNull } from '@mui/icons-material';
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -151,8 +153,8 @@ const AppRegistration = () => {
     
     
     const [errorHelperText, setHelperText] = React.useState('')
+
     const handleOccupation = (event) => {
-      
       if(event.target.value === null || event.target.value === '') {
         setInfoState(prevState => {
           let infoObj = Object.assign({}, prevState.infoObj)
@@ -166,7 +168,7 @@ const AppRegistration = () => {
         })
       }else{
         setOccupation(event.target.value)
-      setInfoState(prevState => {
+        setInfoState(prevState => {
         let infoObj = Object.assign({}, prevState.infoObj)
         infoObj.occupationStatus = event.target.value
         infoObj.nameOfSchool = ""
@@ -978,13 +980,108 @@ const AppRegistration = () => {
     }
 
 // CLIENT REGISTRATION //
-const clientSteps = ['Primary Information','Credentials','Request Client Proposal','Payment Method', 'Finish'];
+const clientSteps = ['Primary Information','Request Client Proposal','Payment Method','Credentials','Finish'];
 const infoObjClient = { 
   clientfname: "", clientlname: "", clientemail: "",
   clientcontact: "", clientaddress: "", clientusername: "",
   clientpassword: "", clientconpass: "", clientsecquestion: "", clientsecanswer: '', clientTrigger : true
 }
 
+const systemTypesArray = [
+  {
+    label : 'Sales and Inventory System', value: 'inventory'
+  },
+  {
+    label : 'Payroll System', value: 'payroll'
+  },
+  {
+    label : 'Product Landing Page Website', value: 'landing_website'
+  },
+  {
+    label : 'Warehousing and Monitoring System', value: 'warehouse'
+  },
+
+]
+
+const requestorStatusArray = [
+  {
+    label : 'Business Owner', value: 'business_owner'
+  },
+  {
+    label : 'Student', value: 'student'
+  }
+
+]
+
+const projectScaleArray = [
+  {
+    label : 'Small Scale', value: 'small_scale'
+  },
+  {
+    label : 'Medium Scale', value: 'medium_scale'
+  },
+  {
+    label : 'Large Scale', value: 'large_scale'
+  }
+
+]
+const studentBudgetSmall = [
+  {value: 10, label: '10k',},
+  {value: 15,label: '15k'},
+  {value: 20,label: '20k'}
+];
+const studentBudgetMedium = [
+  {value: 25,label: '25k'},
+  {value: 30,label: '30k'},
+  {value: 35,label: '35k'},
+  {value: 40,label: '40k'},
+  {value: 45,label: '45k'},
+  {value: 50,label: '50k'}
+];
+const studentBudgetLarge = [
+  {value: 60,label: '60k'},
+  {value: 70,label: '70k'},
+  {value: 80,label: '80k'},
+  {value: 85,label: '85k'},
+  {value: 90,label: '90k'},
+  {value: 100,label: '100k'},
+];
+
+function valuetextST(budgetRangeStudent) {
+  return `₱${budgetRangeStudent},000`;
+}
+const BOBudgetSmall = [
+  {value: 30,label: '30k'},
+  {value: 35,label: '35k'},
+  {value: 40,label: '40k'},
+  {value: 45,label: '45k'},
+  {value: 50,label: '50k'},
+  {value: 55,label: '55k'},
+  {value: 60,label: '60k'},
+  {value: 65,label: '65k'},
+];
+const BOBudgetMedium = [
+  {value: 70,label: '70k'},
+  {value: 75,label: '75k'},
+  {value: 80,label: '80k'},
+  {value: 85,label: '85k'},
+  {value: 90,label: '90k'},
+  {value: 95,label: '95k'},
+  {value: 100,label: '100k'},
+];
+const BOBudgetLarge = [
+  {value: 120,label: '120k'},
+  {value: 150,label: '150k'},
+  {value: 170,label: '170k'},
+  {value: 200,label: '200k'},
+  {value: 225,label: '225k'},
+  {value: 250,label: '250k'},
+  {value: 280,label: '280k'},
+  {value: 300,label: '300k'},
+];
+function valuetextBO(budgetRangeBO) {
+  return `₱${budgetRangeBO},000`;
+}
 const secQuestionsArray = [
   {
     label : 'What is your first job position?', value : 'What is your first job position?'
@@ -993,6 +1090,150 @@ const secQuestionsArray = [
     label : 'What is your favorite food?', value: 'What is your favorite food?'
   }
 ]
+const [budgetRangeStudent, setBRStudent] = React.useState(15);
+const [budgetRangeBO, setBRBO] = React.useState(30);
+
+  const handleBudgetRangeST = (event, newValue) => {
+    if (typeof newValue === 'number') {
+      setBRStudent(newValue);
+    }
+  };
+
+  const handleBudgetRangeBO = (event, newValue) => {
+    if (typeof newValue === 'number') {
+      setBRBO(newValue);
+    }
+  };
+
+  const BudgetHelper = () => {
+    if(requestorType === 'student' && projectScale === 'small_scale') {
+      return (
+        <div>
+          <Box sx={{ width: 300 }}>
+           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
+            Budget Range : {valuetextST(budgetRangeStudent)}
+           </Typography>
+           <Slider
+          aria-label="Always visible"
+          defaultValue={15}
+          getAriaValueText={valuetextST}
+          step={null}
+          min={10}
+          max={20}
+          onChange={handleBudgetRangeST}
+          marks={studentBudgetSmall}
+          valueLabelDisplay="auto"
+        />
+         </Box>
+        </div>
+      )
+    } else if(requestorType === 'student' && projectScale === 'medium_scale') {
+      return (
+        <div>
+          <Box sx={{ width: 300 }}>
+           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
+            Budget Range : {valuetextST(budgetRangeStudent)}
+           </Typography>
+           <Slider
+          aria-label="Always visible"
+          defaultValue={25}
+          getAriaValueText={valuetextST}
+          step={null}
+          min={25}
+          max={50}
+          onChange={handleBudgetRangeST}
+          marks={studentBudgetMedium}
+          valueLabelDisplay="auto"
+        />
+         </Box>
+        </div>
+      )
+    } else if(requestorType === 'student' && projectScale === 'large_scale') {
+      return (
+        <div>
+          <Box sx={{ width: 300 }}>
+           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
+            Budget Range : {valuetextST(budgetRangeStudent)}
+           </Typography>
+           <Slider
+          aria-label="Always visible"
+          defaultValue={60}
+          getAriaValueText={valuetextST}
+          step={null}
+          min={60}
+          max={100}
+          onChange={handleBudgetRangeST}
+          marks={studentBudgetLarge}
+          valueLabelDisplay="auto"
+        />
+         </Box>
+        </div>
+      )
+    } else if(requestorType === 'business_owner' && projectScale === 'small_scale') {
+      return (
+        <div>
+          <Box sx={{ width: 300 }}>
+           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
+            Budget Range : {valuetextBO(budgetRangeBO)}
+           </Typography>
+           <Slider
+          aria-label="Always visible"
+          defaultValue={30}
+          getAriaValueText={valuetextBO}
+          min={30}
+          max={65}
+          step={null}
+          onChange={handleBudgetRangeBO}
+          marks={BOBudgetSmall}
+          valueLabelDisplay="auto"
+        />
+         </Box>
+        </div>
+      )
+    } else if(requestorType === 'business_owner' && projectScale === 'medium_scale') {
+      return (
+        <div>
+          <Box sx={{ width: 300 }}>
+           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
+            Budget Range : {valuetextBO(budgetRangeBO)}
+           </Typography>
+           <Slider
+          aria-label="Always visible"
+          defaultValue={70}
+          getAriaValueText={valuetextBO}
+          min={70}
+          max={100}
+          step={null}
+          onChange={handleBudgetRangeBO}
+          marks={BOBudgetMedium}
+          valueLabelDisplay="auto"
+        />
+         </Box>
+        </div>
+      )
+    } else if(requestorType === 'business_owner' && projectScale === 'large_scale') {
+      return (
+        <div>
+          <Box sx={{ width: 300 }}>
+           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
+            Budget Range : {valuetextBO(budgetRangeBO)}
+           </Typography>
+           <Slider
+          aria-label="Always visible"
+          defaultValue={120}
+          getAriaValueText={valuetextBO}
+          min={120}
+          max={300}
+          step={null}
+          onChange={handleBudgetRangeBO}
+          marks={BOBudgetLarge}
+          valueLabelDisplay="auto"
+        />
+         </Box>
+        </div>
+      )
+    }
+  }
   //CLIENT REGISTRATION //
   const [
     clientUserValue,
@@ -1006,9 +1247,12 @@ const secQuestionsArray = [
   const clientref = React.useRef(clientUserValue)
   const refregisterSuccessClient = React.useRef(registrationSuccessMessageClient)
   const checkClientRef = React.useRef(registrationBooleanClient)
-  const [clientActiveStep, setClientActiveStep] = React.useState(0);
+  const [clientActiveStep, setClientActiveStep] = React.useState(1);
   const [infoStateClient,setInfoStateClient] = React.useState(infoObjClient);
   const [clientSecQuestion,setClientSecQuestion] = React.useState('');
+  const [systemType, setSystemType] = React.useState('');
+  const [requestorType, setRequestorType] = React.useState('');
+  const [projectScale, setProjectScale] = React.useState('');
   const [clientErrorRequest, setClientErrorRequest] = React.useState({
     errorHandlerClient : {
       errorLoggerCfname : false,
@@ -1047,7 +1291,15 @@ const secQuestionsArray = [
   }, [clientUserValue,
      registrationSuccessMessageClient,
       registrationBooleanClient])
-  
+
+    const handleRequestorStatus = (event) => {
+        setRequestorType(event.target.value)
+    }
+
+    const handleProjectScale = (event) => {
+      setProjectScale(event.target.value)
+    }
+
     const handleNextCredentialsClient = () => {
         if(!infoStateClient.infoObjClient.clientusername || !infoStateClient.infoObjClient.clientpassword || 
           !infoStateClient.infoObjClient.clientconpass || !infoStateClient.infoObjClient.clientsecquestion || !infoStateClient.infoObjClient.clientsecanswer) {
@@ -1453,9 +1705,9 @@ const handleAddressChangeClient = (e) => {
           return(
               <React.Fragment>
              <div style={{marginTop: '20px', marginBottom: '20px'}}>
-             <h4>Modern Resolve Developer Registration</h4>
+             <h4>Modern Resolve Client Registration</h4>
                                   <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                                          Be one of us, join our development community
+                                          We will help you reach your goal, one step at a time...
                                   </Typography>
                                   <div style={{marginTop: '30px'}} className="row">
                                       <div className="col-sm">
@@ -1559,7 +1811,80 @@ const handleAddressChangeClient = (e) => {
               </React.Fragment>
           )
       }
-      else if(clientActiveStep === 1) {
+      if(clientActiveStep === 1) {
+        return(
+            <React.Fragment>
+           <div style={{marginTop: '20px', marginBottom: '20px'}}>
+           <h4>Modern Resolve Client Registration</h4>
+                                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                                We will help you reach your goal, one step at a time...
+                                </Typography>
+                                <div style={{marginTop: '30px'}} className="row">
+                                    <div className="col-sm">
+                                            {BasicSelect({
+                                              value : clientSecQuestion,
+                                              handleSelect : handleClientSecQuestions,
+                                              selectionArray : systemTypesArray,
+                                              selectionTitle : 'Select System Type'
+                                            })}
+                                    </div>
+                                    <div className="col-sm">
+                                            {BasicSelect({
+                                              value : requestorType,
+                                              handleSelect : handleRequestorStatus,
+                                              selectionArray : requestorStatusArray,
+                                              selectionTitle : `Requestor's Status`
+                                            })}
+                                    </div>
+                                </div>
+                                <div className="row" style={{marginTop: '30px'}}>
+                                   <div className="col-sm">
+                                             {BasicSelect({
+                                              value : projectScale,
+                                              handleSelect : handleProjectScale,
+                                              selectionArray : projectScaleArray,
+                                              selectionTitle : `Select Project Scale`
+                                            })}
+                                    </div>
+                                   <div className="col-sm">
+                                        {BudgetHelper()}
+                                    </div>
+                                </div>
+                                <div style={{marginTop: '30px'}}>
+                                {
+                                        MUIText({
+                                          typography : "Primary Address",
+                                          dataOnChange : handleAddressChangeClient,
+                                          id: "outlined-multiline-flexible",
+                                          label: "Your address",
+                                          type : "text",
+                                          stylish : {width: '100%'},
+                                          isError : clientErrorRequest.errorHandlerClient.errorLoggerCaddress,
+                                          helperTextHelper : errorHelperTextClient,
+                                          value : (infoStateClient.infoObjClient === undefined) ? defaultClientValueSetter : infoStateClient.infoObjClient.clientaddress
+                                        })
+                                      }
+                                </div>  
+           </div>
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+              <Button
+                color="inherit"
+                disabled={clientActiveStep === 0}
+                onClick={handleBackClient}
+                sx={{ mr: 1 }}
+              >
+                Back
+              </Button>
+              <Box sx={{ flex: '1 1 auto' }} />
+
+              <Button onClick={handleNextClient}>
+                {clientActiveStep === clientSteps.length - 1 ? 'Finish' : 'Next'}
+              </Button>
+            </Box>
+            </React.Fragment>
+        )
+    }
+      else if(clientActiveStep === 3) {
         return (
             <React.Fragment>
              <div style={{marginTop: '20px', marginBottom: '20px'}}>
