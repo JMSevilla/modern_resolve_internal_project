@@ -1,4 +1,4 @@
-import React, {useRef, useEffect} from 'react'
+import React, {useRef, useEffect, useState} from 'react'
 import DevNavbar from '../../components/devNavbar/Navbar'
 import imgDev from '../../assets/origlogo.png'
 import {useSelector, useDispatch} from 'react-redux'
@@ -12,45 +12,41 @@ import Pagination from '@mui/material/Pagination';
 import { authIdentify } from '../../redux/core/loginSlice'
 import { appRouter } from '../../router/route'
 import { useHistory } from 'react-router-dom'
+import { getBranches, pushTokenRouteUpdate } from '../../redux/core/branchSlice';
+import Swal from 'sweetalert2'
 
-const platforms = [
-    {
-        id : 1,
-        img : 'https://cdn.dribbble.com/users/1068771/screenshots/14247776/media/fbf5f8ae629e3a6248006e748ddd6b67.jpg?compress=1&resize=1200x900&vertical=top',
-        title : 'Developer Dashboard',
-        Description : 'The Developer Dashboard serves as the central control center from which a developer can manage settings, Users, or Data, as well as view analytics.'
-    },
-    {
-        id : 2,
-        img : 'https://cdn.dribbble.com/users/1068771/screenshots/14247776/media/fbf5f8ae629e3a6248006e748ddd6b67.jpg?compress=1&resize=1200x900&vertical=top',
-        title : 'Developer Dashboard',
-        Description : 'The Developer Dashboard serves as the central control center from which a developer can manage settings, Users, or Data, as well as view analytics.'
-    },
-    {
-        id : 3,
-        img : 'https://cdn.dribbble.com/users/1068771/screenshots/14247776/media/fbf5f8ae629e3a6248006e748ddd6b67.jpg?compress=1&resize=1200x900&vertical=top',
-        title : 'Developer Dashboard',
-        Description : 'The Developer Dashboard serves as the central control center from which a developer can manage settings, Users, or Data, as well as view analytics.'
-    },
-    {
-        id : 4,
-        img : 'https://cdn.dribbble.com/users/1068771/screenshots/14247776/media/fbf5f8ae629e3a6248006e748ddd6b67.jpg?compress=1&resize=1200x900&vertical=top',
-        title : 'Developer Dashboard',
-        Description : 'The Developer Dashboard serves as the central control center from which a developer can manage settings, Users, or Data, as well as view analytics.'
-    },
-    {
-        id : 5,
-        img : 'https://cdn.dribbble.com/users/1068771/screenshots/14247776/media/fbf5f8ae629e3a6248006e748ddd6b67.jpg?compress=1&resize=1200x900&vertical=top',
-        title : 'Developer Dashboard',
-        Description : 'The Developer Dashboard serves as the central control center from which a developer can manage settings, Users, or Data, as well as view analytics.'
-    },
-]
+
 
 const pageNumbers = []
 const DEVPlatform = () => {
-    const [savedInfo, initialRoute] = useSelector((state) => [
-        state.login.savedInfo, state.login.initialRoute
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+    const [arrBranch, setBranchArray] = useState([])
+    const [savedInfo, initialRoute, branchList, branchMessage] = useSelector((state) => [
+        state.login.savedInfo,
+         state.login.initialRoute,
+          state.branch.branchList,
+          state.branch.branchMessage
     ])
+    const [branchtokenUpdater, setBranchUpdater] = useState(
+        {
+            obj : {
+                route : null,
+                id : null
+            }
+        }
+    )
+    const branchrouteUpdaterRef = useRef(branchMessage)
+    const branchRef = useRef(branchList)
     const refResponse = useRef(initialRoute)
     const [currentPage, setPage] = React.useState(1);
     const [dataperPage, setdataperPage] = React.useState(5);
@@ -61,9 +57,9 @@ const DEVPlatform = () => {
 
     const indexData = currentPage * dataperPage
     const indexFirstData = indexData - dataperPage
-    const currentDataPage = platforms.slice(indexFirstData, indexData)
+    const currentDataPage = arrBranch.slice(indexFirstData, indexData)
 
-    for(let i = 1; i <= Math.ceil(platforms.length / dataperPage); i++) {
+    for(let i = 1; i <= Math.ceil(arrBranch.length / dataperPage); i++) {
         pageNumbers.push(i)
     }
     useEffect(() => {
@@ -83,14 +79,47 @@ const DEVPlatform = () => {
                 history.push({pathname: appRouter.Homepage.path})
             }
         }, 1000)
-    }, [initialRoute])
+    }, [])
+    useEffect(() => {
+        branchrouteUpdaterRef.current = branchMessage
+    }, [branchMessage])
+    useEffect(() => {
+        async function getchBranch(){
+            await dispatch(getBranches(true))
+        }
+        getchBranch()
+        branchRef.current = branchList
+        setBranchArray(branchRef.current)
+    },[branchList])
+
     useEffect(() => {
         refSavedInfo.current = savedInfo
         
-    }, [savedInfo])
+    }, [])
     const handleChangePage = (event, value) => {
         setPage(value);
       };
+    const handleNavigate = (route) => {
+        if(route === '/developer/dashboard') {
+            const uid = localStorage.getItem('key_identifier')
+            setBranchUpdater(prevState => {
+                let obj = Object.assign({}, prevState.obj)
+                obj.route = "developer_dashboard"
+                obj.id = uid
+                return {obj}
+            })
+            dispatch(pushTokenRouteUpdate(branchtokenUpdater))
+            setTimeout(() => {
+                if(branchrouteUpdaterRef.current[0].key === 'route_updated'){
+                    history.push(route)
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Successfully navigate to developer dashboard.'
+                      })
+                }
+            }, 2000)
+        }
+    }
     return(
         <>
             <DevNavbar />
@@ -123,19 +152,19 @@ const DEVPlatform = () => {
                                         <CardMedia
                                             component="img"
                                             height="140"
-                                            image={i.img}
+                                            image={i.branchImg}
                                             alt="developer dahboard"
                                         />
                                         <CardContent>
                                             <Typography gutterBottom variant="h5" component="div">
-                                            {i.title}
+                                            {i.branchName}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
-                                                {i.Description}
+                                                {i.branchDescription}
                                             </Typography>
                                         </CardContent>
                                         <CardActions>
-                                            <Button variant="contained" style={{width: '100%'}} size="small">SELECT</Button>
+                                            <Button onClick={() => handleNavigate(i.branchRoute)} variant="contained" style={{width: '100%'}} size="small">SELECT</Button>
                                         </CardActions>
                                     </Card>
                                     </div>
