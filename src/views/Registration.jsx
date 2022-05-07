@@ -238,9 +238,25 @@ const AppRegistration = () => {
                   infoObjClient.clientconpass = undefined
                   infoObjClient.clientsecquestion = undefined
                   infoObjClient.clientsecanswer = undefined
+                  setClientSecQuestion(clientSecQuestion => clientSecQuestion = "")
+                  setHelperTextClient("")
+                  setClientErrorRequest(prevState => {
+                    let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+                    errorHandlerClient.errorLoggerCfname = false
+                    errorHandlerClient.errorLoggerClname = false
+                    errorHandlerClient.errorLoggerCemail = false
+                    errorHandlerClient.errorLoggerCcontact = false
+                    errorHandlerClient.errorLoggerCaddress = false
+                    errorHandlerClient.errorLoggerCusername = false
+                    errorHandlerClient.errorLoggerCpassword = false
+                    errorHandlerClient.errorLoggerCconpass = false
+                    errorHandlerClient.errorLoggerCsecquestion = false
+                    errorHandlerClient.errorLoggerCsecanswer = false
+                    return {errorHandlerClient}
+                  })
                   return {infoObjClient}
                 })
-                setInfoState(prevState => {
+                  setInfoState(prevState => {
                   let infoObj = Object.assign({}, prevState.infoObj)
                   infoObj.fname = undefined
                   infoObj.lname = undefined
@@ -253,6 +269,24 @@ const AppRegistration = () => {
                   infoObj.username = undefined
                   infoObj.password = undefined
                   infoObj.conpass = undefined
+                  setOccupation(Occupation => Occupation = "")
+                  setStudy(study => study = "")
+                  setErrorRequest(prevState => {
+                    let errorHandler = Object.assign({}, prevState.errorHandler)
+                    errorHandler.errorLoggerFname = false
+                    errorHandler.errorLoggerLname = false
+                    errorHandler.errorLoggerNameOfCompany= false
+                    errorHandler.errorLoggerPositionWork = false
+                    errorHandler.errorLoggerSchoolName = false
+                    errorHandler.errorLoggerAddress = false
+                    errorHandler.errorLoggerIsStudy = false
+                    errorHandler.errorLoggerOccupation = false
+                    errorHandler.errorLoggerUsername = false
+                    errorHandler.errorLoggerPassword = false
+                    errorHandler.errorLoggerConfirmPassword = false
+                    return {errorHandler}
+                  })
+                  setHelperText("")
                   return {infoObj}
                 })	
                 setClientActiveStep(clientActiveStep => clientActiveStep = 0)
@@ -291,7 +325,7 @@ const AppRegistration = () => {
           title: 'Empty fields. please try again.'
         })
         return false
-      } else if(infoState.infoObj.conpass != infoState.infoObj.password) {
+      } else if(infoState.infoObj.conpass !== infoState.infoObj.password) {
         Toast.fire({
           icon: 'error',
           title: 'Password mismatch'
@@ -320,6 +354,23 @@ const AppRegistration = () => {
             Toast.fire({
               icon: 'success',
               title: 'You have successfully created an account.'
+            })
+            setInfoState(prevState => {
+              let infoObj = Object.assign({}, prevState.infoObj)
+              infoObj.fname = undefined
+              infoObj.lname = undefined
+              infoObj.occupationStatus = undefined
+              infoObj.occupationDetails = undefined
+              infoObj.occupationPositionWork = undefined
+              infoObj.nameOfSchool = undefined
+              infoObj.degree = undefined
+              infoObj.address = undefined
+              infoObj.username = undefined
+              infoObj.password = undefined
+              infoObj.conpass = undefined
+              setOccupation(Occupation => Occupation = "")
+              setStudy(study => study = "")
+              return {infoObj}
             })
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
           } 
