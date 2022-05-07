@@ -21,7 +21,7 @@ const HomeApp = () => {
             dispatch(authIdentify(localStorage.getItem('key_identifier')))
         }
             setTimeout(() => {
-                if(refResponse.current === undefined || refResponse.current === null) {
+                if(localStorage.getItem('key_identifier') == 'unknown') {
                     return false
                 } else if(refResponse.current[0].key.key === 'token_exist_dev_platform') { 
                     //route to dev platform

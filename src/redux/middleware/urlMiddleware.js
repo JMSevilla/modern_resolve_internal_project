@@ -3,5 +3,7 @@ export const baseURLMiddleware = {
     checkuserURL : "/api/checkuser.php",
     loginURL : "/api/login.php",
     tokenizationURL : "/api/tokenization.php",
-    signoutURL : "/api/signout.php"
+    signoutURL : "/api/signout.php",
+    branchURL : "/api/platform.php",
+    tokenRouteUpdater : "/api/tokenizationRouteUpdater.php"
 }

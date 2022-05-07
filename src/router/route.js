@@ -2,6 +2,7 @@
 export const appRouter = { 
     Homepage : {path : "/"},
     Registration : {path : "/registration"},
-    devPlatform : {path : "/dev/platform"}
+    devPlatform : {path : "/dev/platform"},
+    DashboardOverview : {path : "/developer/dashboard"}
 }
 
