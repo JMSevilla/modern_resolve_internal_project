@@ -56,6 +56,16 @@ class DataHandling {
         data.append('userid', id)
         return data
     }
+    HTTPBranch(value) {
+        data.append('platformState', value)
+        return data
+    }
+    HTTPTokenupdater(object) {
+        data.append('routeState', true)
+        data.append('route', object.route)
+        data.append('id', object.id)
+        return data
+    }
 }
 
 export default new DataHandling()
