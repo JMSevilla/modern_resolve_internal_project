@@ -28,7 +28,7 @@ const HomeApp = () => {
                     history.push(appRouter.devPlatform.path)
                 } else if(refResponse.current[0].key.lastroute === '/developer/dashboard'){
                     history.push(appRouter.DashboardOverview.path)
-                } else {}
+                } else {  history.push(appRouter.Homepage.path)}
             },1000)
     } ,[initialRoute])
     

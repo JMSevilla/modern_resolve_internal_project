@@ -21,12 +21,6 @@ const branchSlice = createSlice({
             state.branchList = action.payload
         }
     },
-    // extraReducers(builder) {
-    //     builder
-    //     .addCase(getBranches.fulfilled, (state, action) => {
-    //         state.branchList = action.payload
-    //     })
-    // }
 })
 
 export default branchSlice.reducer
@@ -54,8 +48,3 @@ export const getBranches = (value) => (dispatch) => {
         })
     )
 }
-
-// export const getBranches = createAsyncThunk('get/branches', async (value) => {
-//     const response = await client.connect().post(baseURLMiddleware.branchURL, handler.HTTPBranch(value))
-//     return response.data
-// })
