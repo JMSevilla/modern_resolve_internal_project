@@ -16,32 +16,46 @@ const branchSlice = createSlice({
     reducers : {
         TokenrouteReceived : (state, action) => {
             state.branchMessage = action.payload
+        },
+        branchReceived : (state, action) => {
+            state.branchList = action.payload
         }
     },
-    extraReducers(builder) {
-        builder
-        .addCase(getBranches.fulfilled, (state, action) => {
-            state.branchList = action.payload
-        })
-    }
+    // extraReducers(builder) {
+    //     builder
+    //     .addCase(getBranches.fulfilled, (state, action) => {
+    //         state.branchList = action.payload
+    //     })
+    // }
 })
 
 export default branchSlice.reducer
-const {TokenrouteReceived} = branchSlice.actions;
+const {TokenrouteReceived, branchReceived} = branchSlice.actions;
 
 
-export const pushTokenRouteUpdate = (obj) => (dispatch) => {
+export const pushTokenRouteUpdate = (route) => (dispatch) => {
     return dispatch(
         apiCallBegan({
             url : baseURLMiddleware.tokenRouteUpdater,
             method : 'POST',
-            data : handler.HTTPTokenupdater(obj),
+            data : handler.HTTPTokenupdater(route),
             onSuccess : TokenrouteReceived.type
         })
     )
 }
 
-export const getBranches = createAsyncThunk('get/branches', async (value) => {
-    const response = await client.connect().post(baseURLMiddleware.branchURL, handler.HTTPBranch(value))
-    return response.data
-})
+export const getBranches = (value) => (dispatch) => {
+    return dispatch(
+        apiCallBegan({
+            url : baseURLMiddleware.branchURL,
+            method : 'POST',
+            data : handler.HTTPBranch(value),
+            onSuccess : branchReceived.type
+        })
+    )
+}
+
+// export const getBranches = createAsyncThunk('get/branches', async (value) => {
+//     const response = await client.connect().post(baseURLMiddleware.branchURL, handler.HTTPBranch(value))
+//     return response.data
+// })

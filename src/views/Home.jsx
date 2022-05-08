@@ -23,9 +23,11 @@ const HomeApp = () => {
             setTimeout(() => {
                 if(localStorage.getItem('key_identifier') == 'unknown') {
                     return false
-                } else if(refResponse.current[0].key.key === 'token_exist_dev_platform') { 
+                } else if(refResponse.current[0].key.lastroute === 'developer_platform') { 
                     //route to dev platform
                     history.push(appRouter.devPlatform.path)
+                } else if(refResponse.current[0].key.lastroute === '/developer/dashboard'){
+                    history.push(appRouter.DashboardOverview.path)
                 } else {}
             },1000)
     } ,[initialRoute])
