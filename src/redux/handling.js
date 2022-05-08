@@ -60,10 +60,10 @@ class DataHandling {
         data.append('platformState', value)
         return data
     }
-    HTTPTokenupdater(object) {
+    HTTPTokenupdater(route) {
         data.append('routeState', true)
-        data.append('route', object.route)
-        data.append('id', object.id)
+        data.append('route', route)
+        data.append('id', localStorage.getItem('key_identifier'))
         return data
     }
 }
