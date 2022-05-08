@@ -13,8 +13,10 @@ import { authIdentify } from '../../redux/core/loginSlice'
 import { appRouter } from '../../router/route'
 import { useHistory } from 'react-router-dom'
 import { getBranches, pushTokenRouteUpdate } from '../../redux/core/branchSlice';
+import client from '../../redux/common'
 import Swal from 'sweetalert2'
-
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 
 
 const pageNumbers = []
@@ -37,14 +39,12 @@ const DEVPlatform = () => {
           state.branch.branchList,
           state.branch.branchMessage
     ])
-    const [branchtokenUpdater, setBranchUpdater] = useState(
-        {
-            obj : {
-                route : null,
-                id : null
-            }
-        }
-    )
+    const branchReference = useRef(arrBranch)
+    useEffect(() => {
+        branchReference.current = arrBranch
+    }, [arrBranch])
+   
+    const [isLoading, setLoading] = React.useState(false)
     const branchrouteUpdaterRef = useRef(branchMessage)
     const branchRef = useRef(branchList)
     const refResponse = useRef(initialRoute)
@@ -54,12 +54,11 @@ const DEVPlatform = () => {
     const [keyIdentifier, setkeyIdentifier] = React.useState('')
     const dispatch = useDispatch()
     const history = useHistory()
-
     const indexData = currentPage * dataperPage
     const indexFirstData = indexData - dataperPage
-    const currentDataPage = arrBranch.slice(indexFirstData, indexData)
+    const currentDataPage = branchList.slice(indexFirstData, indexData)
 
-    for(let i = 1; i <= Math.ceil(arrBranch.length / dataperPage); i++) {
+    for(let i = 1; i <= Math.ceil(branchReference.current.length / dataperPage); i++) {
         pageNumbers.push(i)
     }
     useEffect(() => {
@@ -73,24 +72,25 @@ const DEVPlatform = () => {
         setTimeout(() => {
             if(refResponse.current === undefined || refResponse.current === null) {
                 
-            } else if(refResponse.current[0].key.key === 'token_exist_dev_platform') { 
-                //retain dev here in platform
+            } else if(refResponse.current[0].key.lastroute === 'developer_platform') { 
+                //route to dev platform
+                history.push(appRouter.devPlatform.path)
+            } else if(refResponse.current[0].key.lastroute === '/developer/dashboard'){
+                history.push(appRouter.DashboardOverview.path)
             } else {
-                history.push({pathname: appRouter.Homepage.path})
+                history.push(appRouter.Homepage.path)
             }
         }, 1000)
     }, [])
     useEffect(() => {
         branchrouteUpdaterRef.current = branchMessage
     }, [branchMessage])
+    
     useEffect(() => {
-        async function getchBranch(){
-            await dispatch(getBranches(true))
-        }
-        getchBranch()
+        dispatch(getBranches(true))
         branchRef.current = branchList
-        setBranchArray(branchRef.current)
-    },[branchList])
+        // setBranchArray(branchRef.current)
+    },[])
 
     useEffect(() => {
         refSavedInfo.current = savedInfo
@@ -100,25 +100,23 @@ const DEVPlatform = () => {
         setPage(value);
       };
     const handleNavigate = (route) => {
-        if(route === '/developer/dashboard') {
-            const uid = localStorage.getItem('key_identifier')
-            setBranchUpdater(prevState => {
-                let obj = Object.assign({}, prevState.obj)
-                obj.route = "developer_dashboard"
-                obj.id = uid
-                return {obj}
-            })
-            dispatch(pushTokenRouteUpdate(branchtokenUpdater))
-            setTimeout(() => {
-                if(branchrouteUpdaterRef.current[0].key === 'route_updated'){
-                    history.push(route)
-                    Toast.fire({
-                        icon: 'success',
-                        title: 'Successfully navigate to developer dashboard.'
-                      })
-                }
-            }, 2000)
-        }
+       if(route === '/developer/dashboard') {
+        setLoading(true)
+        setTimeout(() => {
+            dispatch(pushTokenRouteUpdate(route))
+        } ,2000)
+        setTimeout(() => {
+            if(branchrouteUpdaterRef.current[0].key === 'route_updated'){
+                history.push(route)
+                setLoading(false)
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Successfully navigate to developer dashboard.'
+                  })
+
+            }
+        }, 3000)
+       }
     }
     return(
         <>
@@ -172,6 +170,12 @@ const DEVPlatform = () => {
                         )
                     })
                 }
+                <Backdrop
+                                      sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                      open={isLoading}
+                                    >
+                                      <CircularProgress color="inherit" />
+                                    </Backdrop>
             </div>
                 <div style={{marginTop: '20px'}}>
                     <Pagination count={pageNumbers} page={currentPage} onChange={handleChangePage} />

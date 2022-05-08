@@ -17,6 +17,7 @@ const loginSlice = createSlice({
         userLoginRequestReceived : (state, action) => {
             state.token = action.payload
             state.loginSuccess = true
+            console.log(action.payload)
             //push array to saved fetch infoes
             state.savedInfo.push({
                 fname : action.payload[0].key.fname,
