@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 import Slider from '@mui/material/Slider';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import Tooltip from '@mui/material/Tooltip';
 import store from '../redux/store'
 // import {checkUser, createUser} from '../redux/core/registration'
 import {checkUser, pushCreateDev, checkClient, pushCreateClient} from '../redux/core/registrationSlice'
@@ -1000,6 +1002,9 @@ const systemTypesArray = [
   {
     label : 'Warehousing and Monitoring System', value: 'warehouse'
   },
+  {
+    label : 'Hotel & Resort Reservation System', value: 'appointment'
+  },
 
 ]
 
@@ -1027,7 +1032,9 @@ const projectScaleArray = [
 ]
 const studentBudgetSmall = [
   {value: 10, label: '10k',},
+  {value: 12, label: '12k',},
   {value: 15,label: '15k'},
+  {value: 18,label: '18k'},
   {value: 20,label: '20k'}
 ];
 const studentBudgetMedium = [
@@ -1040,10 +1047,13 @@ const studentBudgetMedium = [
 ];
 const studentBudgetLarge = [
   {value: 60,label: '60k'},
+  {value: 65,label: '65k'},
   {value: 70,label: '70k'},
+  {value: 75,label: '75k'},
   {value: 80,label: '80k'},
   {value: 85,label: '85k'},
   {value: 90,label: '90k'},
+  {value: 95,label: '95k'},
   {value: 100,label: '100k'},
 ];
 
@@ -1090,6 +1100,7 @@ const secQuestionsArray = [
     label : 'What is your favorite food?', value: 'What is your favorite food?'
   }
 ]
+
 const [budgetRangeStudent, setBRStudent] = React.useState(15);
 const [budgetRangeBO, setBRBO] = React.useState(30);
 
@@ -1104,18 +1115,20 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       setBRBO(newValue);
     }
   };
-
   const BudgetHelper = () => {
     if(requestorType === 'student' && projectScale === 'small_scale') {
       return (
         <div>
           <Box sx={{ width: 300 }}>
-           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
-            Budget Range : {valuetextST(budgetRangeStudent)}
+           <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
+           <Tooltip title="System Development depends on Project Scale and Budget Range" placement="top">
+           <InfoOutlinedIcon style={{fontSize: '100%'}}/>
+          </Tooltip>
+          {budgetRangeStudent === 0 ? '  Select Budget Range' : `  Budget Range :  ${valuetextST(budgetRangeStudent)}` } 
            </Typography>
            <Slider
           aria-label="Always visible"
-          defaultValue={15}
+          defaultValue={budgetRangeStudent}
           getAriaValueText={valuetextST}
           step={null}
           min={10}
@@ -1124,6 +1137,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           marks={studentBudgetSmall}
           valueLabelDisplay="auto"
         />
+        <Typography sx={{ fontSize: 16 }} color="text.secondary">
+           {budgetRangeStudent === 0 ? 'minimum: ₱10,000' : <></>}
+           </Typography>
          </Box>
         </div>
       )
@@ -1131,12 +1147,15 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       return (
         <div>
           <Box sx={{ width: 300 }}>
-           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
-            Budget Range : {valuetextST(budgetRangeStudent)}
+          <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
+           <Tooltip title="System Development depends on Project Scale and Budget Range" placement="top">
+           <InfoOutlinedIcon style={{fontSize: '100%'}}/>
+          </Tooltip>
+          {budgetRangeStudent === 0 ? '  Select Budget Range' : `  Budget Range :  ${valuetextST(budgetRangeStudent)}` } 
            </Typography>
            <Slider
           aria-label="Always visible"
-          defaultValue={25}
+          defaultValue={budgetRangeStudent}
           getAriaValueText={valuetextST}
           step={null}
           min={25}
@@ -1145,6 +1164,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           marks={studentBudgetMedium}
           valueLabelDisplay="auto"
         />
+        <Typography sx={{ fontSize: 16 }} color="text.secondary">
+           {budgetRangeStudent === 0 ? 'minimum: ₱25,000' : <></>}
+           </Typography>
          </Box>
         </div>
       )
@@ -1152,12 +1174,15 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       return (
         <div>
           <Box sx={{ width: 300 }}>
-           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
-            Budget Range : {valuetextST(budgetRangeStudent)}
+          <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
+           <Tooltip title="System Development depends on Project Scale and Budget Range" placement="top">
+           <InfoOutlinedIcon style={{fontSize: '100%'}}/>
+          </Tooltip>
+          {budgetRangeStudent === 0 ? '  Select Budget Range' : `  Budget Range :  ${valuetextST(budgetRangeStudent)}` } 
            </Typography>
            <Slider
           aria-label="Always visible"
-          defaultValue={60}
+          defaultValue={budgetRangeStudent}
           getAriaValueText={valuetextST}
           step={null}
           min={60}
@@ -1166,6 +1191,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           marks={studentBudgetLarge}
           valueLabelDisplay="auto"
         />
+        <Typography sx={{ fontSize: 16 }} color="text.secondary">
+           {budgetRangeStudent === 0 ? 'minimum: ₱60,000' : <></>}
+           </Typography>
          </Box>
         </div>
       )
@@ -1173,8 +1201,11 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       return (
         <div>
           <Box sx={{ width: 300 }}>
-           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
-            Budget Range : {valuetextBO(budgetRangeBO)}
+          <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
+           <Tooltip title="System Development depends on Project Scale and Budget Range" placement="top">
+           <InfoOutlinedIcon style={{fontSize: '100%'}}/>
+          </Tooltip>
+          {budgetRangeBO === 0 ? '  Select Budget Range' : `  Budget Range :  ${valuetextBO(budgetRangeBO)}` } 
            </Typography>
            <Slider
           aria-label="Always visible"
@@ -1187,6 +1218,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           marks={BOBudgetSmall}
           valueLabelDisplay="auto"
         />
+         <Typography sx={{ fontSize: 16 }} color="text.secondary">
+           {budgetRangeBO === 0 ? 'minimum: ₱30,000' : <></>}
+           </Typography>
          </Box>
         </div>
       )
@@ -1194,8 +1228,11 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       return (
         <div>
           <Box sx={{ width: 300 }}>
-           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
-            Budget Range : {valuetextBO(budgetRangeBO)}
+          <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
+           <Tooltip title="System Development depends on Project Scale and Budget Range" placement="top">
+           <InfoOutlinedIcon style={{fontSize: '100%'}}/>
+          </Tooltip>
+          {budgetRangeBO === 0 ? '  Select Budget Range' : `  Budget Range :  ${valuetextBO(budgetRangeBO)}` } 
            </Typography>
            <Slider
           aria-label="Always visible"
@@ -1208,6 +1245,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           marks={BOBudgetMedium}
           valueLabelDisplay="auto"
         />
+         <Typography sx={{ fontSize: 16 }} color="text.secondary">
+           {budgetRangeBO === 0 ? 'minimum: ₱70,000' : <></>}
+           </Typography>
          </Box>
         </div>
       )
@@ -1215,8 +1255,11 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       return (
         <div>
           <Box sx={{ width: 300 }}>
-           <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
-            Budget Range : {valuetextBO(budgetRangeBO)}
+          <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
+           <Tooltip title="System Development depends on Project Scale and Budget Range" placement="top">
+           <InfoOutlinedIcon style={{fontSize: '100%'}}/>
+          </Tooltip>
+          {budgetRangeBO === 0 ? '  Select Budget Range' : `  Budget Range :  ${valuetextBO(budgetRangeBO)}` } 
            </Typography>
            <Slider
           aria-label="Always visible"
@@ -1229,6 +1272,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           marks={BOBudgetLarge}
           valueLabelDisplay="auto"
         />
+           <Typography sx={{ fontSize: 16 }} color="text.secondary">
+           {budgetRangeBO === 0 ? 'minimum: ₱120,000' : <></>}
+           </Typography>
          </Box>
         </div>
       )
@@ -1292,12 +1338,19 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
      registrationSuccessMessageClient,
       registrationBooleanClient])
 
+    const handleSystemType = (event) => {
+      setSystemType(event.target.value)
+    }
     const handleRequestorStatus = (event) => {
         setRequestorType(event.target.value)
+        setBRStudent(budgetRangeStudent => budgetRangeStudent = 0)
+        setBRBO(budgetRangeBO => budgetRangeBO = 0)
     }
-
     const handleProjectScale = (event) => {
+      setBRStudent(budgetRangeStudent => budgetRangeStudent = 0)
+      setBRBO(budgetRangeBO => budgetRangeBO = 0)
       setProjectScale(event.target.value)
+      
     }
 
     const handleNextCredentialsClient = () => {
@@ -1406,6 +1459,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
   }
  }
 
+  const handleNextRequestProposal = () => {
+    alert('in progress');
+  }
   const handleBackClient = () => {
   setClientActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
@@ -1822,8 +1878,8 @@ const handleAddressChangeClient = (e) => {
                                 <div style={{marginTop: '30px'}} className="row">
                                     <div className="col-sm">
                                             {BasicSelect({
-                                              value : clientSecQuestion,
-                                              handleSelect : handleClientSecQuestions,
+                                              value : systemType,
+                                              handleSelect : handleSystemType,
                                               selectionArray : systemTypesArray,
                                               selectionTitle : 'Select System Type'
                                             })}
@@ -1847,16 +1903,18 @@ const handleAddressChangeClient = (e) => {
                                             })}
                                     </div>
                                    <div className="col-sm">
+                                     <center>
                                         {BudgetHelper()}
+                                     </center>
                                     </div>
                                 </div>
                                 <div style={{marginTop: '30px'}}>
                                 {
                                         MUIText({
-                                          typography : "Primary Address",
+                                          typography : "Remarks / Comments",
                                           dataOnChange : handleAddressChangeClient,
                                           id: "outlined-multiline-flexible",
-                                          label: "Your address",
+                                          label: "",
                                           type : "text",
                                           stylish : {width: '100%'},
                                           isError : clientErrorRequest.errorHandlerClient.errorLoggerCaddress,
@@ -1877,7 +1935,7 @@ const handleAddressChangeClient = (e) => {
               </Button>
               <Box sx={{ flex: '1 1 auto' }} />
 
-              <Button onClick={handleNextClient}>
+              <Button onClick={handleNextRequestProposal}>
                 {clientActiveStep === clientSteps.length - 1 ? 'Finish' : 'Next'}
               </Button>
             </Box>
