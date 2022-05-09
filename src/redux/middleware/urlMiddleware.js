@@ -5,5 +5,6 @@ export const baseURLMiddleware = {
     tokenizationURL : "/api/tokenization.php",
     signoutURL : "/api/signout.php",
     branchURL : "/api/platform.php",
-    tokenRouteUpdater : "/api/tokenizationRouteUpdater.php"
+    tokenRouteUpdater : "/api/tokenizationRouteUpdater.php",
+    UAMPostdev : "/api/usermanagement.php"
 }

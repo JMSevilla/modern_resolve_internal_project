@@ -62,16 +62,23 @@ const DEVPlatform = () => {
         pageNumbers.push(i)
     }
     useEffect(() => {
+        dispatch(getBranches(true))
+        branchRef.current = branchList
+        branchrouteUpdaterRef.current = branchMessage
+        refSavedInfo.current = savedInfo
+    }, [])
+
+    useEffect(() => {
         setkeyIdentifier(JSON.parse(localStorage.getItem('keySaved'))[0].uid)
+        refResponse.current = initialRoute
         if(localStorage.getItem('key_identifier') == 'unknown'){
             
         }else{ 
              dispatch(authIdentify(localStorage.getItem('key_identifier')))
         }
-        refResponse.current = initialRoute
         setTimeout(() => {
-            if(refResponse.current === undefined || refResponse.current === null) {
-                
+            if(localStorage.getItem('key_identifier') == 'unknown') {
+                return false
             } else if(refResponse.current[0].key.lastroute === 'developer_platform') { 
                 //route to dev platform
                 history.push(appRouter.devPlatform.path)
@@ -81,20 +88,6 @@ const DEVPlatform = () => {
                 history.push(appRouter.Homepage.path)
             }
         }, 1000)
-    }, [])
-    useEffect(() => {
-        branchrouteUpdaterRef.current = branchMessage
-    }, [branchMessage])
-    
-    useEffect(() => {
-        dispatch(getBranches(true))
-        branchRef.current = branchList
-        // setBranchArray(branchRef.current)
-    },[])
-
-    useEffect(() => {
-        refSavedInfo.current = savedInfo
-        
     }, [])
     const handleChangePage = (event, value) => {
         setPage(value);
