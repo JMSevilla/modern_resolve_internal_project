@@ -66,6 +66,16 @@ class DataHandling {
         data.append('id', localStorage.getItem('key_identifier'))
         return data
     }
+    HTTPUAM(obj) {
+        data.append('userMState', true)
+        data.append('firstname', obj.firstname)
+        data.append('lastname', obj.lastname)
+        data.append('username', obj.username)
+        data.append('branch', obj.branch)
+        data.append('branchStatus', obj.branchStatus)
+        data.append('password', obj.password)
+        return data
+    }
 }
 
 export default new DataHandling()

@@ -33,6 +33,7 @@ const BasicSelect = ({value, handleSelect, selectionArray, selectionLabel, selec
               value={value}
               label={selectionLabel}
               onChange={handleSelect}
+              defaultValue='Kindly select'
               labelId={(isError ? 'demo-simple-select-error-label' : 'demo-simple-select-error-label')}
             >
                 {
