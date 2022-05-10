@@ -24,6 +24,7 @@ import store from '../redux/store'
 // import {checkUser, createUser} from '../redux/core/registration'
 import {checkUser, pushCreateDev, checkClient, pushCreateClient} from '../redux/core/registrationSlice'
 import { SignalCellularNull } from '@mui/icons-material';
+import { indigo } from '@mui/material/colors';
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -99,7 +100,9 @@ const AppRegistration = () => {
         || infoStateClient.infoObjClient.clientaddress !== undefined || infoState.infoObj.fname !== undefined || infoState.infoObj.lname !== undefined 
         || infoState.infoObj.occupationStatus !== undefined || infoState.infoObj.occupationDetails !== undefined 
         || infoState.infoObj.occupationPositionWork !== undefined || infoState.infoObj.nameOfSchool !== undefined
-        || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined){
+        || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined || infoStateClientProposal.infoObjClientProposal.clientSystemType !== undefined
+        || infoStateClientProposal.infoObjClientProposal.clientRequestorStatus !== undefined || infoStateClientProposal.infoObjClientProposal.clientProjectScale !== undefined
+        || infoStateClientProposal.infoObjClientProposal.clientBudgetRange !== undefined || infoStateClientProposal.infoObjClientProposal.clientremarks !== undefined){
           event.preventDefault()
           event.returnValue = ''
       }
@@ -219,7 +222,9 @@ const AppRegistration = () => {
           || infoStateClient.infoObjClient.clientaddress !== undefined || infoState.infoObj.fname !== undefined || infoState.infoObj.lname !== undefined 
           || infoState.infoObj.occupationStatus !== undefined || infoState.infoObj.occupationDetails !== undefined 
           || infoState.infoObj.occupationPositionWork !== undefined || infoState.infoObj.nameOfSchool !== undefined
-          || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined){
+          || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined || infoStateClientProposal.infoObjClientProposal.clientSystemType !== undefined
+          || infoStateClientProposal.infoObjClientProposal.clientRequestorStatus !== undefined || infoStateClientProposal.infoObjClientProposal.clientProjectScale !== undefined
+          || infoStateClientProposal.infoObjClientProposal.clientBudgetRange !== undefined || infoStateClientProposal.infoObjClientProposal.clientremarks !== undefined){
             Swal.fire({
               title: 'Are you sure?',
               text: "You won't be able to revert this!",
@@ -260,19 +265,40 @@ const AppRegistration = () => {
                   })
                   return {infoObjClient}
                 })
+                  setInfoStateClientProposal(prevState => {
+                  let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+                  infoObjClientProposal.clientSystemType = undefined
+                  infoObjClientProposal.clientRequestorStatus = undefined
+                  infoObjClientProposal.clientProjectScale = undefined
+                  infoObjClientProposal.clientBudgetRange = undefined
+                  infoObjClientProposal.clientremarks = undefined
+                  setSystemType(systemType => systemType = "")
+                  setRequestorType(requestorType => requestorType = "")
+                  setProjectScale(projectScale => projectScale = "")
+                  setClientErrorRequest(prevState => {
+                    let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+                    errorHandlerClient.errorLoggerCsystemtype = false
+                    errorHandlerClient.errorLoggerCrequestor = false
+                    errorHandlerClient.errorLoggerCprojectscale = false
+                    errorHandlerClient.errorLoggerCbudgetrange = false
+                    errorHandlerClient.errorLoggerCremarks = false
+                    return {errorHandlerClient}
+                    })
+                    return {infoObjClientProposal}
+                  })
                   setInfoState(prevState => {
-                  let infoObj = Object.assign({}, prevState.infoObj)
-                  infoObj.fname = undefined
-                  infoObj.lname = undefined
-                  infoObj.occupationStatus = undefined
-                  infoObj.occupationDetails = undefined
-                  infoObj.occupationPositionWork = undefined
-                  infoObj.nameOfSchool = undefined
-                  infoObj.degree = undefined
-                  infoObj.address = undefined
-                  infoObj.username = undefined
-                  infoObj.password = undefined
-                  infoObj.conpass = undefined
+                    let infoObj = Object.assign({}, prevState.infoObj)
+                    infoObj.fname = undefined
+                    infoObj.lname = undefined
+                    infoObj.occupationStatus = undefined
+                    infoObj.occupationDetails = undefined
+                    infoObj.occupationPositionWork = undefined
+                    infoObj.nameOfSchool = undefined
+                    infoObj.degree = undefined
+                    infoObj.address = undefined
+                    infoObj.username = undefined
+                    infoObj.password = undefined
+                    infoObj.conpass = undefined
                   setOccupation(Occupation => Occupation = "")
                   setStudy(study => study = "")
                   setErrorRequest(prevState => {
@@ -988,6 +1014,9 @@ const infoObjClient = {
   clientcontact: "", clientaddress: "", clientusername: "",
   clientpassword: "", clientconpass: "", clientsecquestion: "", clientsecanswer: '', clientTrigger : true
 }
+const infoObjClientProposal = {
+    clientSystemType: "", clientRequestorStatus: "", clientProjectScale: "", clientBudgetRange: "", clientremarks: "", clientProposalTrigger: true
+}
 
 const systemTypesArray = [
   {
@@ -1106,12 +1135,22 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
 
   const handleBudgetRangeST = (event, newValue) => {
     if (typeof newValue === 'number') {
+      setInfoStateClientProposal(prevState => {
+      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+      infoObjClientProposal.clientBudgetRange = event.target.value
+      return {infoObjClientProposal}
+      })
       setBRStudent(newValue);
     }
   };
 
   const handleBudgetRangeBO = (event, newValue) => {
     if (typeof newValue === 'number') {
+      setInfoStateClientProposal(prevState => {
+      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+      infoObjClientProposal.clientBudgetRange = event.target.value
+      return {infoObjClientProposal}
+      })
       setBRBO(newValue);
     }
   };
@@ -1293,8 +1332,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
   const clientref = React.useRef(clientUserValue)
   const refregisterSuccessClient = React.useRef(registrationSuccessMessageClient)
   const checkClientRef = React.useRef(registrationBooleanClient)
-  const [clientActiveStep, setClientActiveStep] = React.useState(1);
+  const [clientActiveStep, setClientActiveStep] = React.useState(0);
   const [infoStateClient,setInfoStateClient] = React.useState(infoObjClient);
+  const [infoStateClientProposal, setInfoStateClientProposal] = React.useState(infoObjClientProposal);
   const [clientSecQuestion,setClientSecQuestion] = React.useState('');
   const [systemType, setSystemType] = React.useState('');
   const [requestorType, setRequestorType] = React.useState('');
@@ -1306,6 +1346,11 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       errorLoggerCemail : false,
       errorLoggerCcontact : false,
       errorLoggerCaddress : false,
+      errorLoggerCsystemtype: false,
+      errorLoggerCrequestor: false,
+      errorLoggerCprojectscale: false,
+      errorLoggerCbudgetrange: false,
+      errorLoggerCremarks: false,
       errorLoggerCusername : false,
       errorLoggerCpassword : false,
       errorLoggerCconpass : false,
@@ -1331,6 +1376,14 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
   }, [])
 
   React.useEffect(() => {
+    setInfoStateClientProposal(prevState => {
+      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+      infoObjClientProposal.clientProposalTrigger = true
+      return {infoObjClientProposal}
+    })
+  }, [])
+
+  React.useEffect(() => {
     clientref.current = clientUserValue
     refregisterSuccessClient.current = registrationSuccessMessageClient
     checkClientRef.current = registrationBooleanClient
@@ -1339,18 +1392,87 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       registrationBooleanClient])
 
     const handleSystemType = (event) => {
-      setSystemType(event.target.value)
-    }
+        if(event.target.value === null || event.target.value === '') {
+          setInfoStateClientProposal(prevState => {
+            let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+            infoObjClientProposal.clientSystemType = ""
+            return {infoObjClientProposal}
+          })
+          setClientErrorRequest(prevState => {
+            let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+            errorHandlerClient.errorLoggerCsystemtype = true
+            return {errorHandlerClient}
+          })
+        }else{
+          setSystemType(event.target.value)
+          setInfoStateClientProposal(prevState => {
+          let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+          infoObjClientProposal.clientSystemType = event.target.value
+          return {infoObjClientProposal}
+        })
+          setClientErrorRequest(prevState => {
+          let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+          errorHandlerClient.errorLoggerCsystemtype = false
+          return {errorHandlerClient}
+        })
+        }
+      }
     const handleRequestorStatus = (event) => {
+      if(event.target.valuue === null || event.target.value === ''){
+        setInfoStateClientProposal(prevState => {
+        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+        infoObjClientProposal.clientRequestorStatus = ""
+        return {infoObjClientProposal}
+        })
+        setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCrequestor = true
+        return {errorHandlerClient}
+        })
+      } else {
         setRequestorType(event.target.value)
         setBRStudent(budgetRangeStudent => budgetRangeStudent = 0)
         setBRBO(budgetRangeBO => budgetRangeBO = 0)
+        setInfoStateClientProposal(prevState => {
+        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+        infoObjClientProposal.clientRequestorStatus = event.target.value
+        return {infoObjClientProposal}
+        })
+        setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCrequestor = false
+        return {errorHandlerClient}
+        })
+      }
     }
+
     const handleProjectScale = (event) => {
-      setBRStudent(budgetRangeStudent => budgetRangeStudent = 0)
-      setBRBO(budgetRangeBO => budgetRangeBO = 0)
-      setProjectScale(event.target.value)
-      
+      if(event.target.valuue === null || event.target.value === ''){
+        setInfoStateClientProposal(prevState => {
+        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+        infoObjClientProposal.clientProjectScale = ""
+        return {infoObjClientProposal}
+        })
+        setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCprojectscale = true
+        return {errorHandlerClient}
+        })
+      } else {
+        setProjectScale(event.target.value)
+        setBRStudent(budgetRangeStudent => budgetRangeStudent = 0)
+        setBRBO(budgetRangeBO => budgetRangeBO = 0)
+        setInfoStateClientProposal(prevState => {
+        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+        infoObjClientProposal.clientProjectScale = event.target.value
+        return {infoObjClientProposal}
+        })
+        setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCprojectscale = false
+        return {errorHandlerClient}
+        })
+      }
     }
 
     const handleNextCredentialsClient = () => {
@@ -1455,13 +1577,47 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       return false
     }
   else{
+    setInfoStateClientProposal(prevState => {
+      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+      infoObjClientProposal.clientremarks = ""
+      return {infoObjClientProposal}
+      })
     setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
   }
  }
 
   const handleNextRequestProposal = () => {
-    alert('in progress');
-  }
+    console.log(infoStateClientProposal.infoObjClientProposal);
+      if(infoStateClientProposal.infoObjClientProposal === undefined){
+        setClientErrorRequest(prevState => {
+          let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+          errorHandlerClient.errorLoggerCsystemtype = true
+          errorHandlerClient.errorLoggerCrequestor = true
+          errorHandlerClient.errorLoggerCprojectscale = true
+          errorHandlerClient.errorLoggerCbudgetrange = true
+          errorHandlerClient.errorLoggerCremarks = true
+          return {errorHandlerClient}
+        })
+        setHelperTextClient("Empty field")
+        Toast.fire({
+          icon: 'error',
+          title: 'Empty fields. please try again.'
+        })
+        return false
+      }
+      else if(!infoStateClientProposal.infoObjClientProposal.clientSystemType || !infoStateClientProposal.infoObjClientProposal.clientRequestorStatus
+          || !infoStateClientProposal.infoObjClientProposal.clientProjectScale || !infoStateClientProposal.infoObjClientProposal.clientBudgetRange 
+          || !infoStateClientProposal.infoObjClientProposal.clientremarks){
+          Toast.fire({
+            icon: 'error',
+            title: 'Empty fields. please try again.'
+          })
+          return false
+      } else {
+        setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }
+    }
+
   const handleBackClient = () => {
   setClientActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
@@ -1601,6 +1757,34 @@ const handleAddressChangeClient = (e) => {
     setHelperTextClient("")
     }
   }
+
+  const handleClientRemarks = (e) => {
+    if(e.target.value === null || e.target.value === ''){
+      setInfoStateClientProposal(prevState => {
+        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+        infoObjClientProposal.clientremarks = ""
+        return {infoObjClientProposal}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCremarks = true
+        return {errorHandlerClient}
+      })
+      setHelperTextClient("Empty field")
+    }else{
+      setInfoStateClientProposal(prevState => {
+        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+        infoObjClientProposal.clientremarks = e.target.value
+        return {infoObjClientProposal}
+      })
+      setClientErrorRequest(prevState => {
+        let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
+        errorHandlerClient.errorLoggerCremarks = false
+        return {errorHandlerClient}
+      })
+      setHelperTextClient("")
+      }
+    }
 
   const handleClientUsername = (e) => {
     if(e.target.value === null || e.target.value === '') {
@@ -1755,6 +1939,14 @@ const handleAddressChangeClient = (e) => {
         return {infoObjClient}
       })
     }
+
+    const defaultClientProposalValueSetter = () => {
+      setInfoStateClientProposal(prevState => {
+        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
+        infoObjClientProposal.clientremarks = undefined
+        return {infoObjClientProposal}
+      })
+    }
     // CLIENT REGISTRATION //
     const StepHelperClient = () => {
       if(clientActiveStep === 0) {
@@ -1881,7 +2073,8 @@ const handleAddressChangeClient = (e) => {
                                               value : systemType,
                                               handleSelect : handleSystemType,
                                               selectionArray : systemTypesArray,
-                                              selectionTitle : 'Select System Type'
+                                              selectionTitle : 'Select System Type',
+                                              isError: clientErrorRequest.errorHandlerClient.errorLoggerCsystemtype
                                             })}
                                     </div>
                                     <div className="col-sm">
@@ -1889,7 +2082,8 @@ const handleAddressChangeClient = (e) => {
                                               value : requestorType,
                                               handleSelect : handleRequestorStatus,
                                               selectionArray : requestorStatusArray,
-                                              selectionTitle : `Requestor's Status`
+                                              selectionTitle : `Requestor's Status`,
+                                              isError: clientErrorRequest.errorHandlerClient.errorLoggerCrequestor
                                             })}
                                     </div>
                                 </div>
@@ -1899,7 +2093,8 @@ const handleAddressChangeClient = (e) => {
                                               value : projectScale,
                                               handleSelect : handleProjectScale,
                                               selectionArray : projectScaleArray,
-                                              selectionTitle : `Select Project Scale`
+                                              selectionTitle : `Select Project Scale`,
+                                              isError: clientErrorRequest.errorHandlerClient.errorLoggerCprojectscale
                                             })}
                                     </div>
                                    <div className="col-sm">
@@ -1912,16 +2107,17 @@ const handleAddressChangeClient = (e) => {
                                 {
                                         MUIText({
                                           typography : "Remarks / Comments",
-                                          dataOnChange : handleAddressChangeClient,
-                                          id: "outlined-multiline-flexible",
+                                          dataOnChange : handleClientRemarks,
+                                          id: "outlined-basic",
                                           label: "",
                                           type : "text",
                                           stylish : {width: '100%'},
-                                          isError : clientErrorRequest.errorHandlerClient.errorLoggerCaddress,
+                                          variant : "outlined",
+                                          isError : clientErrorRequest.errorHandlerClient.errorLoggerCremarks,
                                           helperTextHelper : errorHelperTextClient,
-                                          value : (infoStateClient.infoObjClient === undefined) ? defaultClientValueSetter : infoStateClient.infoObjClient.clientaddress
+                                          value : (infoStateClientProposal.infoObjClientProposal === undefined) ? defaultClientProposalValueSetter : infoStateClientProposal.infoObjClientProposal.clientremarks
                                         })
-                                      }
+                                  }
                                 </div>  
            </div>
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
