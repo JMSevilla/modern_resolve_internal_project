@@ -21,6 +21,12 @@ import Slider from '@mui/material/Slider';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Tooltip from '@mui/material/Tooltip';
 import store from '../redux/store'
+import visa from '../assets/creditcard.png';
+import gcash from '../assets/gcash.png';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
 // import {checkUser, createUser} from '../redux/core/registration'
 import {checkUser, pushCreateDev, checkClient, pushCreateClient} from '../redux/core/registrationSlice'
 import { SignalCellularNull } from '@mui/icons-material';
@@ -100,9 +106,9 @@ const AppRegistration = () => {
         || infoStateClient.infoObjClient.clientaddress !== undefined || infoState.infoObj.fname !== undefined || infoState.infoObj.lname !== undefined 
         || infoState.infoObj.occupationStatus !== undefined || infoState.infoObj.occupationDetails !== undefined 
         || infoState.infoObj.occupationPositionWork !== undefined || infoState.infoObj.nameOfSchool !== undefined
-        || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined || infoStateClientProposal.infoObjClientProposal.clientSystemType !== undefined
-        || infoStateClientProposal.infoObjClientProposal.clientRequestorStatus !== undefined || infoStateClientProposal.infoObjClientProposal.clientProjectScale !== undefined
-        || infoStateClientProposal.infoObjClientProposal.clientBudgetRange !== undefined || infoStateClientProposal.infoObjClientProposal.clientremarks !== undefined){
+        || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined || infoStateClient.infoObjClient.clientsystemtype !== undefined
+        || infoStateClient.infoObjClient.clientrequestorstatus !== undefined || infoStateClient.infoObjClient.clientprojectscale !== undefined
+        || infoStateClient.infoObjClient.clientbudgetrange !== undefined || infoStateClient.infoObjClient.clientremarks !== undefined){
           event.preventDefault()
           event.returnValue = ''
       }
@@ -222,9 +228,9 @@ const AppRegistration = () => {
           || infoStateClient.infoObjClient.clientaddress !== undefined || infoState.infoObj.fname !== undefined || infoState.infoObj.lname !== undefined 
           || infoState.infoObj.occupationStatus !== undefined || infoState.infoObj.occupationDetails !== undefined 
           || infoState.infoObj.occupationPositionWork !== undefined || infoState.infoObj.nameOfSchool !== undefined
-          || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined || infoStateClientProposal.infoObjClientProposal.clientSystemType !== undefined
-          || infoStateClientProposal.infoObjClientProposal.clientRequestorStatus !== undefined || infoStateClientProposal.infoObjClientProposal.clientProjectScale !== undefined
-          || infoStateClientProposal.infoObjClientProposal.clientBudgetRange !== undefined || infoStateClientProposal.infoObjClientProposal.clientremarks !== undefined){
+          || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined || infoStateClient.infoObjClient.clientsystemtype !== undefined
+          || infoStateClient.infoObjClient.clientrequestorstatus !== undefined || infoStateClient.infoObjClient.clientprojectscale !== undefined
+          || infoStateClient.infoObjClient.clientbudgetrange !== undefined || infoStateClient.infoObjClient.clientremarks !== undefined){
             Swal.fire({
               title: 'Are you sure?',
               text: "You won't be able to revert this!",
@@ -265,13 +271,13 @@ const AppRegistration = () => {
                   })
                   return {infoObjClient}
                 })
-                  setInfoStateClientProposal(prevState => {
-                  let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-                  infoObjClientProposal.clientSystemType = undefined
-                  infoObjClientProposal.clientRequestorStatus = undefined
-                  infoObjClientProposal.clientProjectScale = undefined
-                  infoObjClientProposal.clientBudgetRange = undefined
-                  infoObjClientProposal.clientremarks = undefined
+                  setInfoStateClient(prevState => {
+                  let infoObjClient = Object.assign({}, prevState.infoObjClient)
+                  infoObjClient.clientsystemtype = undefined
+                  infoObjClient.clientrequestorstatus = undefined
+                  infoObjClient.clientprojectscale = undefined
+                  infoObjClient.clientbudgetrange = undefined
+                  infoObjClient.clientremarks = undefined
                   setSystemType(systemType => systemType = "")
                   setRequestorType(requestorType => requestorType = "")
                   setProjectScale(projectScale => projectScale = "")
@@ -284,7 +290,7 @@ const AppRegistration = () => {
                     errorHandlerClient.errorLoggerCremarks = false
                     return {errorHandlerClient}
                     })
-                    return {infoObjClientProposal}
+                    return {infoObjClient}
                   })
                   setInfoState(prevState => {
                     let infoObj = Object.assign({}, prevState.infoObj)
@@ -1012,10 +1018,9 @@ const clientSteps = ['Primary Information','Request Client Proposal','Payment Me
 const infoObjClient = { 
   clientfname: "", clientlname: "", clientemail: "",
   clientcontact: "", clientaddress: "", clientusername: "",
-  clientpassword: "", clientconpass: "", clientsecquestion: "", clientsecanswer: '', clientTrigger : true
-}
-const infoObjClientProposal = {
-    clientSystemType: "", clientRequestorStatus: "", clientProjectScale: "", clientBudgetRange: "", clientremarks: "", clientProposalTrigger: true
+  clientpassword: "", clientconpass: "", clientsecquestion: "", clientsecanswer: '', clientsystemtype: "", 
+  clientrequestorstatus: "", clientprojectscale: "", clientbudgetrange: "", clientremarks: "", clientpayment: "",
+   clientTrigger : true
 }
 
 const systemTypesArray = [
@@ -1135,10 +1140,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
 
   const handleBudgetRangeST = (event, newValue) => {
     if (typeof newValue === 'number') {
-      setInfoStateClientProposal(prevState => {
-      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-      infoObjClientProposal.clientBudgetRange = event.target.value
-      return {infoObjClientProposal}
+      setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientbudgetrange = event.target.value + ",000"
+      return {infoObjClient}
       })
       setBRStudent(newValue);
     }
@@ -1146,10 +1151,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
 
   const handleBudgetRangeBO = (event, newValue) => {
     if (typeof newValue === 'number') {
-      setInfoStateClientProposal(prevState => {
-      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-      infoObjClientProposal.clientBudgetRange = event.target.value
-      return {infoObjClientProposal}
+      setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientbudgetrange = event.target.value + ",000"
+      return {infoObjClient}
       })
       setBRBO(newValue);
     }
@@ -1334,11 +1339,11 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
   const checkClientRef = React.useRef(registrationBooleanClient)
   const [clientActiveStep, setClientActiveStep] = React.useState(0);
   const [infoStateClient,setInfoStateClient] = React.useState(infoObjClient);
-  const [infoStateClientProposal, setInfoStateClientProposal] = React.useState(infoObjClientProposal);
   const [clientSecQuestion,setClientSecQuestion] = React.useState('');
   const [systemType, setSystemType] = React.useState('');
   const [requestorType, setRequestorType] = React.useState('');
   const [projectScale, setProjectScale] = React.useState('');
+  const [payment, setPayment] = React.useState('');
   const [clientErrorRequest, setClientErrorRequest] = React.useState({
     errorHandlerClient : {
       errorLoggerCfname : false,
@@ -1376,14 +1381,6 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
   }, [])
 
   React.useEffect(() => {
-    setInfoStateClientProposal(prevState => {
-      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-      infoObjClientProposal.clientProposalTrigger = true
-      return {infoObjClientProposal}
-    })
-  }, [])
-
-  React.useEffect(() => {
     clientref.current = clientUserValue
     refregisterSuccessClient.current = registrationSuccessMessageClient
     checkClientRef.current = registrationBooleanClient
@@ -1393,10 +1390,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
 
     const handleSystemType = (event) => {
         if(event.target.value === null || event.target.value === '') {
-          setInfoStateClientProposal(prevState => {
-            let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-            infoObjClientProposal.clientSystemType = ""
-            return {infoObjClientProposal}
+          setInfoStateClient(prevState => {
+            let infoObjClient = Object.assign({}, prevState.infoObjClient)
+            infoObjClient.clientsystemtype = ""
+            return {infoObjClient}
           })
           setClientErrorRequest(prevState => {
             let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1405,10 +1402,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           })
         }else{
           setSystemType(event.target.value)
-          setInfoStateClientProposal(prevState => {
-          let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-          infoObjClientProposal.clientSystemType = event.target.value
-          return {infoObjClientProposal}
+          setInfoStateClient(prevState => {
+          let infoObjClient = Object.assign({}, prevState.infoObjClient)
+          infoObjClient.clientsystemtype = event.target.value
+          return {infoObjClient}
         })
           setClientErrorRequest(prevState => {
           let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1419,10 +1416,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       }
     const handleRequestorStatus = (event) => {
       if(event.target.valuue === null || event.target.value === ''){
-        setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientRequestorStatus = ""
-        return {infoObjClientProposal}
+        setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientrequestorstatus = ""
+        return {infoObjClient}
         })
         setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1433,10 +1430,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
         setRequestorType(event.target.value)
         setBRStudent(budgetRangeStudent => budgetRangeStudent = 0)
         setBRBO(budgetRangeBO => budgetRangeBO = 0)
-        setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientRequestorStatus = event.target.value
-        return {infoObjClientProposal}
+        setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientrequestorstatus = event.target.value
+        return {infoObjClient}
         })
         setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1448,10 +1445,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
 
     const handleProjectScale = (event) => {
       if(event.target.valuue === null || event.target.value === ''){
-        setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientProjectScale = ""
-        return {infoObjClientProposal}
+        setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientprojectscale = ""
+        return {infoObjClient}
         })
         setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1462,10 +1459,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
         setProjectScale(event.target.value)
         setBRStudent(budgetRangeStudent => budgetRangeStudent = 0)
         setBRBO(budgetRangeBO => budgetRangeBO = 0)
-        setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientProjectScale = event.target.value
-        return {infoObjClientProposal}
+        setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientprojectscale = event.target.value
+        return {infoObjClient}
         })
         setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1474,7 +1471,7 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
         })
       }
     }
-
+    
     const handleNextCredentialsClient = () => {
         if(!infoStateClient.infoObjClient.clientusername || !infoStateClient.infoObjClient.clientpassword || 
           !infoStateClient.infoObjClient.clientconpass || !infoStateClient.infoObjClient.clientsecquestion || !infoStateClient.infoObjClient.clientsecanswer) {
@@ -1490,6 +1487,7 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           })
           return false
         } else {
+          console.log(infoStateClient.infoObjClient)
           setLoading(true)
           dispatch(checkClient(infoStateClient.infoObjClient))
           setTimeout(() => {
@@ -1504,6 +1502,31 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
                 Toast.fire({
                   icon: 'success',
                   title: 'You have successfully created an account.'
+                })
+                setInfoStateClient(prevState => {
+                let infoObjClient = Object.assign({}, prevState.infoObjClient)
+                infoObjClient.clientfname = undefined
+                infoObjClient.clientlname = undefined
+                infoObjClient.clientemail = undefined
+                infoObjClient.clientcontact = undefined
+                infoObjClient.clientaddress = undefined
+                infoObjClient.clientusername = undefined
+                infoObjClient.clientpassword = undefined
+                infoObjClient.clientconpass = undefined
+                infoObjClient.clientsecquestion = undefined
+                infoObjClient.clientsecanswer = undefined
+                infoObjClient.clientsystemtype = undefined
+                infoObjClient.clientrequestorstatus = undefined
+                infoObjClient.clientprojectscale = undefined
+                infoObjClient.clientbudgetrange = undefined
+                infoObjClient.clientremarks = undefined
+                infoObjClient.clientpayment = undefined
+                setClientSecQuestion(clientSecQuestion => clientSecQuestion = "")
+                setSystemType(systemType => systemType = "")
+                setRequestorType(requestorType => requestorType = "")
+                setProjectScale(projectScale => projectScale = "")
+                setPayment(payment => payment = "")
+                return {infoObjClient}
                 })
                 setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
               } 
@@ -1577,18 +1600,18 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       return false
     }
   else{
-    setInfoStateClientProposal(prevState => {
-      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-      infoObjClientProposal.clientremarks = ""
-      return {infoObjClientProposal}
+    setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientremarks = ""
+      return {infoObjClient}
       })
     setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
   }
  }
 
   const handleNextRequestProposal = () => {
-    console.log(infoStateClientProposal.infoObjClientProposal);
-      if(infoStateClientProposal.infoObjClientProposal === undefined){
+    console.log(infoStateClient.infoObjClient);
+      if(infoStateClient.infoObjClient === undefined){
         setClientErrorRequest(prevState => {
           let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
           errorHandlerClient.errorLoggerCsystemtype = true
@@ -1605,9 +1628,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
         })
         return false
       }
-      else if(!infoStateClientProposal.infoObjClientProposal.clientSystemType || !infoStateClientProposal.infoObjClientProposal.clientRequestorStatus
-          || !infoStateClientProposal.infoObjClientProposal.clientProjectScale || !infoStateClientProposal.infoObjClientProposal.clientBudgetRange 
-          || !infoStateClientProposal.infoObjClientProposal.clientremarks){
+      else if(!infoStateClient.infoObjClient.clientsystemtype || !infoStateClient.infoObjClient.clientrequestorstatus
+          || !infoStateClient.infoObjClient.clientprojectscale || !infoStateClient.infoObjClient.clientbudgetrange 
+          || !infoStateClient.infoObjClient.clientremarks){
           Toast.fire({
             icon: 'error',
             title: 'Empty fields. please try again.'
@@ -1617,6 +1640,27 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
         setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
       }
     }
+  
+  const handleRadioChange = (event) => {
+     setPayment(event.target.value);
+  }
+
+  const handleNextPayment = (event) => {
+    console.log(payment);
+    if(payment === ''){
+      Toast.fire({
+        icon: 'error',
+        title: 'Please choose a payment method.'
+      })
+    } else {
+      setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({},prevState.infoObjClient)
+      infoObjClient.clientpayment = payment
+      return {infoObjClient}
+      })
+      setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
+  }
 
   const handleBackClient = () => {
   setClientActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -1760,10 +1804,10 @@ const handleAddressChangeClient = (e) => {
 
   const handleClientRemarks = (e) => {
     if(e.target.value === null || e.target.value === ''){
-      setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientremarks = ""
-        return {infoObjClientProposal}
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientremarks = ""
+        return {infoObjClient}
       })
       setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1772,10 +1816,10 @@ const handleAddressChangeClient = (e) => {
       })
       setHelperTextClient("Empty field")
     }else{
-      setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientremarks = e.target.value
-        return {infoObjClientProposal}
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientremarks = e.target.value
+        return {infoObjClient}
       })
       setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1936,15 +1980,8 @@ const handleAddressChangeClient = (e) => {
         infoObjClient.conpass = undefined
         infoObjClient.secquestion = undefined
         infoObjClient.secanswer = undefined
+        infoObjClient.clientremarks = undefined
         return {infoObjClient}
-      })
-    }
-
-    const defaultClientProposalValueSetter = () => {
-      setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientremarks = undefined
-        return {infoObjClientProposal}
       })
     }
     // CLIENT REGISTRATION //
@@ -2115,7 +2152,7 @@ const handleAddressChangeClient = (e) => {
                                           variant : "outlined",
                                           isError : clientErrorRequest.errorHandlerClient.errorLoggerCremarks,
                                           helperTextHelper : errorHelperTextClient,
-                                          value : (infoStateClientProposal.infoObjClientProposal === undefined) ? defaultClientProposalValueSetter : infoStateClientProposal.infoObjClientProposal.clientremarks
+                                          value : (infoStateClient.infoObjClient === undefined) ? defaultClientValueSetter : infoStateClient.infoObjClient.clientremarks
                                         })
                                   }
                                 </div>  
@@ -2138,6 +2175,52 @@ const handleAddressChangeClient = (e) => {
             </React.Fragment>
         )
     }
+    else if(clientActiveStep === 2) {
+      const paymentOptions = [
+        {value: 'creditdebit', label: 'Credit/Debit', image: `${visa}`, alt: 'creditdebit'},
+        {value: 'gcash', label: 'Gcash', image: `${gcash}`, alt: 'gcash'}
+      ]
+      return(
+        <React.Fragment>
+       <div style={{marginTop: '20px', marginBottom: '20px'}}>
+       <h4>Choose your payment method</h4>
+                            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                                    How do you want to pay?
+                            </Typography>
+                            <FormControl style={{marginTop: '40px'}}>
+                            <RadioGroup
+                              aria-labelledby="demo-row-radio-buttons-group-label"
+                              value={payment}
+                              name="radio-buttons-group"
+                              onChange={handleRadioChange}
+                            >
+                              {paymentOptions.map(({value, label, image, alt}) => {
+                                return  <div className="col-md-4">
+                                <FormControlLabel value={value} control={<Radio />} label={label}/>
+                                <img src={image} alt={alt} style={{width: '30%', height: 'auto'}}/>
+                                </div>
+                              })}
+                            </RadioGroup>
+                          </FormControl>              
+       </div>
+        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+          <Button
+            color="inherit"
+            disabled={clientActiveStep === 0}
+            onClick={handleBackClient}
+            sx={{ mr: 1 }}
+          >
+            Back
+          </Button>
+          <Box sx={{ flex: '1 1 auto' }} />
+
+          <Button onClick={handleNextPayment}>
+            {clientActiveStep === clientSteps.length - 1 ? 'Finish' : 'Next'}
+          </Button>
+        </Box>
+        </React.Fragment>
+    )
+  } 
       else if(clientActiveStep === 3) {
         return (
             <React.Fragment>
@@ -2239,6 +2322,32 @@ const handleAddressChangeClient = (e) => {
             </Box>
             </React.Fragment>
         )
+    } else if(clientActiveStep === 4) {
+      return(
+        <React.Fragment>
+           <div style={{marginTop: '20px', marginBottom: '20px'}}>
+           <h4>You're all caught up !</h4>
+                                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                                        Kindly wait for your account or contact the system admin for account activation.
+                                </Typography>
+           </div>
+           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+              <Button
+                color="inherit"
+                disabled={clientActiveStep === 0}
+                onClick={handleBackClient}
+                sx={{ mr: 1 }}
+              >
+                Back
+              </Button>
+              <Box sx={{ flex: '1 1 auto' }} />
+
+              <Button onClick={handleNextCredentials}>
+                {clientActiveStep === clientSteps.length - 1 ? 'Finish' : 'Next'}
+              </Button>
+            </Box>
+        </React.Fragment>
+      )
     }  
   }
     return (
