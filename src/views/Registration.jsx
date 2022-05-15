@@ -13,6 +13,9 @@ import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import BasicSelect from '../components/Select/Select'
 import MUIText from '../components/TextField/TextField'
+import MUIButton from '../components/Button/Button';
+import TextField from '@mui/material/TextField';
+import Checkbox from '@mui/material/Checkbox';
 import Swal from 'sweetalert2'
 import { useDispatch, useSelector } from 'react-redux';
 import Backdrop from '@mui/material/Backdrop'
@@ -26,11 +29,19 @@ import gcash from '../assets/gcash.png';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 import FormControl from '@mui/material/FormControl';
+import { styled as styler } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 // import {checkUser, createUser} from '../redux/core/registration'
 import {checkUser, pushCreateDev, checkClient, pushCreateClient} from '../redux/core/registrationSlice'
 import { SignalCellularNull } from '@mui/icons-material';
 import { indigo } from '@mui/material/colors';
+import TermsAConditions from '../components/TermsAndConditions/TermsAConditions';
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -62,6 +73,43 @@ function TabPanel(props) {
       'aria-controls': `simple-tabpanel-${index}`,
     };
   }
+  const BootstrapDialog = styler(Dialog)(({ theme }) => ({
+    '& .MuiDialogContent-root': {
+      padding: theme.spacing(2),
+    },
+    '& .MuiDialogActions-root': {
+      padding: theme.spacing(1),
+    },
+    maxWidth: 'sm'
+  }));
+
+  const BootstrapDialogTitle = (props) => {
+    const { children, onClose, ...other } = props;
+  
+    return (
+      <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+        {children}
+        {onClose ? (
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </DialogTitle>
+    );
+  };
+BootstrapDialogTitle.propTypes = {
+    children: PropTypes.node,
+    onClose: PropTypes.func.isRequired,
+  };
 // DEV REGISTRATION //
 const steps = ['Personal Information', 'Credentials Information', 'Finish'];
 const infoObj = {
@@ -281,6 +329,7 @@ const AppRegistration = () => {
                   setSystemType(systemType => systemType = "")
                   setRequestorType(requestorType => requestorType = "")
                   setProjectScale(projectScale => projectScale = "")
+                  setTermsandConditions(false);
                   setClientErrorRequest(prevState => {
                     let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
                     errorHandlerClient.errorLoggerCsystemtype = false
@@ -1025,19 +1074,19 @@ const infoObjClient = {
 
 const systemTypesArray = [
   {
-    label : 'Sales and Inventory System', value: 'inventory'
+    label : 'Sales and Inventory System', value: 'Sales and Inventory System'
   },
   {
-    label : 'Payroll System', value: 'payroll'
+    label : 'Payroll System', value: 'Payroll System'
   },
   {
-    label : 'Product Landing Page Website', value: 'landing_website'
+    label : 'Product Landing Page Website', value: 'Product Landing Page Website'
   },
   {
-    label : 'Warehousing and Monitoring System', value: 'warehouse'
+    label : 'Warehousing and Monitoring System', value: 'Warehousing and Monitoring System'
   },
   {
-    label : 'Hotel & Resort Reservation System', value: 'appointment'
+    label : 'Hotel & Resort Reservation System', value: 'Hotel & Resort Reservation System'
   },
 
 ]
@@ -1344,6 +1393,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
   const [requestorType, setRequestorType] = React.useState('');
   const [projectScale, setProjectScale] = React.useState('');
   const [payment, setPayment] = React.useState('');
+  const [modal, setModalOpen] = React.useState(false);
+  const [openModal, setIsOpen] = React.useState(false);
+  const [termsandconditions, setTermsandConditions] = React.useState(false);
   const [clientErrorRequest, setClientErrorRequest] = React.useState({
     errorHandlerClient : {
       errorLoggerCfname : false,
@@ -1491,45 +1543,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           setLoading(true)
           dispatch(checkClient(infoStateClient.infoObjClient))
           setTimeout(() => {
-            if(clientref.current[0].key === 'client_username_available'){
-              dispatch(pushCreateClient(infoStateClient.infoObjClient))
-            }
-          }, 1000)
-          setTimeout(() => {
             if(clientref.current[0].key === "client_username_available") {
-              if(refregisterSuccessClient.current[0].key === "client_registration_success") {
-                setLoading(false)
-                Toast.fire({
-                  icon: 'success',
-                  title: 'You have successfully created an account.'
-                })
-                setInfoStateClient(prevState => {
-                let infoObjClient = Object.assign({}, prevState.infoObjClient)
-                infoObjClient.clientfname = undefined
-                infoObjClient.clientlname = undefined
-                infoObjClient.clientemail = undefined
-                infoObjClient.clientcontact = undefined
-                infoObjClient.clientaddress = undefined
-                infoObjClient.clientusername = undefined
-                infoObjClient.clientpassword = undefined
-                infoObjClient.clientconpass = undefined
-                infoObjClient.clientsecquestion = undefined
-                infoObjClient.clientsecanswer = undefined
-                infoObjClient.clientsystemtype = undefined
-                infoObjClient.clientrequestorstatus = undefined
-                infoObjClient.clientprojectscale = undefined
-                infoObjClient.clientbudgetrange = undefined
-                infoObjClient.clientremarks = undefined
-                infoObjClient.clientpayment = undefined
-                setClientSecQuestion(clientSecQuestion => clientSecQuestion = "")
-                setSystemType(systemType => systemType = "")
-                setRequestorType(requestorType => requestorType = "")
-                setProjectScale(projectScale => projectScale = "")
-                setPayment(payment => payment = "")
-                return {infoObjClient}
-                })
-                setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
-              } 
+              setLoading(false)
+              setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
             }
             else {
               Toast.fire({
@@ -1542,6 +1558,66 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           }, 2000)
         }
       }
+      const handleCloseModal = () => {
+        setIsOpen(false)
+        setModalOpen(false)
+    }
+      const onModal = () => {
+        setModalOpen(true)
+        setIsOpen(false)
+      }
+  const handleFinishClient = () => {
+    if(!termsandconditions){
+      Toast.fire({
+        icon: 'warning',
+        title: 'Please check our terms and conditions first'
+      })
+      return false
+    } else {
+      console.log(infoStateClient.infoObjClient)
+      setLoading(true)
+      setTimeout(() => {
+          dispatch(pushCreateClient(infoStateClient.infoObjClient))
+      }, 1000)
+      setTimeout(() => {
+          if(refregisterSuccessClient.current[0].key === "client_registration_success") {
+            setLoading(false)
+            Toast.fire({
+              icon: 'success',
+              title: 'You have successfully created an account.'
+            })
+            setInfoStateClient(prevState => {
+            let infoObjClient = Object.assign({}, prevState.infoObjClient)
+            infoObjClient.clientfname = undefined
+            infoObjClient.clientlname = undefined
+            infoObjClient.clientemail = undefined
+            infoObjClient.clientcontact = undefined
+            infoObjClient.clientaddress = undefined
+            infoObjClient.clientusername = undefined
+            infoObjClient.clientpassword = undefined
+            infoObjClient.clientconpass = undefined
+            infoObjClient.clientsecquestion = undefined
+            infoObjClient.clientsecanswer = undefined
+            infoObjClient.clientsystemtype = undefined
+            infoObjClient.clientrequestorstatus = undefined
+            infoObjClient.clientprojectscale = undefined
+            infoObjClient.clientbudgetrange = undefined
+            infoObjClient.clientremarks = undefined
+            infoObjClient.clientpayment = undefined
+            setClientSecQuestion(clientSecQuestion => clientSecQuestion = "")
+            setSystemType(systemType => systemType = "")
+            setRequestorType(requestorType => requestorType = "")
+            setProjectScale(projectScale => projectScale = "")
+            setPayment(payment => payment = "")
+            setTermsandConditions(false);
+            return {infoObjClient}
+            })
+            setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setClientActiveStep((prevActiveStep) => prevActiveStep = 0);
+          } 
+      }, 2000)
+    }
+  }
 
   const handleNextClient = () => {
   // It matches either of the following formats 1. +639191234567, or 2. 09191234567
@@ -2328,9 +2404,157 @@ const handleAddressChangeClient = (e) => {
            <div style={{marginTop: '20px', marginBottom: '20px'}}>
            <h4>You're all caught up !</h4>
                                 <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                                        Kindly wait for your account or contact the system admin for account activation.
+                                        Kindly review your data information to proceed to account registration
                                 </Typography>
            </div>
+            <div className="row" style={{marginTop: '30px', textAlign: 'center'}}>
+              <div className="col-3">
+              <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+              Primary Information
+              </Typography>
+                    <div className="row">
+                          <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Firstname"
+                          value={infoStateClient.infoObjClient.clientfname}
+                          style={{margin: '10px 0px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Lastname"
+                          value={infoStateClient.infoObjClient.clientlname}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Email Address"
+                          value={infoStateClient.infoObjClient.clientemail}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Contact No"
+                          value={infoStateClient.infoObjClient.clientcontact}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Address"
+                          value={infoStateClient.infoObjClient.clientaddress}
+                          style={{marginBottom: '10px'}}
+                        />
+                    </div>
+              </div>
+              <div className="col-3" style={{marginLeft: '20px'}}>
+              <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+              Request Client Proposal
+              </Typography>
+                 <div className="row">
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="System Type"
+                          value={systemType}
+                          style={{margin: '10px 0px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Requestor Status"
+                          value={requestorType === "student" ? "Student" : "Business Owner"}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Project Scale"
+                          value={projectScale === 'small_scale' ? "Small Scale" : projectScale === 'medium_scale' ? "Medium Scale" : "Large Scale"}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Budget Range"
+                          value={`₱ ${infoStateClient.infoObjClient.clientbudgetrange}`}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Remarks / Comments"
+                          value={infoStateClient.infoObjClient.clientremarks}
+                          style={{marginBottom: '10px'}}
+                        />        
+                        </div>
+              </div>
+              <div className="col-3" style={{marginRight: '-20px'}}>
+              <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+              Payment Method
+              </Typography>
+                       <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Payment Method"
+                          value={infoStateClient.infoObjClient.clientpayment}
+                          style={{margin: '10px 0px'}}
+                        />
+              </div>
+              <div className="col-3">
+              <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+              Credentials
+              </Typography>
+                    <div className="row">
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Username"
+                          value={infoStateClient.infoObjClient.clientusername}
+                          style={{margin: '10px 0px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Password"
+                          value={infoStateClient.infoObjClient.clientpassword}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Security Question"
+                          value={clientSecQuestion}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Security Answer"
+                          value={infoStateClient.infoObjClient.clientsecanswer}
+                          style={{marginBottom: '10px'}}
+                        />
+                      </div>
+                     </div>
+                  </div>
+              <BootstrapDialog
+              maxWidth='sm'
+              fullWidth={true}
+              onClose={handleCloseModal}
+              aria-labelledby="customized-dialog-title"
+              open={modal}
+            >
+              <BootstrapDialogTitle id="customized-dialog-title" onClose={handleCloseModal}>
+                Terms and Conditions
+              </BootstrapDialogTitle>
+              <DialogContent dividers>
+              <TermsAConditions/>
+              </DialogContent>
+            </BootstrapDialog>
+
            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
               <Button
                 color="inherit"
@@ -2341,8 +2565,18 @@ const handleAddressChangeClient = (e) => {
                 Back
               </Button>
               <Box sx={{ flex: '1 1 auto' }} />
-
-              <Button onClick={handleNextCredentials}>
+              <FormGroup style={{display: 'flex', flexDirection:'row'}}
+              value={termsandconditions}>
+              <FormControlLabel control={<Checkbox />} value={value} onClick={() => setTermsandConditions(!termsandconditions)} style={{marginRight: '-10px'}}/>
+              {
+              MUIButton({
+                variant : "text",
+                onhandleClick : onModal,
+                buttonName: "I agree with the terms and conditions"
+              })
+              }
+              </FormGroup>
+              <Button onClick={handleFinishClient}>
                 {clientActiveStep === clientSteps.length - 1 ? 'Finish' : 'Next'}
               </Button>
             </Box>
