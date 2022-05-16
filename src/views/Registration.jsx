@@ -13,6 +13,9 @@ import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import BasicSelect from '../components/Select/Select'
 import MUIText from '../components/TextField/TextField'
+import MUIButton from '../components/Button/Button';
+import TextField from '@mui/material/TextField';
+import Checkbox from '@mui/material/Checkbox';
 import Swal from 'sweetalert2'
 import { useDispatch, useSelector } from 'react-redux';
 import Backdrop from '@mui/material/Backdrop'
@@ -21,10 +24,24 @@ import Slider from '@mui/material/Slider';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Tooltip from '@mui/material/Tooltip';
 import store from '../redux/store'
+import visa from '../assets/creditcard.png';
+import gcash from '../assets/gcash.png';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import FormControl from '@mui/material/FormControl';
+import { styled as styler } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 // import {checkUser, createUser} from '../redux/core/registration'
 import {checkUser, pushCreateDev, checkClient, pushCreateClient} from '../redux/core/registrationSlice'
 import { SignalCellularNull } from '@mui/icons-material';
 import { indigo } from '@mui/material/colors';
+import TermsAConditions from '../components/TermsAndConditions/TermsAConditions';
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -56,6 +73,43 @@ function TabPanel(props) {
       'aria-controls': `simple-tabpanel-${index}`,
     };
   }
+  const BootstrapDialog = styler(Dialog)(({ theme }) => ({
+    '& .MuiDialogContent-root': {
+      padding: theme.spacing(2),
+    },
+    '& .MuiDialogActions-root': {
+      padding: theme.spacing(1),
+    },
+    maxWidth: 'sm'
+  }));
+
+  const BootstrapDialogTitle = (props) => {
+    const { children, onClose, ...other } = props;
+  
+    return (
+      <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+        {children}
+        {onClose ? (
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </DialogTitle>
+    );
+  };
+BootstrapDialogTitle.propTypes = {
+    children: PropTypes.node,
+    onClose: PropTypes.func.isRequired,
+  };
 // DEV REGISTRATION //
 const steps = ['Personal Information', 'Credentials Information', 'Finish'];
 const infoObj = {
@@ -100,9 +154,9 @@ const AppRegistration = () => {
         || infoStateClient.infoObjClient.clientaddress !== undefined || infoState.infoObj.fname !== undefined || infoState.infoObj.lname !== undefined 
         || infoState.infoObj.occupationStatus !== undefined || infoState.infoObj.occupationDetails !== undefined 
         || infoState.infoObj.occupationPositionWork !== undefined || infoState.infoObj.nameOfSchool !== undefined
-        || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined || infoStateClientProposal.infoObjClientProposal.clientSystemType !== undefined
-        || infoStateClientProposal.infoObjClientProposal.clientRequestorStatus !== undefined || infoStateClientProposal.infoObjClientProposal.clientProjectScale !== undefined
-        || infoStateClientProposal.infoObjClientProposal.clientBudgetRange !== undefined || infoStateClientProposal.infoObjClientProposal.clientremarks !== undefined){
+        || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined || infoStateClient.infoObjClient.clientsystemtype !== undefined
+        || infoStateClient.infoObjClient.clientrequestorstatus !== undefined || infoStateClient.infoObjClient.clientprojectscale !== undefined
+        || infoStateClient.infoObjClient.clientbudgetrange !== undefined || infoStateClient.infoObjClient.clientremarks !== undefined){
           event.preventDefault()
           event.returnValue = ''
       }
@@ -222,9 +276,9 @@ const AppRegistration = () => {
           || infoStateClient.infoObjClient.clientaddress !== undefined || infoState.infoObj.fname !== undefined || infoState.infoObj.lname !== undefined 
           || infoState.infoObj.occupationStatus !== undefined || infoState.infoObj.occupationDetails !== undefined 
           || infoState.infoObj.occupationPositionWork !== undefined || infoState.infoObj.nameOfSchool !== undefined
-          || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined || infoStateClientProposal.infoObjClientProposal.clientSystemType !== undefined
-          || infoStateClientProposal.infoObjClientProposal.clientRequestorStatus !== undefined || infoStateClientProposal.infoObjClientProposal.clientProjectScale !== undefined
-          || infoStateClientProposal.infoObjClientProposal.clientBudgetRange !== undefined || infoStateClientProposal.infoObjClientProposal.clientremarks !== undefined){
+          || infoState.infoObj.degree !== undefined || infoState.infoObj.address !== undefined || infoStateClient.infoObjClient.clientsystemtype !== undefined
+          || infoStateClient.infoObjClient.clientrequestorstatus !== undefined || infoStateClient.infoObjClient.clientprojectscale !== undefined
+          || infoStateClient.infoObjClient.clientbudgetrange !== undefined || infoStateClient.infoObjClient.clientremarks !== undefined){
             Swal.fire({
               title: 'Are you sure?',
               text: "You won't be able to revert this!",
@@ -265,16 +319,17 @@ const AppRegistration = () => {
                   })
                   return {infoObjClient}
                 })
-                  setInfoStateClientProposal(prevState => {
-                  let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-                  infoObjClientProposal.clientSystemType = undefined
-                  infoObjClientProposal.clientRequestorStatus = undefined
-                  infoObjClientProposal.clientProjectScale = undefined
-                  infoObjClientProposal.clientBudgetRange = undefined
-                  infoObjClientProposal.clientremarks = undefined
+                  setInfoStateClient(prevState => {
+                  let infoObjClient = Object.assign({}, prevState.infoObjClient)
+                  infoObjClient.clientsystemtype = undefined
+                  infoObjClient.clientrequestorstatus = undefined
+                  infoObjClient.clientprojectscale = undefined
+                  infoObjClient.clientbudgetrange = undefined
+                  infoObjClient.clientremarks = undefined
                   setSystemType(systemType => systemType = "")
                   setRequestorType(requestorType => requestorType = "")
                   setProjectScale(projectScale => projectScale = "")
+                  setTermsandConditions(false);
                   setClientErrorRequest(prevState => {
                     let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
                     errorHandlerClient.errorLoggerCsystemtype = false
@@ -284,7 +339,7 @@ const AppRegistration = () => {
                     errorHandlerClient.errorLoggerCremarks = false
                     return {errorHandlerClient}
                     })
-                    return {infoObjClientProposal}
+                    return {infoObjClient}
                   })
                   setInfoState(prevState => {
                     let infoObj = Object.assign({}, prevState.infoObj)
@@ -1012,27 +1067,26 @@ const clientSteps = ['Primary Information','Request Client Proposal','Payment Me
 const infoObjClient = { 
   clientfname: "", clientlname: "", clientemail: "",
   clientcontact: "", clientaddress: "", clientusername: "",
-  clientpassword: "", clientconpass: "", clientsecquestion: "", clientsecanswer: '', clientTrigger : true
-}
-const infoObjClientProposal = {
-    clientSystemType: "", clientRequestorStatus: "", clientProjectScale: "", clientBudgetRange: "", clientremarks: "", clientProposalTrigger: true
+  clientpassword: "", clientconpass: "", clientsecquestion: "", clientsecanswer: '', clientsystemtype: "", 
+  clientrequestorstatus: "", clientprojectscale: "", clientbudgetrange: "", clientremarks: "", clientpayment: "",
+   clientTrigger : true
 }
 
 const systemTypesArray = [
   {
-    label : 'Sales and Inventory System', value: 'inventory'
+    label : 'Sales and Inventory System', value: 'Sales and Inventory System'
   },
   {
-    label : 'Payroll System', value: 'payroll'
+    label : 'Payroll System', value: 'Payroll System'
   },
   {
-    label : 'Product Landing Page Website', value: 'landing_website'
+    label : 'Product Landing Page Website', value: 'Product Landing Page Website'
   },
   {
-    label : 'Warehousing and Monitoring System', value: 'warehouse'
+    label : 'Warehousing and Monitoring System', value: 'Warehousing and Monitoring System'
   },
   {
-    label : 'Hotel & Resort Reservation System', value: 'appointment'
+    label : 'Hotel & Resort Reservation System', value: 'Hotel & Resort Reservation System'
   },
 
 ]
@@ -1135,10 +1189,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
 
   const handleBudgetRangeST = (event, newValue) => {
     if (typeof newValue === 'number') {
-      setInfoStateClientProposal(prevState => {
-      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-      infoObjClientProposal.clientBudgetRange = event.target.value
-      return {infoObjClientProposal}
+      setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientbudgetrange = event.target.value + ",000"
+      return {infoObjClient}
       })
       setBRStudent(newValue);
     }
@@ -1146,10 +1200,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
 
   const handleBudgetRangeBO = (event, newValue) => {
     if (typeof newValue === 'number') {
-      setInfoStateClientProposal(prevState => {
-      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-      infoObjClientProposal.clientBudgetRange = event.target.value
-      return {infoObjClientProposal}
+      setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientbudgetrange = event.target.value + ",000"
+      return {infoObjClient}
       })
       setBRBO(newValue);
     }
@@ -1334,11 +1388,14 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
   const checkClientRef = React.useRef(registrationBooleanClient)
   const [clientActiveStep, setClientActiveStep] = React.useState(0);
   const [infoStateClient,setInfoStateClient] = React.useState(infoObjClient);
-  const [infoStateClientProposal, setInfoStateClientProposal] = React.useState(infoObjClientProposal);
   const [clientSecQuestion,setClientSecQuestion] = React.useState('');
   const [systemType, setSystemType] = React.useState('');
   const [requestorType, setRequestorType] = React.useState('');
   const [projectScale, setProjectScale] = React.useState('');
+  const [payment, setPayment] = React.useState('');
+  const [modal, setModalOpen] = React.useState(false);
+  const [openModal, setIsOpen] = React.useState(false);
+  const [termsandconditions, setTermsandConditions] = React.useState(false);
   const [clientErrorRequest, setClientErrorRequest] = React.useState({
     errorHandlerClient : {
       errorLoggerCfname : false,
@@ -1376,14 +1433,6 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
   }, [])
 
   React.useEffect(() => {
-    setInfoStateClientProposal(prevState => {
-      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-      infoObjClientProposal.clientProposalTrigger = true
-      return {infoObjClientProposal}
-    })
-  }, [])
-
-  React.useEffect(() => {
     clientref.current = clientUserValue
     refregisterSuccessClient.current = registrationSuccessMessageClient
     checkClientRef.current = registrationBooleanClient
@@ -1393,10 +1442,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
 
     const handleSystemType = (event) => {
         if(event.target.value === null || event.target.value === '') {
-          setInfoStateClientProposal(prevState => {
-            let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-            infoObjClientProposal.clientSystemType = ""
-            return {infoObjClientProposal}
+          setInfoStateClient(prevState => {
+            let infoObjClient = Object.assign({}, prevState.infoObjClient)
+            infoObjClient.clientsystemtype = ""
+            return {infoObjClient}
           })
           setClientErrorRequest(prevState => {
             let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1405,10 +1454,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           })
         }else{
           setSystemType(event.target.value)
-          setInfoStateClientProposal(prevState => {
-          let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-          infoObjClientProposal.clientSystemType = event.target.value
-          return {infoObjClientProposal}
+          setInfoStateClient(prevState => {
+          let infoObjClient = Object.assign({}, prevState.infoObjClient)
+          infoObjClient.clientsystemtype = event.target.value
+          return {infoObjClient}
         })
           setClientErrorRequest(prevState => {
           let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1419,10 +1468,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       }
     const handleRequestorStatus = (event) => {
       if(event.target.valuue === null || event.target.value === ''){
-        setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientRequestorStatus = ""
-        return {infoObjClientProposal}
+        setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientrequestorstatus = ""
+        return {infoObjClient}
         })
         setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1433,10 +1482,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
         setRequestorType(event.target.value)
         setBRStudent(budgetRangeStudent => budgetRangeStudent = 0)
         setBRBO(budgetRangeBO => budgetRangeBO = 0)
-        setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientRequestorStatus = event.target.value
-        return {infoObjClientProposal}
+        setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientrequestorstatus = event.target.value
+        return {infoObjClient}
         })
         setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1448,10 +1497,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
 
     const handleProjectScale = (event) => {
       if(event.target.valuue === null || event.target.value === ''){
-        setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientProjectScale = ""
-        return {infoObjClientProposal}
+        setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientprojectscale = ""
+        return {infoObjClient}
         })
         setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1462,10 +1511,10 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
         setProjectScale(event.target.value)
         setBRStudent(budgetRangeStudent => budgetRangeStudent = 0)
         setBRBO(budgetRangeBO => budgetRangeBO = 0)
-        setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientProjectScale = event.target.value
-        return {infoObjClientProposal}
+        setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientprojectscale = event.target.value
+        return {infoObjClient}
         })
         setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1474,7 +1523,7 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
         })
       }
     }
-
+    
     const handleNextCredentialsClient = () => {
         if(!infoStateClient.infoObjClient.clientusername || !infoStateClient.infoObjClient.clientpassword || 
           !infoStateClient.infoObjClient.clientconpass || !infoStateClient.infoObjClient.clientsecquestion || !infoStateClient.infoObjClient.clientsecanswer) {
@@ -1490,23 +1539,13 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           })
           return false
         } else {
+          console.log(infoStateClient.infoObjClient)
           setLoading(true)
           dispatch(checkClient(infoStateClient.infoObjClient))
           setTimeout(() => {
-            if(clientref.current[0].key === 'client_username_available'){
-              dispatch(pushCreateClient(infoStateClient.infoObjClient))
-            }
-          }, 1000)
-          setTimeout(() => {
             if(clientref.current[0].key === "client_username_available") {
-              if(refregisterSuccessClient.current[0].key === "client_registration_success") {
-                setLoading(false)
-                Toast.fire({
-                  icon: 'success',
-                  title: 'You have successfully created an account.'
-                })
-                setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
-              } 
+              setLoading(false)
+              setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
             }
             else {
               Toast.fire({
@@ -1519,6 +1558,66 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
           }, 2000)
         }
       }
+      const handleCloseModal = () => {
+        setIsOpen(false)
+        setModalOpen(false)
+    }
+      const onModal = () => {
+        setModalOpen(true)
+        setIsOpen(false)
+      }
+  const handleFinishClient = () => {
+    if(!termsandconditions){
+      Toast.fire({
+        icon: 'warning',
+        title: 'Please check our terms and conditions first'
+      })
+      return false
+    } else {
+      console.log(infoStateClient.infoObjClient)
+      setLoading(true)
+      setTimeout(() => {
+          dispatch(pushCreateClient(infoStateClient.infoObjClient))
+      }, 1000)
+      setTimeout(() => {
+          if(refregisterSuccessClient.current[0].key === "client_registration_success") {
+            setLoading(false)
+            Toast.fire({
+              icon: 'success',
+              title: 'You have successfully created an account.'
+            })
+            setInfoStateClient(prevState => {
+            let infoObjClient = Object.assign({}, prevState.infoObjClient)
+            infoObjClient.clientfname = undefined
+            infoObjClient.clientlname = undefined
+            infoObjClient.clientemail = undefined
+            infoObjClient.clientcontact = undefined
+            infoObjClient.clientaddress = undefined
+            infoObjClient.clientusername = undefined
+            infoObjClient.clientpassword = undefined
+            infoObjClient.clientconpass = undefined
+            infoObjClient.clientsecquestion = undefined
+            infoObjClient.clientsecanswer = undefined
+            infoObjClient.clientsystemtype = undefined
+            infoObjClient.clientrequestorstatus = undefined
+            infoObjClient.clientprojectscale = undefined
+            infoObjClient.clientbudgetrange = undefined
+            infoObjClient.clientremarks = undefined
+            infoObjClient.clientpayment = undefined
+            setClientSecQuestion(clientSecQuestion => clientSecQuestion = "")
+            setSystemType(systemType => systemType = "")
+            setRequestorType(requestorType => requestorType = "")
+            setProjectScale(projectScale => projectScale = "")
+            setPayment(payment => payment = "")
+            setTermsandConditions(false);
+            return {infoObjClient}
+            })
+            setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setClientActiveStep((prevActiveStep) => prevActiveStep = 0);
+          } 
+      }, 2000)
+    }
+  }
 
   const handleNextClient = () => {
   // It matches either of the following formats 1. +639191234567, or 2. 09191234567
@@ -1577,18 +1676,18 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
       return false
     }
   else{
-    setInfoStateClientProposal(prevState => {
-      let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-      infoObjClientProposal.clientremarks = ""
-      return {infoObjClientProposal}
+    setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({}, prevState.infoObjClient)
+      infoObjClient.clientremarks = ""
+      return {infoObjClient}
       })
     setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
   }
  }
 
   const handleNextRequestProposal = () => {
-    console.log(infoStateClientProposal.infoObjClientProposal);
-      if(infoStateClientProposal.infoObjClientProposal === undefined){
+    console.log(infoStateClient.infoObjClient);
+      if(infoStateClient.infoObjClient === undefined){
         setClientErrorRequest(prevState => {
           let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
           errorHandlerClient.errorLoggerCsystemtype = true
@@ -1605,9 +1704,9 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
         })
         return false
       }
-      else if(!infoStateClientProposal.infoObjClientProposal.clientSystemType || !infoStateClientProposal.infoObjClientProposal.clientRequestorStatus
-          || !infoStateClientProposal.infoObjClientProposal.clientProjectScale || !infoStateClientProposal.infoObjClientProposal.clientBudgetRange 
-          || !infoStateClientProposal.infoObjClientProposal.clientremarks){
+      else if(!infoStateClient.infoObjClient.clientsystemtype || !infoStateClient.infoObjClient.clientrequestorstatus
+          || !infoStateClient.infoObjClient.clientprojectscale || !infoStateClient.infoObjClient.clientbudgetrange 
+          || !infoStateClient.infoObjClient.clientremarks){
           Toast.fire({
             icon: 'error',
             title: 'Empty fields. please try again.'
@@ -1617,6 +1716,27 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
         setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
       }
     }
+  
+  const handleRadioChange = (event) => {
+     setPayment(event.target.value);
+  }
+
+  const handleNextPayment = (event) => {
+    console.log(payment);
+    if(payment === ''){
+      Toast.fire({
+        icon: 'error',
+        title: 'Please choose a payment method.'
+      })
+    } else {
+      setInfoStateClient(prevState => {
+      let infoObjClient = Object.assign({},prevState.infoObjClient)
+      infoObjClient.clientpayment = payment
+      return {infoObjClient}
+      })
+      setClientActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
+  }
 
   const handleBackClient = () => {
   setClientActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -1760,10 +1880,10 @@ const handleAddressChangeClient = (e) => {
 
   const handleClientRemarks = (e) => {
     if(e.target.value === null || e.target.value === ''){
-      setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientremarks = ""
-        return {infoObjClientProposal}
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientremarks = ""
+        return {infoObjClient}
       })
       setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1772,10 +1892,10 @@ const handleAddressChangeClient = (e) => {
       })
       setHelperTextClient("Empty field")
     }else{
-      setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientremarks = e.target.value
-        return {infoObjClientProposal}
+      setInfoStateClient(prevState => {
+        let infoObjClient = Object.assign({}, prevState.infoObjClient)
+        infoObjClient.clientremarks = e.target.value
+        return {infoObjClient}
       })
       setClientErrorRequest(prevState => {
         let errorHandlerClient = Object.assign({}, prevState.errorHandlerClient)
@@ -1936,15 +2056,8 @@ const handleAddressChangeClient = (e) => {
         infoObjClient.conpass = undefined
         infoObjClient.secquestion = undefined
         infoObjClient.secanswer = undefined
+        infoObjClient.clientremarks = undefined
         return {infoObjClient}
-      })
-    }
-
-    const defaultClientProposalValueSetter = () => {
-      setInfoStateClientProposal(prevState => {
-        let infoObjClientProposal = Object.assign({}, prevState.infoObjClientProposal)
-        infoObjClientProposal.clientremarks = undefined
-        return {infoObjClientProposal}
       })
     }
     // CLIENT REGISTRATION //
@@ -2115,7 +2228,7 @@ const handleAddressChangeClient = (e) => {
                                           variant : "outlined",
                                           isError : clientErrorRequest.errorHandlerClient.errorLoggerCremarks,
                                           helperTextHelper : errorHelperTextClient,
-                                          value : (infoStateClientProposal.infoObjClientProposal === undefined) ? defaultClientProposalValueSetter : infoStateClientProposal.infoObjClientProposal.clientremarks
+                                          value : (infoStateClient.infoObjClient === undefined) ? defaultClientValueSetter : infoStateClient.infoObjClient.clientremarks
                                         })
                                   }
                                 </div>  
@@ -2138,6 +2251,52 @@ const handleAddressChangeClient = (e) => {
             </React.Fragment>
         )
     }
+    else if(clientActiveStep === 2) {
+      const paymentOptions = [
+        {value: 'creditdebit', label: 'Credit/Debit', image: `${visa}`, alt: 'creditdebit'},
+        {value: 'gcash', label: 'Gcash', image: `${gcash}`, alt: 'gcash'}
+      ]
+      return(
+        <React.Fragment>
+       <div style={{marginTop: '20px', marginBottom: '20px'}}>
+       <h4>Choose your payment method</h4>
+                            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                                    How do you want to pay?
+                            </Typography>
+                            <FormControl style={{marginTop: '40px'}}>
+                            <RadioGroup
+                              aria-labelledby="demo-row-radio-buttons-group-label"
+                              value={payment}
+                              name="radio-buttons-group"
+                              onChange={handleRadioChange}
+                            >
+                              {paymentOptions.map(({value, label, image, alt}) => {
+                                return  <div className="col-md-4">
+                                <FormControlLabel value={value} control={<Radio />} label={label}/>
+                                <img src={image} alt={alt} style={{width: '30%', height: 'auto'}}/>
+                                </div>
+                              })}
+                            </RadioGroup>
+                          </FormControl>              
+       </div>
+        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+          <Button
+            color="inherit"
+            disabled={clientActiveStep === 0}
+            onClick={handleBackClient}
+            sx={{ mr: 1 }}
+          >
+            Back
+          </Button>
+          <Box sx={{ flex: '1 1 auto' }} />
+
+          <Button onClick={handleNextPayment}>
+            {clientActiveStep === clientSteps.length - 1 ? 'Finish' : 'Next'}
+          </Button>
+        </Box>
+        </React.Fragment>
+    )
+  } 
       else if(clientActiveStep === 3) {
         return (
             <React.Fragment>
@@ -2239,6 +2398,190 @@ const handleAddressChangeClient = (e) => {
             </Box>
             </React.Fragment>
         )
+    } else if(clientActiveStep === 4) {
+      return(
+        <React.Fragment>
+           <div style={{marginTop: '20px', marginBottom: '20px'}}>
+           <h4>You're all caught up !</h4>
+                                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                                        Kindly review your data information to proceed to account registration
+                                </Typography>
+           </div>
+            <div className="row" style={{marginTop: '30px', textAlign: 'center'}}>
+              <div className="col-3">
+              <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+              Primary Information
+              </Typography>
+                    <div className="row">
+                          <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Firstname"
+                          value={infoStateClient.infoObjClient.clientfname}
+                          style={{margin: '10px 0px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Lastname"
+                          value={infoStateClient.infoObjClient.clientlname}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Email Address"
+                          value={infoStateClient.infoObjClient.clientemail}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Contact No"
+                          value={infoStateClient.infoObjClient.clientcontact}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Address"
+                          value={infoStateClient.infoObjClient.clientaddress}
+                          style={{marginBottom: '10px'}}
+                        />
+                    </div>
+              </div>
+              <div className="col-3" style={{marginLeft: '20px'}}>
+              <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+              Request Client Proposal
+              </Typography>
+                 <div className="row">
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="System Type"
+                          value={systemType}
+                          style={{margin: '10px 0px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Requestor Status"
+                          value={requestorType === "student" ? "Student" : "Business Owner"}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Project Scale"
+                          value={projectScale === 'small_scale' ? "Small Scale" : projectScale === 'medium_scale' ? "Medium Scale" : "Large Scale"}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Budget Range"
+                          value={`₱ ${infoStateClient.infoObjClient.clientbudgetrange}`}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Remarks / Comments"
+                          value={infoStateClient.infoObjClient.clientremarks}
+                          style={{marginBottom: '10px'}}
+                        />        
+                        </div>
+              </div>
+              <div className="col-3" style={{marginRight: '-20px'}}>
+              <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+              Payment Method
+              </Typography>
+                       <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Payment Method"
+                          value={infoStateClient.infoObjClient.clientpayment}
+                          style={{margin: '10px 0px'}}
+                        />
+              </div>
+              <div className="col-3">
+              <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+              Credentials
+              </Typography>
+                    <div className="row">
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Username"
+                          value={infoStateClient.infoObjClient.clientusername}
+                          style={{margin: '10px 0px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Password"
+                          value={infoStateClient.infoObjClient.clientpassword}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Security Question"
+                          value={clientSecQuestion}
+                          style={{marginBottom: '10px'}}
+                        />
+                        <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Security Answer"
+                          value={infoStateClient.infoObjClient.clientsecanswer}
+                          style={{marginBottom: '10px'}}
+                        />
+                      </div>
+                     </div>
+                  </div>
+              <BootstrapDialog
+              maxWidth='sm'
+              fullWidth={true}
+              onClose={handleCloseModal}
+              aria-labelledby="customized-dialog-title"
+              open={modal}
+            >
+              <BootstrapDialogTitle id="customized-dialog-title" onClose={handleCloseModal}>
+                Terms and Conditions
+              </BootstrapDialogTitle>
+              <DialogContent dividers>
+              <TermsAConditions/>
+              </DialogContent>
+            </BootstrapDialog>
+
+           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+              <Button
+                color="inherit"
+                disabled={clientActiveStep === 0}
+                onClick={handleBackClient}
+                sx={{ mr: 1 }}
+              >
+                Back
+              </Button>
+              <Box sx={{ flex: '1 1 auto' }} />
+              <FormGroup style={{display: 'flex', flexDirection:'row'}}
+              value={termsandconditions}>
+              <FormControlLabel control={<Checkbox />} value={value} onClick={() => setTermsandConditions(!termsandconditions)} style={{marginRight: '-10px'}}/>
+              {
+              MUIButton({
+                variant : "text",
+                onhandleClick : onModal,
+                buttonName: "I agree with the terms and conditions"
+              })
+              }
+              </FormGroup>
+              <Button onClick={handleFinishClient}>
+                {clientActiveStep === clientSteps.length - 1 ? 'Finish' : 'Next'}
+              </Button>
+            </Box>
+        </React.Fragment>
+      )
     }  
   }
     return (

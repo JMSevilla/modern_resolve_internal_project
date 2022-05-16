@@ -56,6 +56,7 @@ const MUIText = ({
                 </>
             )
         }
+       
     }
    
     if(isMultiline){
