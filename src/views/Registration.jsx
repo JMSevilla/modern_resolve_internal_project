@@ -1496,7 +1496,7 @@ const [budgetRangeBO, setBRBO] = React.useState(30);
     }
 
     const handleProjectScale = (event) => {
-      if(event.target.valuue === null || event.target.value === ''){
+      if(event.target.value === null || event.target.value === ''){
         setInfoStateClient(prevState => {
         let infoObjClient = Object.assign({}, prevState.infoObjClient)
         infoObjClient.clientprojectscale = ""
