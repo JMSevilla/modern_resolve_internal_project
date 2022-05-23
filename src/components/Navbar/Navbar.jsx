@@ -13,7 +13,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import { Redirect } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
-import { appRouter } from '../../router/route'
+import { appRouter } from '../../router/route';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress'
 import MUIText from '../TextField/TextField'
@@ -23,7 +23,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import {pushLogin} from '../../redux/core/loginSlice'
 import { useHistory } from 'react-router-dom';
 import BasicSelect from '../Select/Select'
-import authenticationRoutes from "../../router/authroute"
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import authenticationRoutes from "../../router/authroute";
 
 const BootstrapDialog = styler(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -65,6 +67,10 @@ BootstrapDialogTitle.propTypes = {
 const loginObject = { 
   username : '', password : '', userLogin: true, role : ''
 }
+
+ const clientObject = {
+    newpass: '', conpass: ''
+ }
 const roleArray = [
   {
     value : 'client', label : 'CB - Client Branch'
@@ -73,6 +79,9 @@ const roleArray = [
     value : 'developer', label : 'DB - Developer Branch'
   }
 ]
+  const email = "paladbryanj@gmail.com";
+  const randomCode = Math.floor(100000 + Math.random() * 900000);
+
 const NavigationBar = () => {
   const Toast = Swal.mixin({
     toast: true,
@@ -86,18 +95,27 @@ const NavigationBar = () => {
     }
   })
     const history = useHistory()
+    const form = React.useRef();
     const [isSuccessLogin, setSuccessLogin] = React.useState(false)
     const [isLoading, setLoading] = React.useState(false)
     const [open, setIsOpen] = React.useState(false)
-    const [modal, setModalOpen] = React.useState(false)
+    const [modalEmail, setEmailModal] = React.useState(false)
+    const [modalSecQuestion, setSecQuestionModal] = React.useState(false)
     const [BDOpen, setBDOpen] = React.useState(false)
     const [loginState, setLoginState] = React.useState(loginObject)
-    const [roleIdentify, setRole] = React.useState('')
+    const [clientState, setClientState] = React.useState(clientObject)
+    const [roleIdentify, setRole] = React.useState('');
+    const [code, setCode] = React.useState('');
+    const [sentCode, setSentCode] = React.useState(false);
+    const [codeCount, setCodeCount] = React.useState(0);
     const [errorRequest, setErrorRequest] = React.useState({
       errorHandler : {
         errorLoggerUsername : false,
         errorLoggerPassword : false,
-        errorLoggerRole : false
+        errorLoggerRole : false,
+        errorLoggerCode : false,
+        errorLoggerNewPass : false,
+        errorLoggerConPass : false
       }
     })
     const [token, loginSuccess] = useSelector((state) => [
@@ -118,11 +136,14 @@ const NavigationBar = () => {
     const [errorHelperText, setHelperText] = React.useState('')
     const handleSignin = () => {
         setIsOpen(true)
-        setModalOpen(false)
+        setEmailModal(false)
+        setSecQuestionModal(false)
+        setSentCode(false)
     }
     const handleClose = () => {
         setIsOpen(false)
-        setModalOpen(false)
+        setEmailModal(false)
+        setSecQuestionModal(false)
     }
     const backDropAwait = () => {
       return <Redirect as={HashLink} to={appRouter.Registration.path} />
@@ -130,12 +151,183 @@ const NavigationBar = () => {
     const onBDOpen = () => {
       setBDOpen(true)
     }
-    const onModal = () => {
-      setModalOpen(true)
-      setIsOpen(false)
+    const onRecoverbyEmail = () => {
+      if(loginState.loginObject.username === undefined || loginState.loginObject.username === ""){
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerUsername = true
+          return {errorHandler}     
+        })
+        setHelperText("Empty field")
+        return false
+      } else {
+        setEmailModal(true)
+        setIsOpen(false)
+        setSecQuestionModal(false)
+      } 
     }
+
+    const changePasswordbyEmail = () => {
+      if(clientState.clientObject === undefined){
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerNewPass = true
+          errorHandler.errorLoggerConPass = true
+          return {errorHandler}
+        })
+        setHelperText("Empty field")
+        Toast.fire({
+          icon: 'error',
+          title: 'Empty fields. please try again.'
+        })
+        return false
+      }
+      else if(!clientState.clientObject.newpass || !clientState.clientObject.conpass){
+          Toast.fire({
+            icon: 'error',
+            title: 'Empty fields. please try again.'
+          })
+          return false
+        }
+        else if(clientState.clientObject.newpass !== clientState.clientObject.conpass)
+        {
+          Toast.fire({
+            icon: 'error',
+            title: 'Password does not match! Please try again'
+          })
+          return false
+        }
+      else{
+        Toast.fire({
+          icon: 'success',
+          title: 'Password Changed'
+        })
+      }
+     }
+
+    const onRecoverbySecQuestion = () => {
+      setSecQuestionModal(true)
+      setEmailModal(false)
+      setIsOpen(false)
+      setSentCode(false)
+    }
+
+    const handleCodeSent = (e) => {
+      console.log(randomCode);
+      if(e.target.value === null || e.target.value === '') {
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerCode = true
+          return {errorHandler}
+        })
+        setCode('');
+        setHelperText("Empty code")
+        setSentCode(false);
+      }
+      else{
+        if(e.target.value.match(randomCode) && e.target.value.length === 6){
+          setSentCode(true);
+        } else if (!e.target.value.match(randomCode) && e.target.value.length > 6){
+          return false
+        } else if (e.target.value.length > 6){
+          return false
+        }
+        else {
+          setSentCode(false);
+        }
+        setCode(prevState => prevState = e.target.value)
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerCode = false
+          return {errorHandler}
+        })
+        setHelperText("")
+      }
+    }        
+
+    const verifySentCode = (e) => {
+      console.log(loginState.loginObject.username + email + randomCode);
+      var xhr = new XMLHttpRequest();
+      
+      xhr.addEventListener('load',() => {
+        if(xhr.responseText === "Message has been sent"){
+          Toast.fire({
+            icon: 'success',
+            title: 'Code has been sent! please check your email.'
+          })
+          setCodeCount(prevState => prevState + 1);
+        } else {
+          Toast.fire({
+            icon: 'error',
+            title: 'Code could not be sent, Please try again'
+          })
+        }
+      });
+      
+      xhr.open('GET', 'http://localhost/modern_resolve_intern_project_backend/api/sendemail.php?sendto=' + email + '&name=' + loginState.loginObject.username + '&code=' + randomCode);
+      
+      xhr.send();
+
+    }
+
     const handleCloseBackDrop = () => {
       setBDOpen(false)
+    }
+    const handleNewPass = (e) => {
+      if(e.target.value === null || e.target.value === '') {
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerNewPass = true
+          return {errorHandler}
+        })
+        setClientState(prevState => {
+          let clientObject = Object.assign({}, prevState.clientObject)
+          clientObject.newpass = ""
+          return {clientObject}
+        })
+        setHelperText("Empty password")
+      }
+      else{
+        setClientState(prevState => {
+          let clientObject = Object.assign({}, prevState.clientObject)
+          clientObject.newpass = e.target.value
+          return {clientObject}
+        })
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerNewPass = false
+          return {errorHandler}
+        })
+        setHelperText("")
+      }
+    }
+    const handleConPass = (e) => {
+      if(e.target.value === null || e.target.value === '') {
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerConPass = true
+          return {errorHandler}
+        })
+        setClientState(prevState => {
+          let clientObject = Object.assign({}, prevState.clientObject)
+          clientObject.conpass = ""
+          return {clientObject}
+        })
+        setHelperText("Empty password")
+      }
+      else{
+        setClientState(prevState => {
+          let clientObject = Object.assign({}, prevState.clientObject)
+          clientObject.conpass = e.target.value
+          return {clientObject}
+        })
+        setErrorRequest(prevState => {
+          let errorHandler = Object.assign({}, prevState.errorHandler)
+          errorHandler.errorLoggerConPass = false
+          return {errorHandler}
+        })
+        setHelperText("")
+      }
     }
     const handlePassword = (e) => {
       if(e.target.value === null || e.target.value === '') {
@@ -200,6 +392,15 @@ const NavigationBar = () => {
         loginObject.password = undefined
         loginObject.role = undefined
         return {loginObject}
+      })
+    }
+
+    const defaultClientValueSetter = () => {
+      setClientState(prevState => {
+        let clientObject = Object.assign({}, prevState.clientObject)
+        clientObject.newpass = undefined
+        clientObject.conpass = undefined
+        return {clientObject}
       })
     }
     const pushtoPlatform = () => {
@@ -379,7 +580,7 @@ const NavigationBar = () => {
             {roleIdentify === 'client' ? (
               MUIButton({
                 variant : "text",
-                onhandleClick : onModal,
+                onhandleClick : onRecoverbyEmail,
                 buttonName: "Forget Password?"
               })
               
@@ -411,118 +612,243 @@ const NavigationBar = () => {
         </DialogActions>
       </BootstrapDialog>
 
-      {/* // MODAL // */}
+      {/* Primary Option */}
       <BootstrapDialog
         maxWidth='sm'
         fullWidth={true}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
-        open={modal}
+        open={modalEmail}
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Recover your Account
+          Recover Account by Email
         </BootstrapDialogTitle>
         <DialogContent dividers>
-            <div style={{marginBottom : '20px'}}>
-            
-            {
+                       <form onSubmit={verifySentCode}>
+                        <div className="row">
+                          <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Username"
+                          value={(loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.username}
+                          style={{margin: '10px 0px 10px 12px', width: '96%'}}
+                        />
+                        </div>
+                        <div className="row">
+                          <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Email Address"
+                          value={email}
+                          // value={(loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.username}
+                          style={{margin: '10px 0px 0px 12px', width: '96%'}}
+                        />
+                        </div>
+                        
+            <div style={{marginBottom: '10px'}}>
+            <Card sx={{ minWidth: 275 }} style={{marginTop: '20px', marginBottom: '20px'}}>
+                        <CardContent>
+                        <Typography sx={{ fontSize: 16, marginBottom: '20px' }} color="text.primary" gutterBottom>
+                          Verification Code will be sent to your email, click send code..
+                          </Typography>
+                                        {
                                             MUIText({
-                                              typography : "Username",
-                                              dataOnChange : handleUsername,
+                                              typography : "",
+                                              dataOnChange : handleCodeSent,
                                               id: "outlined-basic",
-                                              label: "Your username",
+                                              label: "Enter Code",
                                               type : "text",
                                               stylish : {width: '100%'},
                                               variant : "outlined",
-                                              isError : errorRequest.errorHandler.errorLoggerUsername,
+                                              isError : errorRequest.errorHandler.errorLoggerCode,
                                               helperTextHelper : errorHelperText,
-                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.username
+                                              value : code
                                             })
                                           }
-            </div>
-            <div style={{marginBottom : '10px'}}>
-       
-            {
+                                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                                         {
+                                            MUIButton({
+                                              variant : "text",
+                                              onhandleClick : onRecoverbySecQuestion,
+                                              buttonName: "Try Another Way?"
+                                            })
+                                          }
+                                         <Box sx={{ flex: '1 1 auto' }} />
+                                         {
+                                            MUIButton({
+                                              variant : "text",
+                                              onhandleClick : verifySentCode,
+                                              buttonName: codeCount === 0 ? 'Send Code' : 'Resend Code'
+                                            })
+                                          }
+                                         </Box>
+                                         
+                       </CardContent>
+              </Card>
+              
+                                      
+                                      {sentCode ? (
+                                        <>
+                                         <div style={{marginBottom : '15px'}}>
+                                          {
                                             MUIText({
-                                              typography : "Security Question",
-                                              dataOnChange : handlePassword,
+                                              typography : "",
+                                              dataOnChange : handleNewPass,
                                               id: "outlined-basic",
-                                              label: "Security Question",
+                                              label: "New Password",
                                               type : "password",
                                               stylish : {width: '100%'},
                                               variant : "outlined",
-                                              isError : errorRequest.errorHandler.errorLoggerPassword,
+                                              isError : errorRequest.errorHandler.errorLoggerNewPass,
                                               helperTextHelper : errorHelperText,
-                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
-                                            })
+                                              value : (clientState.clientObject === undefined) ? defaultClientValueSetter : clientState.clientObject.newpass
+                                            }) 
                                           }
-            </div>
-            <div style={{marginBottom: '10px'}}>
-            {
+                                        </div>
+                                        <div style={{marginBottom : '15px'}}>
+                                          {
                                             MUIText({
-                                              typography : "Security Answer",
-                                              dataOnChange : handlePassword,
+                                              typography : "",
+                                              dataOnChange : handleConPass,
                                               id: "outlined-basic",
-                                              label: "Enter your answer",
+                                              label: "Confirm Password",
                                               type : "password",
                                               stylish : {width: '100%'},
                                               variant : "outlined",
-                                              isError : errorRequest.errorHandler.errorLoggerPassword,
+                                              isError : errorRequest.errorHandler.errorLoggerConPass,
                                               helperTextHelper : errorHelperText,
-                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
-                                            })
+                                              value : (clientState.clientObject === undefined) ? defaultClientValueSetter : clientState.clientObject.conpass
+                                            }) 
                                           }
+                                        </div>
+                                        </>
+                                      ):(<></>)}
+                                      
             </div>
-              <div style={{marginBottom: '10px'}}>
-              {
-                                              MUIText({
-                                                typography : "New Password",
-                                                dataOnChange : handlePassword,
-                                                id: "outlined-basic",
-                                                label: "Enter new password",
-                                                type : "password",
-                                                stylish : {width: '100%'},
-                                                variant : "outlined",
-                                                isError : errorRequest.errorHandler.errorLoggerPassword,
-                                                helperTextHelper : errorHelperText,
-                                                value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
-                                              })
-                                            }
-              </div>
-              <div style={{marginBottom: '10px'}}>
-              {
-                                              MUIText({
-                                                typography : "Confirm Password",
-                                                dataOnChange : handlePassword,
-                                                id: "outlined-basic",
-                                                label: "Confirm Password",
-                                                type : "password",
-                                                stylish : {width: '100%'},
-                                                variant : "outlined",
-                                                isError : errorRequest.errorHandler.errorLoggerPassword,
-                                                helperTextHelper : errorHelperText,
-                                                value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
-                                              })
-                                            }
-              </div>
-            
+            </form>
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-            {
-               MUIButton({
-                variant : "text",
-                onhandleClick : onModal,
-                buttonName: "Change Password"
-              })
-            }
-            <Box sx={{ flex: '1 1 auto' }} />
             {
             MUIButton({
               variant : "contained",
               onhandleClick : handleSignin,
               size : "small",
-              buttonName: "Sign in"
+              buttonName: "Back"
             })
+          } 
+            <Box sx={{ flex: '1 1 auto' }} />
+            {
+               MUIButton({
+                variant : "contained",
+                onhandleClick : changePasswordbyEmail,
+                buttonName: "Change Password"
+              })
+            }
+            {
           }
+          </Box>
+        </DialogContent>
+      </BootstrapDialog>
+
+      {/* 2nd Option */}
+      <BootstrapDialog
+        maxWidth='sm'
+        fullWidth={true}
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={modalSecQuestion}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+          Recover Account by Security Q and A
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+            <div style={{marginBottom : '10px'}}>
+                        <div className="row">
+                          <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Username"
+                          value={(loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.username}
+                          style={{margin: '10px 0px 0px 12px', width: '96%'}}
+                        />
+                        </div>
+            </div>
+            <div style={{marginBottom : '10px'}}>
+                        <div className="row">
+                          <TextField
+                          disabled
+                          id="outlined-disabled"
+                          label="Security Question"
+                          value={(loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.username}
+                          style={{margin: '10px 0px 10px 12px', width: '96%'}}
+                        />
+                        </div>
+            </div>
+            <div style={{marginBottom: '10px'}}>
+                                          {
+                                            MUIText({
+                                              typography : "",
+                                              dataOnChange : handlePassword,
+                                              id: "outlined-basic",
+                                              label: "Enter your answer",
+                                              type : "text",
+                                              stylish : {width: '100%'},
+                                              variant : "outlined",
+                                              isError : errorRequest.errorHandler.errorLoggerPassword,
+                                              helperTextHelper : errorHelperText,
+                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
+                                            })
+                                          }                         
+            </div>
+            <div style={{marginBottom: '10px'}}>
+                                          {
+                                            MUIText({
+                                              typography : "",
+                                              dataOnChange : handlePassword,
+                                              id: "outlined-basic",
+                                              label: "New Password",
+                                              type : "text",
+                                              stylish : {width: '100%'},
+                                              variant : "outlined",
+                                              isError : errorRequest.errorHandler.errorLoggerPassword,
+                                              helperTextHelper : errorHelperText,
+                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
+                                            })
+                                          }                       
+            </div>
+            <div style={{marginBottom: '10px'}}>
+                                          {
+                                            MUIText({
+                                              typography : "",
+                                              dataOnChange : handlePassword,
+                                              id: "outlined-basic",
+                                              label: "Confirm Password",
+                                              type : "text",
+                                              stylish : {width: '100%'},
+                                              variant : "outlined",
+                                              isError : errorRequest.errorHandler.errorLoggerPassword,
+                                              helperTextHelper : errorHelperText,
+                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
+                                            })
+                                          }                      
+            </div>
+             
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+            {
+            MUIButton({
+              variant : "contained",
+              onhandleClick : onRecoverbyEmail,
+              size : "small",
+              buttonName: "Back"
+            })
+          } 
+            <Box sx={{ flex: '1 1 auto' }} />
+            {
+               MUIButton({
+                variant : "contained",
+                onhandleClick : onRecoverbyEmail,
+                buttonName: "Change Password"
+              })
+            }
             {
           }
           </Box>
