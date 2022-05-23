@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -6,6 +6,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { useDispatch, useSelector } from 'react-redux';
+import {fetchListUsermanagement} from '../../redux/core/admin/usermanagementSlice'
 
 function createData(name, calories, fat, carbs, protein) {
     return { name, calories, fat, carbs, protein };
@@ -20,31 +22,39 @@ function createData(name, calories, fat, carbs, protein) {
   ];
 
   export default function BasicTable() {
+    const [uamList] = useSelector((state) => [state.uam.uamList])
+    const listRef = useRef(uamList)
+    const dispatch = useDispatch()
+    
+    useEffect(() => {
+        dispatch(fetchListUsermanagement())
+        listRef.current = uamList
+    }, [uamList])
     return (
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Dessert (100g serving)</TableCell>
-              <TableCell align="right">Calories</TableCell>
-              <TableCell align="right">Fat&nbsp;(g)</TableCell>
-              <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-              <TableCell align="right">Protein&nbsp;(g)</TableCell>
+              <TableCell>Firstname</TableCell>
+              <TableCell align="right">Lastname</TableCell>
+              <TableCell align="right">Username&nbsp;(g)</TableCell>
+              {/* <TableCell align="right">Carbs&nbsp;(g)</TableCell>
+              <TableCell align="right">Protein&nbsp;(g)</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+          {listRef.current.map((row) => (
               <TableRow
-                key={row.name}
+                key={row.firstname}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {row.name}
+                  {row.firstname}
                 </TableCell>
-                <TableCell align="right">{row.calories}</TableCell>
-                <TableCell align="right">{row.fat}</TableCell>
-                <TableCell align="right">{row.carbs}</TableCell>
-                <TableCell align="right">{row.protein}</TableCell>
+                <TableCell align="right">{row.lastname}</TableCell>
+                <TableCell align="right">{row.username}</TableCell>
+                {/* <TableCell align="right">{row.carbs}</TableCell>
+                <TableCell align="right">{row.protein}</TableCell> */}
               </TableRow>
             ))}
           </TableBody>

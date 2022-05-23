@@ -76,6 +76,10 @@ class DataHandling {
         data.append('password', obj.password)
         return data
     }
+    HTTPUAMList(){
+        data.append('uamlistState', true)
+        return data
+    }
 }
 
 export default new DataHandling()

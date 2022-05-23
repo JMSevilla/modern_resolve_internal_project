@@ -61,6 +61,7 @@ const AddUser = () => {
       })
     const dispatch = useDispatch()
     const [uamMessage] = useSelector((state) => [state.uam.uamMessage])
+    
     const uamRef = useRef(uamMessage)
     const [adduserState, setadduserState] = useState(false)
     const [userState, setuserState] = useState(userObj)
@@ -90,6 +91,7 @@ const AddUser = () => {
         setadduserState(false)
     }
     useEffect(() => {
+        
         uamRef.current = uamMessage
     }, [uamMessage])
     const handleSave = () => {
