@@ -34,6 +34,12 @@ class DataHandling {
         data.append('clientpassword', object.clientpassword)
         data.append('clientsecquestion', object.clientsecquestion)
         data.append('clientsecanswer', object.clientsecanswer)
+        data.append('clientsystemtype', object.clientsystemtype)
+        data.append('clientrequestorstatus', object.clientrequestorstatus)
+        data.append('clientprojectscale', object.clientprojectscale)
+        data.append('clientbudgetrange', object.clientbudgetrange)
+        data.append('clientremarks', object.clientremarks)
+        data.append('clientpayment', object.clientpayment)
         data.append('clientRegTrigger', true)
         return data
     }
