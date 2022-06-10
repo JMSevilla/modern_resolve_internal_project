@@ -4,12 +4,13 @@ import { Carousel } from 'react-bootstrap'
 const CarouseApp = () => {
     return (
         <div>
-            <Carousel>
-                <Carousel.Item>
+            <Carousel >
+                <Carousel.Item >
                     <img
-                    className="d-block w-100"
-                    src="https://res.cloudinary.com/practicaldev/image/fetch/s--JeM7K_XV--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/r3ui703pme0meo82pu5o.png"
+                    className="img-fluid"
+                    src="https://cdn.dribbble.com/users/1791775/screenshots/6832881/___.gif"
                     alt="First slide"
+                    style={{color : 'black'}}
                     />
                     <Carousel.Caption>
                     <h3>Modern Resolve Organization</h3>

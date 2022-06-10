@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react'
+import React, {useEffect, useState, useRef, useContext} from 'react'
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { authIdentify } from '../../../redux/core/loginSlice';
@@ -8,6 +8,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { Context } from '../../../redux/core/context/context';
 
 const cardsArray = [
     {
@@ -33,28 +34,10 @@ const cardsArray = [
 ]
 
 const DashboardExile = () => {
-    const history = useHistory()
-    const [keyIdentifier, setkeyIdentifier] = useState('')
-    const dispatch = useDispatch()
-    const [initialRoute] = useSelector((state) => [state.login.initialRoute])
-    const refResponse = useRef(initialRoute)
+    const contextValues = useContext(Context)
+    const {__home__, initialRoute} = contextValues
     useEffect(() => {
-        setkeyIdentifier(localStorage.getItem('key_identifier'))
-        refResponse.current = initialRoute
-        if(localStorage.getItem('key_identifier') == 'unknown'){
-        }else{ 
-             dispatch(authIdentify(localStorage.getItem('key_identifier')))
-        }
-            setTimeout(() => {
-                if(localStorage.getItem('key_identifier') == 'unknown') {
-                    return false
-                } else if(refResponse.current[0].key.lastroute === 'developer_platform') { 
-                    //route to dev platform
-                    history.push(appRouter.devPlatform.path)
-                } else if(refResponse.current[0].key.lastroute === '/developer/dashboard'){
-                    history.push(appRouter.DashboardOverview.path)
-                } else {}
-            },1000)
+        __home__(1)
     } ,[])
     const basicCard = () => {
         return(

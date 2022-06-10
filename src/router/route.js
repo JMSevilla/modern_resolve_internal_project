@@ -4,6 +4,9 @@ export const appRouter = {
     Registration : {path : "/registration"},
     devPlatform : {path : "/dev/platform"},
     DashboardOverview : {path : "/developer/dashboard"},
-    DashboardAddUser : {path : "/developer/user-management/adduser"}
+    DashboardAddUser : {path : "/developer/user-management/adduser"},
+    //This feature is for personal use only.. 
+    BasketballScoreBoard : {path : "/basketball/scoreboard"},
+    Choosepage : { path : "/choose/registration" }
 }
 

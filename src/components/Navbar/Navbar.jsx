@@ -20,12 +20,14 @@ import MUIText from '../TextField/TextField'
 import Swal from 'sweetalert2'
 import Backdrop from '@mui/material/Backdrop'
 import { useDispatch, useSelector } from 'react-redux';
-import {pushLogin} from '../../redux/core/loginSlice'
-import { useHistory } from 'react-router-dom';
 import BasicSelect from '../Select/Select'
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import authenticationRoutes from "../../router/authroute";
+import {Context} from '../../redux/core/context/context'
+import {Chip} from '@mui/material'
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Button from '@mui/material/Button';
 
 const BootstrapDialog = styler(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -83,6 +85,13 @@ const roleArray = [
   const randomCode = Math.floor(100000 + Math.random() * 900000);
 
 const NavigationBar = () => {
+  const contextValues = React.useContext(Context)
+  const { 
+    handleSigninUsername,
+    settings,
+    isLoading, 
+    handleSigninPassword,
+    handleSigninRole, handleSigninProceed, open, handleSignin, handleClose, handleCloseBackDropLoading } = contextValues
   const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -94,11 +103,8 @@ const NavigationBar = () => {
       toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
   })
-    const history = useHistory()
-    const form = React.useRef();
     const [isSuccessLogin, setSuccessLogin] = React.useState(false)
-    const [isLoading, setLoading] = React.useState(false)
-    const [open, setIsOpen] = React.useState(false)
+    
     const [modalEmail, setEmailModal] = React.useState(false)
     const [modalSecQuestion, setSecQuestionModal] = React.useState(false)
     const [BDOpen, setBDOpen] = React.useState(false)
@@ -125,7 +131,6 @@ const NavigationBar = () => {
     const tokenref = React.useRef(token)
     const loginSuccessref = React.useRef(loginSuccess)
     const isLoginRedirection = React.useRef(isSuccessLogin)
-    const dispatch = useDispatch();
 
     React.useEffect(() => {
       tokenref.current = token
@@ -134,19 +139,9 @@ const NavigationBar = () => {
     }, [token, loginSuccess, isSuccessLogin])
 
     const [errorHelperText, setHelperText] = React.useState('')
-    const handleSignin = () => {
-        setIsOpen(true)
-        setEmailModal(false)
-        setSecQuestionModal(false)
-        setSentCode(false)
-    }
-    const handleClose = () => {
-        setIsOpen(false)
-        setEmailModal(false)
-        setSecQuestionModal(false)
-    }
+    
     const backDropAwait = () => {
-      return <Redirect as={HashLink} to={appRouter.Registration.path} />
+      return <Redirect as={HashLink} to={appRouter.Choosepage.path} />
     }
     const onBDOpen = () => {
       setBDOpen(true)
@@ -162,7 +157,7 @@ const NavigationBar = () => {
         return false
       } else {
         setEmailModal(true)
-        setIsOpen(false)
+        
         setSecQuestionModal(false)
       } 
     }
@@ -208,7 +203,7 @@ const NavigationBar = () => {
     const onRecoverbySecQuestion = () => {
       setSecQuestionModal(true)
       setEmailModal(false)
-      setIsOpen(false)
+      
       setSentCode(false)
     }
 
@@ -270,9 +265,6 @@ const NavigationBar = () => {
 
     }
 
-    const handleCloseBackDrop = () => {
-      setBDOpen(false)
-    }
     const handleNewPass = (e) => {
       if(e.target.value === null || e.target.value === '') {
         setErrorRequest(prevState => {
@@ -403,117 +395,21 @@ const NavigationBar = () => {
         return {clientObject}
       })
     }
-    const pushtoPlatform = () => {
-      return <Redirect as={HashLink} to={appRouter.devPlatform.path} />
-    }
-    const onSignin = () => {
-      if(loginState.loginObject === undefined){
-        setErrorRequest(prevState => {
-          let errorHandler = Object.assign({}, prevState.errorHandler)
-          errorHandler.errorLoggerUsername = true
-          errorHandler.errorLoggerPassword = true
-          return {errorHandler}
-        })
-        setHelperText("Empty field")
-        Toast.fire({
-          icon: 'error',
-          title: 'Empty fields. please try again.'
-        })
-        return false
-      } else if(!loginState.loginObject.username || !loginState.loginObject.password) { 
-        Toast.fire({
-          icon: 'error',
-          title: 'Empty username or password.'
-        })
-        return false
-      } else { 
-        setIsOpen(false)
-        setLoading(true)
-        setTimeout(() => dispatch(pushLogin(loginState.loginObject)), 1000)
-        
-        setTimeout(() => {
-          console.log(tokenref.current)
-          if(tokenref.current[0].key.message === 'success_developer') {
-            //login
-            Toast.fire({
-              icon: 'success',
-              title: 'Successfully logged in.'
-            })
-            setLoading(false)
-            localStorage.setItem("key_identifier", tokenref.current[0].key.uid)
-            history.push(appRouter.devPlatform.path)
-          } else if(tokenref.current[0].key === 'PASSWORD_INVALID'){
-            Toast.fire({
-              icon: 'error',
-              title: 'Password invalid.'
-            })
-            setIsOpen(true)
-            setLoading(false)
-          }
-           else { 
-            Toast.fire({
-              icon: 'error',
-              title: 'Username does not exist.'
-            })
-            setIsOpen(true)
-            setLoading(false)
-            
-          }
-        }, 2000)
-      }
-    }
-    const handleCloseBackDropLoading = () => {
-      setLoading(false)
-    }
-    const handleRole = (event) => {
-      if(event.target.value === null || event.target.value === ''){
-        setRole("")
-        setErrorRequest(prevState => {
-          let errorHandler = Object.assign({}, prevState.errorHandler)
-          errorHandler.errorLoggerRole = true
-          return {errorHandler}
-        })
-        setLoginState(prevState => {
-          let loginObject = Object.assign({}, prevState.loginObject)
-          loginObject.role = ""
-          return {loginObject}
-        })
-        setHelperText("Kindly select system")
-      } else {
-        setRole(event.target.value)
-        setLoginState(prevState => {
-          let loginObject = Object.assign({}, prevState.loginObject)
-          loginObject.role = event.target.value
-          return {loginObject}
-        })
-        setErrorRequest(prevState => {
-          let errorHandler = Object.assign({}, prevState.errorHandler)
-          errorHandler.errorLoggerRole = false
-          return {errorHandler}
-        })
-        setHelperText("")
-      }
-    }
+    
+   
+    
+    
     return(
         <div>
-            <Navbar bg="dark" variant="dark">
-            <Container>
-            <Navbar.Brand href="#">
-                <img
-                alt=""
-                src="https://react-bootstrap.github.io/logo.svg"
-                width="30"
-                height="30"
-                className="d-inline-block align-top"
-                />{' '}
-            Modern Resolve
-            </Navbar.Brand>
-                <Navbar.Collapse className="justify-content-end">
-                <BTN onClick={handleSignin} size="small" variant="outline-primary">Sign in</BTN> 
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
-
+            <AppBar style={{backgroundColor : '#121212'}} position="static">
+              <Toolbar>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                  Modern Resolve <Chip label="v1.0 BETA" color="success" />
+                </Typography>
+                <Button onClick={handleSignin} color="inherit">Login</Button>
+              </Toolbar>
+      </AppBar>
+        
         <BootstrapDialog
         maxWidth='sm'
         fullWidth={true}
@@ -530,16 +426,19 @@ const NavigationBar = () => {
             {
                                             MUIText({
                                               typography : "Username",
-                                              dataOnChange : handleUsername,
+                                              dataOnChange : (e) => handleSigninUsername(e, 1),
                                               id: "outlined-basic",
                                               label: "Your username",
                                               type : "text",
                                               stylish : {width: '100%'},
                                               variant : "outlined",
-                                              isError : errorRequest.errorHandler.errorLoggerUsername,
-                                              helperTextHelper : errorHelperText,
-                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.username
+                                              isError : settings[1].errorProvider.error_username,
+                                              helperTextHelper : settings[1].error_provider_message.epm_username,
+                                              value : settings[1].fieldSettings.username
                                             })
+                                          }
+                                          {
+                                            console.log(settings)
                                           }
             </div>
             <div style={{marginBottom : '10px'}}>
@@ -547,25 +446,25 @@ const NavigationBar = () => {
             {
                                             MUIText({
                                               typography : "Password",
-                                              dataOnChange : handlePassword,
+                                              dataOnChange : (e) => handleSigninPassword(e, 1),
                                               id: "outlined-basic",
                                               label: "Your password",
                                               type : "password",
                                               stylish : {width: '100%'},
                                               variant : "outlined",
-                                              isError : errorRequest.errorHandler.errorLoggerPassword,
-                                              helperTextHelper : errorHelperText,
-                                              value : (loginState.loginObject === undefined) ? defaultValueSetter : loginState.loginObject.password
+                                              isError : settings[1].errorProvider.error_password,
+                                              helperTextHelper : settings[1].error_provider_message.epm_password,
+                                              value : settings[1].fieldSettings.password
                                             })
                                           }
             </div>
             <div style={{marginBottom: '10px'}}>
             {BasicSelect({ 
-                                              value : roleIdentify,
-                                              handleSelect : handleRole,
+                                              value : settings[1].fieldSettings.role,
+                                              handleSelect : (e) => handleSigninRole(e, 1),
                                               selectionArray : roleArray,
                                               selectionTitle : 'Branch',
-                                              isError : errorRequest.errorHandler.errorLoggerRole
+                                              isError : settings[1].errorProvider.error_role
                                             })}
             </div>
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -604,7 +503,7 @@ const NavigationBar = () => {
           {
             MUIButton({
               variant : "contained",
-              onhandleClick : onSignin,
+              onhandleClick : () => handleSigninProceed(1),
               size : "small",
               buttonName: "Sign in"
             })
