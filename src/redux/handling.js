@@ -1,3 +1,5 @@
+
+import {localstorageHelper} from './core/data/storage'
 var data = new FormData()
 class DataHandling {
     HTTPHandling(object) {
@@ -69,7 +71,7 @@ class DataHandling {
     HTTPTokenupdater(route) {
         data.append('routeState', true)
         data.append('route', route)
-        data.append('id', localStorage.getItem('key_identifier'))
+        data.append('id', localstorageHelper.load('key_identifier'))
         return data
     }
     HTTPUAM(obj) {

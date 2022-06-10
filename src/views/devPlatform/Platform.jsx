@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState} from 'react'
+import React, {useRef, useEffect, useState, useContext} from 'react'
 import DevNavbar from '../../components/devNavbar/Navbar'
 import imgDev from '../../assets/origlogo.png'
 import {useSelector, useDispatch} from 'react-redux'
@@ -9,51 +9,31 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
-import { authIdentify } from '../../redux/core/loginSlice'
-import { appRouter } from '../../router/route'
-import { useHistory } from 'react-router-dom'
-import { getBranches, pushTokenRouteUpdate } from '../../redux/core/branchSlice';
-import client from '../../redux/common'
-import Swal from 'sweetalert2'
+import { getBranches } from '../../redux/core/branchSlice';
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
+import { Context } from '../../redux/core/context/context';
 
 
 const pageNumbers = []
 const DEVPlatform = () => {
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-      })
+    const contextValues = useContext(Context)
+    const { handleNavigate, isLoading, __home__, initialRoute } = contextValues
+    
     const [arrBranch, setBranchArray] = useState([])
-    const [savedInfo, initialRoute, branchList, branchMessage] = useSelector((state) => [
+    const [savedInfo, branchList] = useSelector((state) => [
         state.login.savedInfo,
-         state.login.initialRoute,
-          state.branch.branchList,
-          state.branch.branchMessage
+          state.branch.branchList
     ])
     const branchReference = useRef(arrBranch)
     useEffect(() => {
         branchReference.current = arrBranch
     }, [arrBranch])
-   
-    const [isLoading, setLoading] = React.useState(false)
-    const branchrouteUpdaterRef = useRef(branchMessage)
     const branchRef = useRef(branchList)
-    const refResponse = useRef(initialRoute)
     const [currentPage, setPage] = React.useState(1);
     const [dataperPage, setdataperPage] = React.useState(5);
     const refSavedInfo = useRef(savedInfo)
-    const [keyIdentifier, setkeyIdentifier] = React.useState('')
     const dispatch = useDispatch()
-    const history = useHistory()
     const indexData = currentPage * dataperPage
     const indexFirstData = indexData - dataperPage
     const currentDataPage = branchList.slice(indexFirstData, indexData)
@@ -64,53 +44,16 @@ const DEVPlatform = () => {
     useEffect(() => {
         dispatch(getBranches(true))
         branchRef.current = branchList
-        branchrouteUpdaterRef.current = branchMessage
         refSavedInfo.current = savedInfo
     }, [])
 
     useEffect(() => {
-        setkeyIdentifier(JSON.parse(localStorage.getItem('keySaved'))[0].uid)
-        refResponse.current = initialRoute
-        if(localStorage.getItem('key_identifier') == 'unknown'){
-            
-        }else{ 
-             dispatch(authIdentify(localStorage.getItem('key_identifier')))
-        }
-        setTimeout(() => {
-            if(localStorage.getItem('key_identifier') == 'unknown') {
-                return false
-            } else if(refResponse.current[0].key.lastroute === 'developer_platform') { 
-                //route to dev platform
-                history.push(appRouter.devPlatform.path)
-            } else if(refResponse.current[0].key.lastroute === '/developer/dashboard'){
-                history.push(appRouter.DashboardOverview.path)
-            } else {
-                history.push(appRouter.Homepage.path)
-            }
-        }, 1000)
+        __home__(1)
     }, [])
     const handleChangePage = (event, value) => {
         setPage(value);
       };
-    const handleNavigate = (route) => {
-       if(route === '/developer/dashboard') {
-        setLoading(true)
-        setTimeout(() => {
-            dispatch(pushTokenRouteUpdate(route))
-        } ,2000)
-        setTimeout(() => {
-            if(branchrouteUpdaterRef.current[0].key === 'route_updated'){
-                history.push(route)
-                setLoading(false)
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Successfully navigate to developer dashboard.'
-                  })
-
-            }
-        }, 3000)
-       }
-    }
+    
     return(
         <>
             <DevNavbar />
@@ -155,7 +98,7 @@ const DEVPlatform = () => {
                                             </Typography>
                                         </CardContent>
                                         <CardActions>
-                                            <Button onClick={() => handleNavigate(i.branchRoute)} variant="contained" style={{width: '100%'}} size="small">SELECT</Button>
+                                            <Button onClick={() => handleNavigate(i.branchRoute, 0)} variant="contained" style={{width: '100%'}} size="small">SELECT</Button>
                                         </CardActions>
                                     </Card>
                                     </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {FieldContext} from './redux/core/context/context'
 import {HashRouter} from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'element-theme-default';
@@ -13,7 +14,9 @@ const store = configureStore()
 ReactDOM.render(
   <HashRouter>
     <Provider store={store}>
-    <ApplicationRouter />
+      <FieldContext>
+          <ApplicationRouter />
+      </FieldContext>
     </Provider>
   </HashRouter>,
   rootElement

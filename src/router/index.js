@@ -12,7 +12,9 @@ import 'react-pro-sidebar/dist/css/styles.css';
 import './style.css'
 import logo from '../assets/circularlogo.png'
 import AddUser from '../views/code/pages/Adduser';
+import ScoringBoard from '../views/code/pages/ScoringBoard';
 import { useHistory } from 'react-router-dom';
+import Choose from '../views/Choose';
 
 const RouteWithLoad = ({component : Component, ...rest}) => {
     return(
@@ -60,10 +62,13 @@ const RouteWithSidebar = ({component: Component, ...rest}) => {
                                 <SubMenu title="User Management">
                                 <MenuItem onClick={navAdduser}>Add user</MenuItem>
                                 </SubMenu>
+                                {/* <SubMenu title="Basketball Timer">
+                                <MenuItem onClick={() => history.push(appRouter.BasketballScoreBoard.path)}>Score Board</MenuItem>
+                                </SubMenu> */}
                             </Menu>
                 </SidebarContent>    
                 <SidebarFooter>
-                <p>© Modern Resolve Org, All Right Reserved.</p>
+                <p>© Developer [JM Sevilla], All Right Reserved.</p>
                 </SidebarFooter>           
             </ProSidebar>
             </div>
@@ -85,8 +90,10 @@ export default () => (
         <RouteWithLoad exact path={appRouter.Homepage.path} component={Home} />
         <RouteWithLoad exact path={appRouter.Registration.path} component={AppRegistration} />
         <RouteWithLoad exact path={appRouter.devPlatform.path} component={DEVPlatform} />
+        <RouteWithLoad exact path={appRouter.Choosepage.path} component={Choose} />
 
         <RouteWithSidebar exact path={appRouter.DashboardOverview.path} component={DashboardExile} />
         <RouteWithSidebar exact path={appRouter.DashboardAddUser.path} component={AddUser} />
+        <RouteWithSidebar exact path={appRouter.BasketballScoreBoard.path} component={ScoringBoard} />
     </Switch>
 )
