@@ -43,6 +43,42 @@ class Spiels {
                     login : appRouter.Homepage.path
                 }
             }
+        },
+        {
+            field_id : 4,
+            fieldSettings : {
+                personalInformation : {
+                    firstname : '',
+                    lastname : ''
+                },
+                workInformation : {
+                    occupationStatus : '',
+                    occupationDetails : '',
+                    occupationPositionWork : [],
+                    nameofschool : '',
+                    degree : '',
+                    address : ''
+                },
+                credentialsInformation : {
+                    username : '',
+                    password : '',
+                    conpassword : ''
+                },
+                errorProvider : {
+                    error_firstname : false,
+                    error_lastname : false,
+                    error_username : false,
+                    error_password : false,
+                    error_conpassword : false
+                },
+                error_provider_message : {
+                    epm_firstname : '',
+                    epm_lastname : '',
+                    epm_username : '',
+                    epm_password : '',
+                    epm_conpassword : ''
+                }
+            }
         }
     ]
 }

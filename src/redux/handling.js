@@ -88,6 +88,11 @@ class DataHandling {
         data.append('uamlistState', true)
         return data
     }
+    HTTPCheckDeveloper(object, trigger){
+        data.append('userTrigger', trigger)
+        data.append('username', object.username)
+        return data
+    }
 }
 
 export default new DataHandling()

@@ -10,6 +10,7 @@ export const accordionContent = [
     {
         AC_id : 1,
         title : 'About Modern Resolve Organization',
+        expanded : true,
         details : [
             {
                 detailsId : 1,
@@ -147,4 +148,63 @@ export const reserveMembers = [
         company : 'Unknown',
         description : 'Developer'
     }
+]
+
+export const steps = ['Personal', 'Team', 'Credentials']
+
+export const OccupationType = [
+    {
+        label : 'Software Quality Engineering Team', value : 'SQE'
+    },
+    {
+        label : 'Quality Assurance Team', value : 'QA'
+    },
+    {
+        label : 'User Experience Design Team' , value : 'UX'
+    }
+]
+
+export const OccupationPosition = [
+    {
+        value : 'ASE-SUPPORT', label : 'Associate Software Engineer (Support)'
+    },
+    {
+        value : 'SE-FE-REACT', label : 'Software Engineer Frontend (React JS)'
+    },
+    {
+        value : 'SE-FE-VUE', label : 'Software Engineer Frontend (Vue JS)'
+    },
+    {
+        value : 'SE-BE-PHP', label : 'Software Engineer Backend (PHP)'
+    },
+    {
+        value : 'SE-BE-C#', label : 'Software Engineer Backend (C# REST API)'
+    },
+    {
+        value : 'SSE-FS', label : 'Software Engineer Full Stack'
+    },
+    {
+        value : 'DBA-MYSQL',  label : 'Database Administrator (MySQL)'
+    },
+    {
+        value : 'DBA-SQL',  label : 'Database Administrator (MSSQL)'
+    },
+    {
+        value : 'UX',  label : 'UX Designer'
+    },
+    {
+        value : 'QE',  label : 'Quality Engineer'
+    }
+]
+
+export const DegreeList = [
+    {
+        value : 'bachelor', label : 'Bachelor'
+    },
+    {
+        value : 'mit', label : 'MIT'
+    },
+    {
+        value : 'dr', label : 'Dr'
+    },
 ]

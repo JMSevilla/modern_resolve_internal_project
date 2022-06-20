@@ -6,6 +6,7 @@ import signoutReducer from './core/signoutSlice'
 import branchReducer from './core/branchSlice'
 import UAMReducer from './core/admin/usermanagementSlice'
 import serverMiddleware from './middleware/serverMiddleware'
+import developerReducer from './core/developerSlice'
 
 export default function store(){
     return configureStore({
@@ -14,7 +15,8 @@ export default function store(){
             login : loginReducer,
             signout : signoutReducer,
             branch : branchReducer,
-            uam : UAMReducer
+            uam : UAMReducer,
+            developer : developerReducer
         },
         middleware: [...getDefaultMiddleware(), serverMiddleware]
     })

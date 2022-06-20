@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import {
     Container,
     CardContent,
@@ -12,6 +12,7 @@ import Avatar from '@mui/material/Avatar';
 import { red, blue } from '@mui/material/colors';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import {useHistory} from 'react-router-dom'
+import { Context } from '../redux/core/context/context';
 
 
 const ChooseNavigation = () => (
@@ -72,6 +73,8 @@ const ChooseClientContent = () => {
     )
 }
 const ChooseDeveloperContent = () => {
+    const contextValues = useContext(Context)
+    const {navigateChooseDeveloper} = contextValues
     return (
         <React.Fragment>
             <CardHeader
@@ -83,7 +86,7 @@ const ChooseDeveloperContent = () => {
                 title="Developer"
                 subheader="Create an account as a developer."
                 action={
-                    <IconButton style={{marginTop: '10px'}} aria-label="settings">
+                    <IconButton onClick={() => navigateChooseDeveloper()} style={{marginTop: '10px'}} aria-label="settings">
                       <ArrowForwardIosIcon />
                     </IconButton>
                   }
@@ -94,12 +97,13 @@ const ChooseDeveloperContent = () => {
 }
 
 const Choose = () => {
+   
     return (
         <React.Fragment>
             <ChooseNavigation />
             <Container style={{marginTop: '170px'}} fixed>
             <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                    <Grid item xs={6}>
+                    <Grid item xs={5}>
                         <img 
                         src="https://cdn.dribbble.com/userupload/2642094/file/original-3695949a32a8ef22b9e9d6c620f16ce3.jpg?compress=1&resize=1200x900"
                         className='img-fluid'
@@ -107,7 +111,7 @@ const Choose = () => {
                         alt='content'
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={7}>
                         <AppCard children={<ChooseContent />} />
                     </Grid>
                 </Grid>
