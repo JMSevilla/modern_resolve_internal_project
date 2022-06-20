@@ -8,6 +8,9 @@ import { useHistory } from 'react-router-dom'
 import { localstorageHelper } from '../data/storage'
 import Swal from 'sweetalert2'
 import { appRouter } from '../../../router/route'
+import {checkdev, create_developers_account} from '../developerSlice'
+import { utils_response } from '../utils/breaker'
+import { developer_account_creation_compressor } from '../utils/compressor'
 
 const Context = createContext()
 
@@ -26,17 +29,26 @@ const FieldContext = ({children}) => {
     const [open, setIsOpen] = useState(false)
     const [settings, setSettings] = useState(Spiels.fields)
     const [isLoading, setLoading] = useState(false)
-    
-    const [branchMessage, token, initialRoute, signoutMessage] = useSelector((state) => [
+    const [activeSteps, setActiveSteps] = useState(0)
+    const [branchMessage,
+        token,
+        initialRoute, 
+        signoutMessage, 
+        check_response,
+        create_response] = useSelector((state) => [
         state.branch.branchMessage,
         state.login.token,
         state.login.initialRoute,
-        state.signout.signoutMessage
+        state.signout.signoutMessage,
+        state.developer.check_response,
+        state.developer.create_response
     ])
     const signoutref = useRef(signoutMessage)
     const scanned = useRef(initialRoute)
     const fieldRef = useRef(branchMessage)
     const signinReference = useRef(token)
+    const devObjReference = useRef(check_response)
+    const devCreateObjReference = useRef(create_response)
     const dispatch = useDispatch()
     const history = useHistory()
     /* use Effects */
@@ -44,7 +56,9 @@ const FieldContext = ({children}) => {
         fieldRef.current = branchMessage
         signinReference.current = token
         signoutref.current = signoutMessage
-    },[branchMessage, token, signoutMessage])
+        devObjReference.current = check_response
+        devCreateObjReference.current = create_response
+    },[branchMessage, token, signoutMessage, check_response, create_response])
     useEffect(() => {
         scanned.current = initialRoute
     }, [initialRoute])
@@ -119,33 +133,29 @@ const FieldContext = ({children}) => {
             dispatch(pushLogin(tempFieldSelected.fieldSettings))
             setTimeout(() => {
                 const message = signinReference.current[0].key.message == undefined || signinReference.current[0].key.message == null ? signinReference.current[0].key : signinReference.current[0].key.message
-                switch(true){
-                    case message == 'success_developer' : {
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Successfully logged in.'
-                        })
-                        setLoading(false)
-                        const key = signinReference.current[0].key.uid
-                        localstorageHelper.store('key_identifier', key)
-                        tempFieldSelected.message = message
-                        setSettings(tempAllFieldsSelected)
-                        history.push(tempFieldSelected.router.login)
-                    }
-                    case message == 'ACCOUNT_NOT_FOUND' : {
-                        Toast.fire({
-                            icon: 'error',
-                            title: 'Sorry, but the account was not found.'
-                        })
-                        setLoading(false)
-                    }
-                    case message == 'PASSWORD_INVALID' : {
-                        Toast.fire({
-                            icon: 'error',
-                            title: 'The username or password you have entered is wrong.'
-                        })
-                        setLoading(false)
-                    }
+                if(message === 'success_developer'){
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Successfully logged in.'
+                    })
+                    setLoading(false)
+                    const key = signinReference.current[0].key.uid
+                    localstorageHelper.store('key_identifier', key)
+                    tempFieldSelected.message = message
+                    setSettings(tempAllFieldsSelected)
+                    history.push(tempFieldSelected.router.login)
+                } else if (message === 'ACCOUNT_NOT_FOUND') {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Sorry, but the account was not found.'
+                    })
+                    setLoading(false)
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'The username or password you have entered is wrong.'
+                    })
+                    setLoading(false)
                 }
             }, 1000)
         }
@@ -279,6 +289,7 @@ const FieldContext = ({children}) => {
             }
         },1000)
     }
+
    const handleDevSignout = (index) => {
         setIsOpen(false)
         setLoading(true)
@@ -305,6 +316,95 @@ const FieldContext = ({children}) => {
             }
         }, 1000)
    }
+   const navigateChooseDeveloper = () => {
+       localstorageHelper.store('reg', 'dev')
+       history.push(appRouter.Registration.path)
+   }
+   const createAccountNavigate = () => {
+       setIsOpen(false)
+       history.push(appRouter.Choosepage.path)
+   }
+   const devNext = (index) => {
+        const tempAllFieldSelected = [...settings]
+        const tempFieldSelected = {...tempAllFieldSelected[index]}
+        const tempField = {...tempFieldSelected.fieldSettings}
+        if(activeSteps == 0) {
+            if(!tempField.personalInformation.firstname 
+                || !tempField.personalInformation.lastname) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Some fields was empty.'
+                    })
+                    return false
+                } else {
+                    setActiveSteps((activeSteps) => activeSteps + 1)
+                }
+        } else if(activeSteps == 1) {
+            //validation team info required
+            setActiveSteps((activeSteps) => activeSteps + 1)
+        }
+        else  {
+            if(!tempField.credentialsInformation.username
+                || !tempField.credentialsInformation.password
+                || !tempField.credentialsInformation.conpassword) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Some fields was empty.'
+                    })
+                    return false
+                }
+                else if(tempField.credentialsInformation.password != tempField.credentialsInformation.conpassword) {
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Password does not match.'
+                    })
+                    return false
+                }
+                else {
+                    if(activeSteps == 2) {
+                       dispatch(checkdev(tempField.credentialsInformation, true))
+                       setTimeout(() => {
+                        utils_response(devObjReference.current).then((snapshot) => {
+                            if(snapshot.__message__ === 'username_taken') {
+                                Toast.fire({
+                                    icon: 'info',
+                                    title: 'Sorry but the username is already taken.'
+                                })
+                                return false
+                            } else {
+                                //dev registration Backend Request
+                                let newConstructFieldSettings = {
+                                    personal : tempField.personalInformation,
+                                    workInformation : tempField.workInformation,
+                                    credentials : tempField.credentialsInformation
+                                }
+                                setLoading(true)
+                                developer_account_creation_compressor(newConstructFieldSettings)
+                                .then((snapshot) => {
+                                    dispatch(create_developers_account(snapshot))
+                                   
+                                })
+                                setTimeout(() => {
+                                    utils_response(devCreateObjReference.current)
+                                    .then((callback) => {
+                                        if(callback.__message__ === 'dev_registration_success') {
+                                            Toast.fire({
+                                                icon: 'success',
+                                                title: 'Success ! Kindly wait for administrators approval'
+                                            })
+                                            setLoading(false)
+                                            //add step for done step
+                                        }
+                                    })
+                                    
+                                },1000)
+                            }
+                        })
+                       },1000)
+                    } 
+                }
+        }
+   }
     return(
         <Context.Provider
         value={{
@@ -312,7 +412,8 @@ const FieldContext = ({children}) => {
             handleSigninUsername, handleSigninPassword, 
             handleSigninRole, handleSigninProceed, handleSignin,
             handleClose, handleCloseBackDropLoading, __home__, initialRoute,
-            handleChangeBranch, handleDevSignout, setIsOpen
+            handleChangeBranch, handleDevSignout, setIsOpen, navigateChooseDeveloper,
+            activeSteps, setActiveSteps, createAccountNavigate, devNext
         }}
         >{children}</Context.Provider>
     )

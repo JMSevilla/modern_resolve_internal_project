@@ -7,7 +7,9 @@ const MUIButton = ({
     variant,
     buttonName,
     stylish,
-    color
+    color,
+    disabled,
+    sx
 }) => {
     return (
         <>
@@ -17,6 +19,8 @@ const MUIButton = ({
             variant={variant}
             style={stylish}
             color={color}
+            disabled={disabled}
+            sx={sx}
             >{buttonName}</Button>
         </>
     )

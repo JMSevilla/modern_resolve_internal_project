@@ -76,6 +76,7 @@ const MUIText = ({
             maxRows={4}
             error={isError}
             helperText={helperTextHelper}
+            value={value}
             />
             </>
         )

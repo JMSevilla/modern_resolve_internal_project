@@ -11,7 +11,7 @@ const AppAccordion = ({array}) => {
             {
                 array.map((item) => {
                     return(
-                        <Accordion>
+                        <Accordion expanded={item.expanded}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 aria-controls="panel1a-content"

@@ -91,7 +91,8 @@ const NavigationBar = () => {
     settings,
     isLoading, 
     handleSigninPassword,
-    handleSigninRole, handleSigninProceed, open, handleSignin, handleClose, handleCloseBackDropLoading } = contextValues
+    handleSigninRole,
+     handleSigninProceed, open, handleSignin, handleClose, handleCloseBackDropLoading , createAccountNavigate} = contextValues
   const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -143,9 +144,7 @@ const NavigationBar = () => {
     const backDropAwait = () => {
       return <Redirect as={HashLink} to={appRouter.Choosepage.path} />
     }
-    const onBDOpen = () => {
-      setBDOpen(true)
-    }
+    
     const onRecoverbyEmail = () => {
       if(loginState.loginObject.username === undefined || loginState.loginObject.username === ""){
         setErrorRequest(prevState => {
@@ -415,7 +414,7 @@ const NavigationBar = () => {
         fullWidth={true}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
-        open={open}
+        open={!open ? false : true}
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
           Sign in your account
@@ -464,14 +463,15 @@ const NavigationBar = () => {
                                               handleSelect : (e) => handleSigninRole(e, 1),
                                               selectionArray : roleArray,
                                               selectionTitle : 'Branch',
-                                              isError : settings[1].errorProvider.error_role
+                                              placeholder: 'Select Branch',
+                                              handleRenderedValue: settings[1].fieldSettings.role
                                             })}
             </div>
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
             {
                MUIButton({
                 variant : "text",
-                onhandleClick : onBDOpen,
+                onhandleClick : () => createAccountNavigate(),
                 buttonName: "Create an account"
               })
             }
