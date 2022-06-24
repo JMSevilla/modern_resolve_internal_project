@@ -186,7 +186,23 @@ const DeveloperContent = () => {
                                         value={allFieldSelected[3].fieldSettings.credentialsInformation.conpassword}
                                     />
                                 </React.Fragment>
-                            ) : <React.Fragment></React.Fragment>
+                            ) : 
+                            <React.Fragment>
+                                <center>
+                                    <img 
+                                    src="https://cdn.dribbble.com/users/841193/screenshots/3144676/media/922abdc08fd70ed8cafa6dae3e234643.gif"
+                                    alt="Success"
+                                    className="img-fluid"
+                                    style={{width: '50%', height: 'auto'}}
+                                    />
+                                    <Typography style={{marginBottom: '10px', marginTop: '10px'}} variant="h6"  component="div">
+                                         You're all caught up
+                                    </Typography>
+                                    <Typography style={{marginTop: '10px'}} variant="overline" display="block" gutterBottom>
+                                        Your account has been successfully created, please wait for administrator's approval
+                                    </Typography>
+                                </center>
+                            </React.Fragment>
                         }
                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             

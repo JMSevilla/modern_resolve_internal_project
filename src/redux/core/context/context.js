@@ -11,6 +11,7 @@ import { appRouter } from '../../../router/route'
 import {checkdev, create_developers_account} from '../developerSlice'
 import { utils_response } from '../utils/breaker'
 import { developer_account_creation_compressor } from '../utils/compressor'
+import { spielsClearing } from '../utils/spielsClearing'
 
 const Context = createContext()
 
@@ -331,6 +332,7 @@ const FieldContext = ({children}) => {
         if(activeSteps == 0) {
             if(!tempField.personalInformation.firstname 
                 || !tempField.personalInformation.lastname) {
+                    
                     Toast.fire({
                         icon: 'error',
                         title: 'Some fields was empty.'
@@ -361,7 +363,7 @@ const FieldContext = ({children}) => {
                     return false
                 }
                 else {
-                    if(activeSteps == 2) {
+                    if(activeSteps === 2) {
                        dispatch(checkdev(tempField.credentialsInformation, true))
                        setTimeout(() => {
                         utils_response(devObjReference.current).then((snapshot) => {
@@ -394,15 +396,25 @@ const FieldContext = ({children}) => {
                                             })
                                             setLoading(false)
                                             //add step for done step
+                                            setActiveSteps((activeSteps) => activeSteps + 1)
                                         }
                                     })
                                     
                                 },1000)
                             }
+                            
                         })
                        },1000)
-                    } 
+                    } else if(activeSteps === 3) {
+                        setActiveSteps(0)
+                        spielsClearing(
+                            tempField.personalInformation,
+                            tempField.workInformation,
+                            tempField.credentialsInformation
+                        )
+                    }  
                 }
+                
         }
    }
     return(

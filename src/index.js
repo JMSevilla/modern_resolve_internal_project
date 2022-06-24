@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {HandlesContext} from './redux/core/context/base/FieldContext'
 import {FieldContext} from './redux/core/context/context'
+import { HandleFetch } from './redux/core/context/base/FetchContext';
 import {HashRouter} from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'element-theme-default';
@@ -17,7 +18,9 @@ ReactDOM.render(
     <Provider store={store}>
       <HandlesContext>
         <FieldContext>
-            <ApplicationRouter />
+          <HandleFetch>
+          <ApplicationRouter />
+          </HandleFetch>
         </FieldContext>
       </HandlesContext>
     </Provider>
