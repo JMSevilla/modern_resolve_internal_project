@@ -3,8 +3,9 @@ import jmimage from '../../../assets/jm.png'
 import bryimage from '../../../assets/bry.png'
 import roximage from '../../../assets/rox.png'
 import emmanimage from '../../../assets/emman.png'
-import {Avatar} from '@mui/material'
+import {Avatar, Chip} from '@mui/material'
 import { red } from '@mui/material/colors'
+
 
 export const accordionContent = [
     {
@@ -150,7 +151,7 @@ export const reserveMembers = [
     }
 ]
 
-export const steps = ['Personal', 'Team', 'Credentials']
+export const steps = ['Personal', 'Team', 'Credentials', 'Done']
 
 export const OccupationType = [
     {
@@ -208,3 +209,21 @@ export const DegreeList = [
         value : 'dr', label : 'Dr'
     },
 ]
+
+
+  
+  export const rowCreativeDesign = (rowData) => {
+    let arrTemp = rowData
+    let newarrTemp = []
+    arrTemp.map((item) => {
+      newarrTemp.push({
+        id : item.id,
+        firstname : item.firstname,
+        lastname : item.lastname,
+        username : item.username,
+        userType : item.userType,
+        isLock : item.isLock
+    })
+  })
+    return newarrTemp
+  }

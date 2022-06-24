@@ -79,6 +79,30 @@ class Spiels {
                     epm_conpassword : ''
                 }
             }
+        },
+        {
+            field_id : 5,
+            fieldSettings : {
+                userlist : []
+            }
+        },
+        {
+            field_id : 6,
+            fieldSettings : {
+                usersObj : {
+                    id : '',
+                    firstname : '',
+                    lastname : ''
+                },
+                errorProvider : {
+                    error_firstname : false,
+                    error_lastname : false
+                },
+                error_provider_message : {
+                    epm_firstname : '',
+                    epm_lastname : ''
+                }
+            }
         }
     ]
 }

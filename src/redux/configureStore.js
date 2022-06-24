@@ -7,6 +7,7 @@ import branchReducer from './core/branchSlice'
 import UAMReducer from './core/admin/usermanagementSlice'
 import serverMiddleware from './middleware/serverMiddleware'
 import developerReducer from './core/developerSlice'
+import fetchReducer from './core/fetchSlice'
 
 export default function store(){
     return configureStore({
@@ -16,7 +17,8 @@ export default function store(){
             signout : signoutReducer,
             branch : branchReducer,
             uam : UAMReducer,
-            developer : developerReducer
+            developer : developerReducer,
+            fetching : fetchReducer
         },
         middleware: [...getDefaultMiddleware(), serverMiddleware]
     })
