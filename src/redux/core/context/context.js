@@ -9,9 +9,11 @@ import { localstorageHelper } from '../data/storage'
 import Swal from 'sweetalert2'
 import { appRouter } from '../../../router/route'
 import {checkdev, create_developers_account} from '../developerSlice'
-import { utils_response } from '../utils/breaker'
+import { utils_response, utils_modified_response } from '../utils/breaker'
 import { developer_account_creation_compressor } from '../utils/compressor'
 import { spielsClearing } from '../utils/spielsClearing'
+
+import FormService from '../../Utilization'
 
 const Context = createContext()
 
@@ -33,12 +35,14 @@ const FieldContext = ({children}) => {
     const [activeSteps, setActiveSteps] = useState(0)
     const [branchMessage,
         token,
-        initialRoute, 
-        signoutMessage, 
+        savedInfo,
+        initialRoute,
+        signoutMessage,
         check_response,
         create_response] = useSelector((state) => [
         state.branch.branchMessage,
         state.login.token,
+        state.login.savedInfo,
         state.login.initialRoute,
         state.signout.signoutMessage,
         state.developer.check_response,
@@ -50,6 +54,7 @@ const FieldContext = ({children}) => {
     const signinReference = useRef(token)
     const devObjReference = useRef(check_response)
     const devCreateObjReference = useRef(create_response)
+    const savedInfoRef = useRef(savedInfo)
     const dispatch = useDispatch()
     const history = useHistory()
     /* use Effects */
@@ -59,7 +64,8 @@ const FieldContext = ({children}) => {
         signoutref.current = signoutMessage
         devObjReference.current = check_response
         devCreateObjReference.current = create_response
-    },[branchMessage, token, signoutMessage, check_response, create_response])
+        savedInfoRef.current = savedInfo
+    },[branchMessage, token, signoutMessage, check_response, create_response, savedInfo])
     useEffect(() => {
         scanned.current = initialRoute
     }, [initialRoute])
@@ -69,15 +75,16 @@ const FieldContext = ({children}) => {
         const tempFieldSelected = {...tempAllFieldsSelected[index]}
         if(route == '/developer/dashboard') {
             setLoading(true)
-            dispatch(pushTokenRouteUpdate(route))
-            setTimeout(() => {
+            FormService.service_updateroute(route)
+            .then((res) => {
                 const fieldSettings = {
                     ResponseMessage : fieldRef.current,
                     registeredRoute : route
                 }
+                setLoading(false)
                 tempFieldSelected.fieldSettings = fieldSettings
                 setSettings(tempAllFieldsSelected)
-                if(tempFieldSelected.fieldSettings.ResponseMessage[0].key == 'route_updated'){
+                if(res.data == 'route_updated'){
                     history.push(tempFieldSelected.fieldSettings.registeredRoute)
                     setLoading(false)
                     Toast.fire({
@@ -85,7 +92,7 @@ const FieldContext = ({children}) => {
                         title: 'Successfully navigate to developer dashboard.'
                     })
                 }
-            }, 1000)
+            }) 
         }
     }
     const handleChangeBranch = (route, index) => {
@@ -116,7 +123,7 @@ const FieldContext = ({children}) => {
         const tempAllFieldsSelected = [...settings]
         const tempFieldSelected = { ...tempAllFieldsSelected[index] }
         let validateSettings
-        validateSettings = { 
+        validateSettings = {
             username : tempFieldSelected.fieldSettings.username,
             password : tempFieldSelected.fieldSettings.password,
             userLogin : tempFieldSelected.fieldSettings.userLogin,
@@ -131,21 +138,29 @@ const FieldContext = ({children}) => {
         } else {
             setIsOpen(false)
             setLoading(true)
-            dispatch(pushLogin(tempFieldSelected.fieldSettings))
-            setTimeout(() => {
-                const message = signinReference.current[0].key.message == undefined || signinReference.current[0].key.message == null ? signinReference.current[0].key : signinReference.current[0].key.message
-                if(message === 'success_developer'){
+            FormService.service_login(tempFieldSelected.fieldSettings)
+            .then((res) => {
+                if(res.data.message === 'success_developer'){
                     Toast.fire({
                         icon: 'success',
                         title: 'Successfully logged in.'
                     })
                     setLoading(false)
-                    const key = signinReference.current[0].key.uid
+                    const key = res.data.uid
+                    let dump = []
+                    dump.push({
+                        fname : res.data.fname,
+                        lname : res.data.lname,
+                        uname : res.data.uname,
+                        role : res.data.role,
+                        uid : res.data.uid
+                    })
+                    localstorageHelper.store('keySaved', dump)
                     localstorageHelper.store('key_identifier', key)
-                    tempFieldSelected.message = message
+                    tempFieldSelected.message = res.data.message
                     setSettings(tempAllFieldsSelected)
                     history.push(tempFieldSelected.router.login)
-                } else if (message === 'ACCOUNT_NOT_FOUND') {
+                }else if (res.data === 'ACCOUNT_NOT_FOUND') {
                     Toast.fire({
                         icon: 'error',
                         title: 'Sorry, but the account was not found.'
@@ -158,7 +173,7 @@ const FieldContext = ({children}) => {
                     })
                     setLoading(false)
                 }
-            }, 1000)
+            })
         }
     }
     const handleSigninUsername = (event, index) => {
@@ -272,23 +287,22 @@ const FieldContext = ({children}) => {
         const __key__ = localstorageHelper.load('key_identifier')
         if(__key__ == 'unknown') {}
         else{
-            dispatch(authIdentify(__key__))
+            FormService.service_tokenization_scanned(__key__)
+            .then(res => {
+                if(__key__ == 'unknown') {
+                    history.push(tempFieldSelected.router.Home)
+                }else if(res.data.lastRoute == 'developer_platform') {
+                    history.push(tempFieldSelected.router.login)
+                }
+                else if(res.data.lastRoute == '/developer/dashboard'){
+                    history.push(tempFieldSelected.router.Dashboard)
+                } else {
+                    history.push(tempFieldSelected.router.Home)
+                    // localstorageHelper.store('key_identifier', 'unknown1')
+                }
+            })
         }
-        setTimeout(() => {
-            if(__key__ == 'unknown') {
-                history.push(tempFieldSelected.router.Home)
-                localstorageHelper.store('key_identifier', 'unknown1')
-            }
-            else if(scanned.current[0].key.lastroute == 'developer_platform') {
-                history.push(tempFieldSelected.router.login)
-            }
-            else if(scanned.current[0].key.lastroute == '/developer/dashboard'){
-                history.push(tempFieldSelected.router.Dashboard)
-            } else { 
-                history.push(tempFieldSelected.router.Home)
-                localstorageHelper.store('key_identifier', 'unknown1')
-            }
-        },1000)
+        
     }
 
    const handleDevSignout = (index) => {
@@ -307,15 +321,15 @@ const FieldContext = ({children}) => {
         tempFieldSelected.fieldSettings = fieldSettings
         tempAllFieldSelected[index] = tempFieldSelected
         setSettings(tempAllFieldSelected)
-        dispatch(pushSignout(tempFieldSelected.fieldSettings.key))
-        setTimeout(() => {
-            if(signoutref.current[0].key === 'SIGNOUT_SUCCESS'){
+        FormService.service_signout(tempFieldSelected.fieldSettings.key)
+        .then(res => {
+            if(res.data === 'SIGNOUT_SUCCESS'){
                 setLoading(false)
                 localstorageHelper.store('key_identifier', 'unknown')
                 localstorageHelper.store('keySaved', 'unknown')
                 history.push(tempFieldSelected.fieldSettings.router.login)
             }
-        }, 1000)
+        })
    }
    const navigateChooseDeveloper = () => {
        localstorageHelper.store('reg', 'dev')
@@ -330,9 +344,9 @@ const FieldContext = ({children}) => {
         const tempFieldSelected = {...tempAllFieldSelected[index]}
         const tempField = {...tempFieldSelected.fieldSettings}
         if(activeSteps == 0) {
-            if(!tempField.personalInformation.firstname 
+            if(!tempField.personalInformation.firstname
                 || !tempField.personalInformation.lastname) {
-                    
+
                     Toast.fire({
                         icon: 'error',
                         title: 'Some fields was empty.'
@@ -364,17 +378,16 @@ const FieldContext = ({children}) => {
                 }
                 else {
                     if(activeSteps === 2) {
-                       dispatch(checkdev(tempField.credentialsInformation, true))
-                       setTimeout(() => {
-                        utils_response(devObjReference.current).then((snapshot) => {
-                            if(snapshot.__message__ === 'username_taken') {
+                       dispatch(checkdev(tempField.credentialsInformation.username))
+                       FormService.service_checkdev(tempField.credentialsInformation.username)
+                       .then(res => {
+                            if(res.data === 'username_taken') {
                                 Toast.fire({
                                     icon: 'info',
                                     title: 'Sorry but the username is already taken.'
                                 })
                                 return false
-                            } else {
-                                //dev registration Backend Request
+                            }else{
                                 let newConstructFieldSettings = {
                                     personal : tempField.personalInformation,
                                     workInformation : tempField.workInformation,
@@ -383,13 +396,10 @@ const FieldContext = ({children}) => {
                                 setLoading(true)
                                 developer_account_creation_compressor(newConstructFieldSettings)
                                 .then((snapshot) => {
-                                    dispatch(create_developers_account(snapshot))
-                                   
-                                })
-                                setTimeout(() => {
-                                    utils_response(devCreateObjReference.current)
-                                    .then((callback) => {
-                                        if(callback.__message__ === 'dev_registration_success') {
+                                    FormService.service_devcreate(snapshot)
+                                    .then(res => {
+                                        setLoading(false)
+                                        if(res.data === 'dev_registration_success'){
                                             Toast.fire({
                                                 icon: 'success',
                                                 title: 'Success ! Kindly wait for administrators approval'
@@ -399,12 +409,9 @@ const FieldContext = ({children}) => {
                                             setActiveSteps((activeSteps) => activeSteps + 1)
                                         }
                                     })
-                                    
-                                },1000)
+                                })
                             }
-                            
-                        })
-                       },1000)
+                       })
                     } else if(activeSteps === 3) {
                         setActiveSteps(0)
                         spielsClearing(
@@ -412,16 +419,16 @@ const FieldContext = ({children}) => {
                             tempField.workInformation,
                             tempField.credentialsInformation
                         )
-                    }  
+                    }
                 }
-                
+
         }
    }
     return(
         <Context.Provider
         value={{
             handleNavigate, isLoading, Toast, settings, open,
-            handleSigninUsername, handleSigninPassword, 
+            handleSigninUsername, handleSigninPassword,
             handleSigninRole, handleSigninProceed, handleSignin,
             handleClose, handleCloseBackDropLoading, __home__, initialRoute,
             handleChangeBranch, handleDevSignout, setIsOpen, navigateChooseDeveloper,

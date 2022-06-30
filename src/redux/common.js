@@ -6,10 +6,24 @@ headers.append('GET', 'POST', 'OPTIONS');
 class APICommon {
     connect() {
         const instance = axios.create({
-            baseURL : "http://localhost/modern_resolve_intern_project_backend",
+            baseURL : "http://127.0.0.1:8000/api/",
             headers: headers
         })
         return instance
+    }
+    connectv2(
+        {method,
+        url,
+        headers,
+        data}
+    ){
+        const instance = axios({
+            method : method,
+            url : "http://127.0.0.1:8000/api/" + url,
+            headers : headers,
+            data: data
+        });
+        return instance;
     }
 }
 

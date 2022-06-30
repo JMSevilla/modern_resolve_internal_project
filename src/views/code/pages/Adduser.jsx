@@ -130,7 +130,6 @@ import { Grid } from '@mui/material';
             >
             </MUIButton>
           </Typography>
-          
           <ProjectTable 
             projectData={allFieldsSelected[4].fieldSettings.userlist}
             openEdit={openEdit}

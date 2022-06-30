@@ -12,17 +12,17 @@ class DataHandling {
     }
     HTTPManual(object) {
         
-        data.append('fname', object.fname)
-        data.append('lname', object.lname)
-        data.append('occupationStatus', object.occupationStatus)
-        data.append('occupationDetails', object.occupationDetails)
-        data.append('occupationPositionWork', object.occupationPositionWork)
-        data.append('nameOfSchool', object.nameOfSchool)
-        data.append('degree', object.degree)
-        data.append('address', object.address)
+        data.append('firstname', object.fname)
+        data.append('lastname', object.lname)
         data.append('username', object.username)
         data.append('password', object.password)
-        data.append('regTrigger', true)
+        data.append('occupationstatus', object.occupationStatus)
+        data.append('occupationdetails', object.occupationDetails)
+        data.append('occupationpositionwork', object.occupationPositionWork)
+        data.append('nameofschool', object.nameOfSchool)
+        data.append('degree', object.degree)
+        data.append('address', object.address)
+        
         return data
     }
     HTTPManualClient(object) {
@@ -49,7 +49,6 @@ class DataHandling {
       
         data.append('username', object.username)
         data.append('password', object.password)
-        data.append('userLogin', object.userLogin)
         data.append('role', object.role)
         return data
     }

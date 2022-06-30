@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import handler from '../handling'
-import {baseURLMiddleware} from '../middleware/urlMiddleware'
-import client from '../common'
-import { apiCallBegan } from "../actions/Action";
+import {baseURLMiddleware, baseURLMiddlewareHelper} from '../middleware/urlMiddleware'
+import API from '../common'
+import { localstorageHelper } from "./data/storage";
 export const initialState = {
     branchList : [],
     branchMessage : null
@@ -28,23 +28,18 @@ const {TokenrouteReceived, branchReceived} = branchSlice.actions;
 
 
 export const pushTokenRouteUpdate = (route) => (dispatch) => {
-    return dispatch(
-        apiCallBegan({
-            url : baseURLMiddleware.tokenRouteUpdater,
-            method : 'POST',
-            data : handler.HTTPTokenupdater(route),
-            onSuccess : TokenrouteReceived.type
-        })
-    )
+    API.connect().put(`developers/branchroute/pushroute/uid/${localstorageHelper.load('key_identifier')}`, {
+        route : route
+    }).then(res => {
+      console.log(res.data)
+       dispatch(TokenrouteReceived(res.data))
+    })
 }
 
-export const getBranches = (value) => (dispatch) => {
-    return dispatch(
-        apiCallBegan({
-            url : baseURLMiddleware.branchURL,
-            method : 'POST',
-            data : handler.HTTPBranch(value),
-            onSuccess : branchReceived.type
-        })
-    )
+export const getBranches = () => (dispatch) => {
+   API.connect().get(
+    'developers/branch/getallbranches'
+   ).then(response => {
+    dispatch(branchReceived(response.data))
+   })
 }

@@ -42,8 +42,9 @@ const DEVPlatform = () => {
         pageNumbers.push(i)
     }
     useEffect(() => {
-        dispatch(getBranches(true))
+        dispatch(getBranches())
         branchRef.current = branchList
+        
         refSavedInfo.current = savedInfo
     }, [])
 

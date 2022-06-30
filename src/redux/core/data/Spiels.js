@@ -20,7 +20,6 @@ class Spiels {
             fieldSettings : {
                 username : '',
                 password : '',
-                userLogin : false,
                 role : ''
             },
             errorProvider : {

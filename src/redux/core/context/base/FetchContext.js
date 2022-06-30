@@ -2,6 +2,7 @@ import React, {createContext, useEffect, useRef, useState, useContext} from 'rea
 import Spiels from '../../data/Spiels'
 import { useDispatch, useSelector } from 'react-redux'
 import { get_request_userlist } from '../../fetchSlice'
+import FormService from '../../../Utilization'
 
 const HandleFetchContext = createContext()
 
@@ -19,16 +20,14 @@ const HandleFetch = ( { children } ) => {
     }, [userlist])
     const GET_USERLIST = (index) => {
         const tempAllFieldsSelected = [...allFieldsSelected]
-
-        let obj = {trigger : true}
-        dispatch(get_request_userlist(obj))
-        setTimeout(() => {
+        FormService.service_dev_getallusers().then(res => {
+            console.log(res.data)
             const fieldSettings = {
-                userlist : userRef.current
+                userlist : res.data
             }
             tempAllFieldsSelected[index].fieldSettings = fieldSettings
             setAllFieldsSelected(tempAllFieldsSelected)
-        },1000)
+        })
     }
     const editTransferContextData = (object, selectedIndex) => {
         const tempAllFieldsSelected = [...allFieldsSelected]
