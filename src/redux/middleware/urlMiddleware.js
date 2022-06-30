@@ -1,6 +1,6 @@
 export const baseURLMiddleware = { 
     userURL : "/api/user.php",
-    checkuserURL : "/api/checkuser.php",
+    checkuserURL : "mdrusers/usercheck",
     loginURL : "/api/login.php",
     tokenizationURL : "/api/tokenization.php",
     signoutURL : "/api/signout.php",
@@ -8,4 +8,9 @@ export const baseURLMiddleware = {
     tokenRouteUpdater : "/api/tokenizationRouteUpdater.php",
     UAMPostdev : "/api/usermanagement.php",
     UAMGetdev : "/api/uamlist.php"
+}
+
+export function baseURLMiddlewareHelper(uri, callback) {
+    const setBack = uri;
+    return `${setBack}/${callback}`
 }

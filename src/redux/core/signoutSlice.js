@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiCallBegan } from "../actions/Action";
 import handler from '../handling'
-import {baseURLMiddleware} from '../middleware/urlMiddleware'
+import {baseURLMiddleware, baseURLMiddlewareHelper} from '../middleware/urlMiddleware'
+import API from '../common'
 
-export const initialState = { 
+export const initialState = {
     signoutMessage : null
 }
 
@@ -21,12 +22,9 @@ export default signoutSlice.reducer
 const { signoutRequestReceived } = signoutSlice.actions
 
 export const pushSignout = (uid) => (dispatch) => {
-    return dispatch(
-        apiCallBegan({
-            url : baseURLMiddleware.signoutURL,
-            method: 'POST',
-            data : handler.HTTPSignout(uid),
-            onSuccess : signoutRequestReceived.type
-        })
-    )
+    API.connect().put(
+      baseURLMiddlewareHelper('developers/devbranch/signout/uid', uid)
+    ).then(response => {
+      dispatch(signoutRequestReceived(response.data))
+    })
 }

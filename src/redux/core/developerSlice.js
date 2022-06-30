@@ -1,8 +1,8 @@
 import {createSlice} from "@reduxjs/toolkit";
 import handler from '../handling'
 import { apiCallBegan } from "../actions/Action";
-import { baseURLMiddleware } from "../middleware/urlMiddleware";
-
+import { baseURLMiddleware, baseURLMiddlewareHelper } from "../middleware/urlMiddleware";
+import API from '../common'
 
 export const initialState ={ 
     create_response : '',
@@ -25,24 +25,19 @@ const developerSlice = createSlice({
 export default developerSlice.reducer
 const { create_account_received, check_account_received } = developerSlice.actions
 
-export const checkdev = (object, trigger) => (dispatch) => {
-    return dispatch(
-        apiCallBegan({
-            url : baseURLMiddleware.checkuserURL,
-            method : 'POST',
-            data : handler.HTTPCheckDeveloper(object, trigger),
-            onSuccess : check_account_received.type
-        })
-    )
+export const checkdev = (username) => (dispatch) => {
+    API.connect().get(
+        baseURLMiddlewareHelper('mdrusers/usercheck', username)
+    ).then(responses => {
+        dispatch(check_account_received(responses.data))
+    })
 }
 
 export const create_developers_account = (object) => (dispatch) => {
-    return dispatch(
-        apiCallBegan({
-            url : baseURLMiddleware.userURL,
-            method : 'POST',
-            data : handler.HTTPManual(object),
-            onSuccess : create_account_received.type
-        })
-    )
+    API.connect().post(
+        'mdrusers/devregistration',
+        handler.HTTPManual(object)
+    ).then(response => {
+        dispatch(create_account_received(response.data))
+    })
 }
