@@ -17,6 +17,7 @@ import { Grid } from '@mui/material';
   const AddUser = () => {
     const contextValues = useContext(HandleFetchContext)
     const { GET_USERLIST, allFieldsSelected, editTransferContextData, selectedIndex } = contextValues
+    
     const [isopen, setOpen] = useState(false)
     const customStyle = {
       width: '100%',
@@ -37,12 +38,14 @@ import { Grid } from '@mui/material';
  useEffect(() => {
   GET_USERLIST(4)
  },[])
- const openEdit = (paramsId, fname, lname) => {
+ const openEdit = (paramsId, fname, lname, username, pass) => {
   setOpen(true)
   let object = {
     id : paramsId,
     firstname : fname,
-    lastname : lname
+    lastname : lname,
+    username : username,
+    password : pass
   }
   editTransferContextData(object, 5)
  }
@@ -77,9 +80,41 @@ import { Grid } from '@mui/material';
                 type={'text'}
                 stylish={customStyle}
                 variant={'filled'}
+                value={allFieldsSelected[selectedIndex].fieldSettings.usersObj.lastname}
+                helperTextHelper={allFieldsSelected[selectedIndex].fieldSettings.error_provider_message.epm_lastname}
+                isError={allFieldsSelected[selectedIndex].fieldSettings.errorProvider.error_lastname}
             />
         </Grid>
       </Grid>
+    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+      <Grid item xs={6}>
+          <MUIText 
+                typography={'Username'}
+                id={'filled-basic'}
+                label={'Your username'}
+                type={'text'}
+                stylish={customStyle}
+                variant={'filled'}
+                value={allFieldsSelected[selectedIndex].fieldSettings.usersObj.username}
+                helperTextHelper={allFieldsSelected[selectedIndex].fieldSettings.error_provider_message.epm_username}
+                isError={allFieldsSelected[selectedIndex].fieldSettings.errorProvider.error_username}
+            />
+        </Grid>
+        <Grid item xs={6}>
+          <MUIText 
+                typography={'Password'}
+                id={'filled-basic'}
+                label={'Your password'}
+                type={'password'}
+                stylish={customStyle}
+                variant={'filled'}
+                value={allFieldsSelected[selectedIndex].fieldSettings.usersObj.password}
+                helperTextHelper={allFieldsSelected[selectedIndex].fieldSettings.error_provider_message.epm_password}
+                isError={allFieldsSelected[selectedIndex].fieldSettings.errorProvider.error_password}
+            />
+        </Grid>
+      </Grid>
+      
     </>
   )
  }

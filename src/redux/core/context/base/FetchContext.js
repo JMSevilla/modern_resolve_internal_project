@@ -35,7 +35,9 @@ const HandleFetch = ( { children } ) => {
         const newusersObj = {
             id : object.id,
             firstname : object.firstname,
-            lastname : object.lastname
+            lastname : object.lastname,
+            username : object.username,
+            password : object.password
         }
         const fieldSettings = {
             usersObj : newusersObj,

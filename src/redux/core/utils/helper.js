@@ -167,6 +167,9 @@ export const OccupationType = [
 
 export const OccupationPosition = [
     {
+        value : 'TRAINEE', label : 'Developer Trainee (FE & BE)'
+    },
+    {
         value : 'ASE-SUPPORT', label : 'Associate Software Engineer (Support)'
     },
     {
@@ -221,6 +224,7 @@ export const DegreeList = [
         firstname : item.firstname,
         lastname : item.lastname,
         username : item.username,
+        password : item.password,
         userType : item.userType,
         isLock : item.isLock
     })
