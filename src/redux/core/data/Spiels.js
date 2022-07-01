@@ -91,15 +91,21 @@ class Spiels {
                 usersObj : {
                     id : '',
                     firstname : '',
-                    lastname : ''
+                    lastname : '',
+                    username : '',
+                    password : ''
                 },
                 errorProvider : {
                     error_firstname : false,
-                    error_lastname : false
+                    error_lastname : false,
+                    error_username : false,
+                    error_password : false
                 },
                 error_provider_message : {
                     epm_firstname : '',
-                    epm_lastname : ''
+                    epm_lastname : '',
+                    epm_username : '',
+                    epm_password : ''
                 }
             }
         }

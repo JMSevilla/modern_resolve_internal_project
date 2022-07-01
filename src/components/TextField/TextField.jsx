@@ -14,7 +14,8 @@ const MUIText = ({
     variant,
     isError = false,
     helperTextHelper,
-    value
+    value,
+    disabled
 }) => {
     
     const helperIsEnable = () => {
@@ -34,6 +35,7 @@ const MUIText = ({
                         error={isError}
                         helperText={helperTextHelper}
                         value={value}
+                        disabled={disabled}
                         />
                 </>
             )
@@ -52,6 +54,7 @@ const MUIText = ({
                         style={stylish}
                         variant={variant}
                         value={value}
+                        disabled={disabled}
                         />
                 </>
             )
@@ -77,6 +80,7 @@ const MUIText = ({
             error={isError}
             helperText={helperTextHelper}
             value={value}
+            disabled={disabled}
             />
             </>
         )

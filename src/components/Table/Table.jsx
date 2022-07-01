@@ -63,7 +63,7 @@ import {Chip} from '@mui/material'
      },
      {
         headerName : 'Actions',
-        width: 180,
+        width: 250,
         sortable: false,
         renderCell : (params) => {
           return(
@@ -75,13 +75,29 @@ import {Chip} from '@mui/material'
                       color={'primary'}
                       onhandleClick={() => openEdit(
                         params.row.id, params.row.firstname,
-                        params.row.lastname)}
+                        params.row.lastname, params.row.username,
+                        params.row.password)}
                       buttonName={'Edit'} /> &nbsp;
                   <MUIButton 
                       size={'sm'}
                       variant={'outlined'}
                       color={'error'}
-                      buttonName={'Delete'} />
+                      buttonName={'Delete'} /> &nbsp;
+                    {params.row.isLock == 1 ? (
+                      <>
+                        <MUIButton 
+                          size={'sm'}
+                          variant={'contained'}
+                          color={'success'}
+                          buttonName={'Unlock'} />
+                      </>
+                    ) : (<>
+                    <MUIButton 
+                          size={'sm'}
+                          variant={'contained'}
+                          color={'error'}
+                          buttonName={'Lock'} />
+                    </>)}
                   </div>
               </>
           )

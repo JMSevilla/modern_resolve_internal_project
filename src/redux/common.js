@@ -6,7 +6,8 @@ headers.append('GET', 'POST', 'OPTIONS');
 class APICommon {
     connect() {
         const instance = axios.create({
-            baseURL : "http://127.0.0.1:8000/api/",
+            // baseURL : "http://127.0.0.1:8000/api/",
+            baseURL : "https://honest-toque-03744.herokuapp.com/api/",
             headers: headers
         })
         return instance
@@ -19,7 +20,7 @@ class APICommon {
     ){
         const instance = axios({
             method : method,
-            url : "http://127.0.0.1:8000/api/" + url,
+            url : "https://honest-toque-03744.herokuapp.com/api/" + url,
             headers : headers,
             data: data
         });

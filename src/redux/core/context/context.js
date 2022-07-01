@@ -166,7 +166,14 @@ const FieldContext = ({children}) => {
                         title: 'Sorry, but the account was not found.'
                     })
                     setLoading(false)
-                } else {
+                } else if(res.data === 'ACCOUNT_LOCK') {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Your account is lock, please contact the administrator.'
+                    })
+                    setLoading(false)
+                }
+                 else {
                     Toast.fire({
                         icon: 'error',
                         title: 'The username or password you have entered is wrong.'
@@ -378,7 +385,7 @@ const FieldContext = ({children}) => {
                 }
                 else {
                     if(activeSteps === 2) {
-                       dispatch(checkdev(tempField.credentialsInformation.username))
+                        setLoading(true)
                        FormService.service_checkdev(tempField.credentialsInformation.username)
                        .then(res => {
                             if(res.data === 'username_taken') {
@@ -386,6 +393,7 @@ const FieldContext = ({children}) => {
                                     icon: 'info',
                                     title: 'Sorry but the username is already taken.'
                                 })
+                                setLoading(false)
                                 return false
                             }else{
                                 let newConstructFieldSettings = {
@@ -393,13 +401,12 @@ const FieldContext = ({children}) => {
                                     workInformation : tempField.workInformation,
                                     credentials : tempField.credentialsInformation
                                 }
-                                setLoading(true)
                                 developer_account_creation_compressor(newConstructFieldSettings)
                                 .then((snapshot) => {
                                     FormService.service_devcreate(snapshot)
                                     .then(res => {
                                         setLoading(false)
-                                        if(res.data === 'dev_registration_success'){
+                                        if(res.data.message === 'dev_registration_success'){
                                             Toast.fire({
                                                 icon: 'success',
                                                 title: 'Success ! Kindly wait for administrators approval'
