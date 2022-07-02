@@ -63,7 +63,7 @@ import {Chip} from '@mui/material'
      },
      {
         headerName : 'Actions',
-        width: 250,
+        width: 280,
         sortable: false,
         renderCell : (params) => {
           return(
